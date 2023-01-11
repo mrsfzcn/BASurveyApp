@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("api/questionnumeric")
 public class QuestionNumericController {
-/*
+    /*
 
- */
+     */
     private final QuestionNumericService questionNumericService;
 }
