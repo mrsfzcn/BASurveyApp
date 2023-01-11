@@ -1,4 +1,4 @@
-package com.bilgeadam.basurveyapp.repository.entity;
+package com.bilgeadam.basurveyapp.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
