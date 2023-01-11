@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("api/questionnumeric")
 public class QuestionNumericController {
 
-    /*
 
-     */
     private final QuestionNumericService questionNumericService;
 }
