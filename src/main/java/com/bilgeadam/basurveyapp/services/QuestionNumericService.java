@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class QuestionNumericService extends ServiceManager<QuestionNumeric,Long> {
+    /*
 
+     */
     private final IQuestionNumericRepository iQuestionNumericRepository;
 
     public QuestionNumericService(IQuestionNumericRepository iQuestionNumericRepository) {
