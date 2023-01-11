@@ -1,14 +1,13 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.service.SurveyService;
+import com.bilgeadam.basurveyapp.service.QuestionTextService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/survey")
+@RequestMapping("/api/questionText")
 @RequiredArgsConstructor
-public class SurveyController {
-    private final SurveyService surveyService;
+public class QuestionTextController {
+    private final QuestionTextService questionTextService;
 }
