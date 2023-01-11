@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public class ServiceManager<T, ID> implements IServices<T, ID> {
+public class ServiceManager<T, ID> implements IService<T, ID> {
 
     private final JpaRepository<T, ID> service;
 
