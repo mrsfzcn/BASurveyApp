@@ -22,7 +22,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table
-public class ClassRoom {
+public class Classroom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
