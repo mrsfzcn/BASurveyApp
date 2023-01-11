@@ -24,8 +24,12 @@ public class Survey {
     private Date endDate;
     private String classroom;
     private String courseTopic;
+    @OneToMany
     private List<QuestionNumeric> numericQuestions;
+    @OneToMany
     private List<ResponseNumeric> numericResponses;
+    @OneToMany
     private List<QuestionText> textQuestions;
+    @OneToMany
     private List<ResponseText> textResponses;
 }

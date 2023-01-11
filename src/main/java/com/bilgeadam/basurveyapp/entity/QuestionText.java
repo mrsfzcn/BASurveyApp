@@ -18,6 +18,7 @@ public class QuestionText {
     @Column(name = "oid", nullable = false, unique = true, updatable = false)
     private Long oid;
     private String questionDescription;
+    @ManyToOne
     private Survey survey;
     private Long order;
 

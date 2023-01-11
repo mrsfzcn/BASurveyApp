@@ -19,6 +19,7 @@ public class QuestionNumeric {
     private Long oid;
 
     private String questionDescription;
+    @ManyToOne
     private Survey survey;
     private Long order;
 }
