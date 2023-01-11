@@ -40,7 +40,7 @@ public class User {
     private String email;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "classroom_oid")
-    private ClassRoom classroom;
+    private Classroom classroom;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     @Temporal(TemporalType.TIMESTAMP)
