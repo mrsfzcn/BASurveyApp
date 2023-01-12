@@ -14,8 +14,9 @@ public class ResponseNumeric {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long oid;
-//    @ManyToOne
-//    private questionNumeric questionNumeric;
+    @ManyToOne
+    @JoinColumn(name = "question_numeric")
+    private QuestionNumeric questionNumeric;
     @ManyToOne
     private User user;
     @Column(name = "numeric_response")

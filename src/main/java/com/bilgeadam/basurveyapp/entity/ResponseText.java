@@ -5,7 +5,8 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 @Entity
 @Table(name = "response_texts")
@@ -14,11 +15,12 @@ public class ResponseText {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "oid", nullable = false)
     private Long oid;
-    @Column(unique = true, nullable = false)
-    private String questionText;
+    @ManyToOne
+    @JoinColumn(referencedColumnName = "oid", name = "question_text")
+    private QuestionText questionText;
     @ManyToOne
     @JoinColumn(name="oid", nullable=false)
     private User user;
-    @Column(unique = true, nullable = false)
+    @Column(name = "text_response", unique = true, nullable = false)
     private String textResponse;
 }

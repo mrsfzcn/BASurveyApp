@@ -1,4 +1,4 @@
-package com.bilgeadam.basurveyapp.entity;
+package com.bilgeadam.basurveyapp.entity.enums;
 
 public enum Role {
 

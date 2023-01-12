@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.entity;
 
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

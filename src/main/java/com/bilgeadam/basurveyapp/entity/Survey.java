@@ -22,14 +22,12 @@ public class Survey {
     private Date startDate;
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
-    private String classroom;
+    @ManyToOne
+    @JoinColumn(name = "classroom_oid")
+    private Classroom classroom;
     private String courseTopic;
     @OneToMany
-    private List<QuestionNumeric> numericQuestions;
+    private List<QuestionNumeric> questionNumeric;
     @OneToMany
-    private List<ResponseNumeric> numericResponses;
-    @OneToMany
-    private List<QuestionText> textQuestions;
-    @OneToMany
-    private List<ResponseText> textResponses;
+    private List<QuestionText> questionText;
 }
