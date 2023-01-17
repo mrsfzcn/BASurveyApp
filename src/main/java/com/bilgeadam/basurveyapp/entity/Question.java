@@ -12,8 +12,8 @@ import lombok.*;
 @Builder
 @Table(name = "questions")
 public class Question extends BaseEntity {
-    @Column(name = "question_description")
-    private String questionDescription;
+    @Column(name = "question_string")
+    private String questionString;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "oid", name = "survey")

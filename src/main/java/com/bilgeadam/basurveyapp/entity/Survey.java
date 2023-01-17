@@ -18,6 +18,9 @@ public class Survey extends BaseEntity {
     @Column(name = "survey_title")
     private String surveyTitle;
 
+    @Column(name = "course_topic")
+    private String courseTopic;
+
     @Column(name = "start_Date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
@@ -30,9 +33,9 @@ public class Survey extends BaseEntity {
     @JoinColumn(name = "classroom_oid")
     private Classroom classroom;
 
-    @Column(name = "course_topic")
-    private String courseTopic;
-
     @OneToMany(mappedBy = "survey")
     private List<Question> question;
+
+    @ManyToMany(mappedBy = "surveys")
+    private List<User> users;
 }

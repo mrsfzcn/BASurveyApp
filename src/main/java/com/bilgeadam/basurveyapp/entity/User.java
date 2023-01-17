@@ -2,15 +2,10 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +23,14 @@ public class User extends BaseEntity {
     private Role role;
     @Column(nullable = false, updatable = false, unique = true)
     private String email;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "classroom_oid")
-    private Classroom classroom;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_classroom",
+            joinColumns = @JoinColumn(name = "user_oid"),
+            inverseJoinColumns = @JoinColumn(name = "classroom_oid"))
+    private List<Classroom> classrooms;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_survey",
+            joinColumns = @JoinColumn(name = "user_oid"),
+            inverseJoinColumns = @JoinColumn(name = "survey_oid"))
+    private List<Survey> surveys;
 }

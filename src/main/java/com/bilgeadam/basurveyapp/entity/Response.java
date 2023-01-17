@@ -20,6 +20,6 @@ public class Response extends BaseEntity {
     @JoinColumn(name="user_oid", nullable=false)
     private User user;
 
-    @Column(name = "response_string", unique = true, nullable = false)
+    @Column(name = "response_string", nullable = false)
     private String responseString;
 }

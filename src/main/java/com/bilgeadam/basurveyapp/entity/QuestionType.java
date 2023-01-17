@@ -12,7 +12,7 @@ import lombok.*;
 @Setter
 @Entity
 @Builder
-@Table(name = "question_types")
+@Table(name = "questiontypes")
 public class QuestionType extends BaseEntity {
     @Column(name = "question_type")
     private String questionType;

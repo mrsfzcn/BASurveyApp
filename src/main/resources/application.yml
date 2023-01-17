@@ -1,3 +1,4 @@
+#http://localhost/api/v1/swagger-ui/index.html
 server:
   port: 80
   servlet:
@@ -11,10 +12,11 @@ spring:
     password: eralp
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         globally_quoted_identifiers: true
+        format_sql: true
 # DBeaver, Microsoft sql server, SSMS 18
 # "Server=90.158.106.204,14333; Database=BASurveyApp_Dev; User Id=developer; Password=Ba12345678+; TrustServerCertificate=True;"
