@@ -13,5 +13,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
 # DBeaver, Microsoft sql server, SSMS 18
 # "Server=90.158.106.204,14333; Database=BASurveyApp_Dev; User Id=developer; Password=Ba12345678+; TrustServerCertificate=True;"
