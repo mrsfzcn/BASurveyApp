@@ -1,16 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.repository.IClassroomRepository;
-import com.bilgeadam.basurveyapp.utility.ServiceManager;
+import com.bilgeadam.basurveyapp.repositories.ClassroomRepositoryImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClassroomService extends ServiceManager<Classroom,Long> {
-    private final IClassroomRepository classroomRepository;
+@RequiredArgsConstructor
+public class ClassroomService {
+    private final ClassroomRepositoryImpl classroomRepository;
 
-    public ClassroomService(IClassroomRepository classroomRepository){
-        super(classroomRepository);
-        this.classroomRepository=classroomRepository;
-    }
 }

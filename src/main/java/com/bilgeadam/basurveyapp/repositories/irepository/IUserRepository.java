@@ -1,4 +1,4 @@
-package com.bilgeadam.basurveyapp.repository;
+package com.bilgeadam.basurveyapp.repositories.irepository;
 
 import com.bilgeadam.basurveyapp.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
