@@ -1,36 +1,20 @@
 package com.bilgeadam.basurveyapp.entity;
 
+import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "oid", nullable = false, unique = true, updatable = false)
-    private Long oid;
+public class User extends BaseEntity {
     @Column(name = "first_name", nullable = false)
     private String firstName;
     @Column(name = "last_name", nullable = false)
@@ -39,11 +23,14 @@ public class User {
     private Role role;
     @Column(nullable = false, updatable = false, unique = true)
     private String email;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "classroom_oid")
-    private Classroom classroom;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_classroom",
+            joinColumns = @JoinColumn(name = "user_oid"),
+            inverseJoinColumns = @JoinColumn(name = "classroom_oid"))
+    private List<Classroom> classrooms;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_survey",
+            joinColumns = @JoinColumn(name = "user_oid"),
+            inverseJoinColumns = @JoinColumn(name = "survey_oid"))
+    private List<Survey> surveys;
 }

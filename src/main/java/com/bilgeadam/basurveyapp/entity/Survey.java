@@ -1,33 +1,41 @@
 package com.bilgeadam.basurveyapp.entity;
 
+import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "surveys")
-@Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Survey {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "oid", nullable = false, unique = true, updatable = false)
-    private Long oid;
+@Getter
+@Setter
+@Entity
+@Builder
+@Table(name = "surveys")
+public class Survey extends BaseEntity {
+    @Column(name = "survey_title")
     private String surveyTitle;
+
+    @Column(name = "course_topic")
+    private String courseTopic;
+
+    @Column(name = "start_Date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startDate;
+
+    @Column(name = "end_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
+
     @ManyToOne
     @JoinColumn(name = "classroom_oid")
     private Classroom classroom;
-    private String courseTopic;
-    @OneToMany
-    private List<QuestionNumeric> questionNumeric;
-    @OneToMany
-    private List<QuestionText> questionText;
+
+    @OneToMany(mappedBy = "survey")
+    private List<Question> question;
+
+    @ManyToMany(mappedBy = "surveys")
+    private List<User> users;
 }
