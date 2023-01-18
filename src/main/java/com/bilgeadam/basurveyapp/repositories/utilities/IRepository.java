@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IRepository<T, Id> {
-    T save(T entity);
-    Iterable<T> saveAll(Iterable<T> entities);
-    T update(T entity);
-    void delete(T entity);
-    void activate(T entity);
-    void deleteById(Id id);
-    void activateById(Id id);
-    Optional<T> findById(Id id);
+    T save(T entity, Long userOid);
+    T update(T entity, Long userOid);
+    void delete(T entity, Long userOid);
+    void activate(T entity, Long userOid);
+    void deleteById(Id oid, Long userOid);
+    void activateById(Id oid, Long userOid);
+    Optional<T> findById(Id oid);
     List<T> findAll();
 }
