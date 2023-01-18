@@ -12,66 +12,63 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public abstract class RepositoryExtension<T extends BaseEntity, Id> implements IRepository<T, Id> {
-    private final JpaRepository<T, Id> repository;
+public abstract class RepositoryExtension<T extends BaseEntity, Oid> implements IRepository<T, Oid> {
+    private final JpaRepository<T, Oid> repository;
 
     @Override
-    public T save(T entity) {
+    public T save(T entity, Long userOid) {
         entity.setCreatedAt(new Date());
         entity.setUpdatedAt(new Date());
+        entity.setCreatedBy(userOid);
+        entity.setUpdatedBy(userOid);
         entity.setState(State.ACTIVE);
         return repository.save(entity);
     }
 
     @Override
-    public Iterable<T> saveAll(Iterable<T> entities) {
-        for (T entity : entities) {
-            entity.setCreatedAt(new Date());
-            entity.setUpdatedAt(new Date());
-            entity.setState(State.ACTIVE);
-        }
-        return repository.saveAll(entities);
-    }
-
-    @Override
-    public T update(T entity) {
+    public T update(T entity, Long userOid) {
         entity.setUpdatedAt(new Date());
+        entity.setUpdatedBy(userOid);
         return repository.save(entity);
     }
 
     @Override
-    public void delete(T entity) {
+    public void delete(T entity, Long userOid) {
         entity.setUpdatedAt(new Date());
+        entity.setUpdatedBy(userOid);
         entity.setState(State.PASSIVE);
         repository.save(entity);
     }
 
     @Override
-    public void activate(T entity) {
+    public void activate(T entity, Long userOid) {
         entity.setUpdatedAt(new Date());
+        entity.setUpdatedBy(userOid);
         entity.setState(State.ACTIVE);
         repository.save(entity);
     }
 
     @Override
-    public void deleteById(Id id) {
-        T entity = repository.getReferenceById(id);
+    public void deleteById(Oid oid, Long userOid) {
+        T entity = repository.getReferenceById(oid);
         entity.setUpdatedAt(new Date());
+        entity.setUpdatedBy(userOid);
         entity.setState(State.PASSIVE);
         repository.save(entity);
     }
 
     @Override
-    public void activateById(Id id) {
-        T entity = repository.getReferenceById(id);
+    public void activateById(Oid oid, Long userOid) {
+        T entity = repository.getReferenceById(oid);
         entity.setUpdatedAt(new Date());
+        entity.setUpdatedBy(userOid);
         entity.setState(State.ACTIVE);
         repository.save(entity);
     }
 
     @Override
-    public Optional<T> findById(Id id) {
-        return repository.findById(id);
+    public Optional<T> findById(Oid oid) {
+        return repository.findById(oid);
     }
 
     @Override
