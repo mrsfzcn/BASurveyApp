@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity.baseentity;
 
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Getter
 @Setter
+@Builder
 @RequiredArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity {
