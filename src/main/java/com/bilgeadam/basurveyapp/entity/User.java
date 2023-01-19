@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,4 +34,8 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_oid"),
             inverseJoinColumns = @JoinColumn(name = "survey_oid"))
     private List<Survey> surveys;
+
+    public Boolean isActive(){
+        return this.getState().equals(State.ACTIVE);
+    }
 }
