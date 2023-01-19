@@ -37,6 +37,10 @@ public class UserController {
     ResponseEntity<Page<User>> getUserPage(Pageable pageable) {
         return ResponseEntity.ok(userService.getUserPage(pageable));
     }
+    @GetMapping("/{userId}")
+    ResponseEntity<User> findById(@PathVariable("userId") Long userId){
+        return ResponseEntity.ok(userService.findByOid(userId));
+    }
     @PostMapping("/create")
     ResponseEntity<User> createUser(@RequestBody UserCreateRequestDto dto){
         return ResponseEntity.ok(userService.createUser(dto));

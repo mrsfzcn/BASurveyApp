@@ -22,12 +22,16 @@ public class UserService {
     private final UserRepositoryImpl userRepository;
 
     public List<User> getUserList() {
+        // getCurrentUser()
+        // user check
         return userRepository.findAll().stream()
             .filter(User::isActive)
             .collect(Collectors.toList());
     }
 
     public Page<User> getUserPage(Pageable pageable) {
+        // getCurrentUser()
+        // user check
         return userRepository.findAll(pageable);
     }
 
@@ -63,5 +67,15 @@ public class UserService {
             // user not found exception is needed.
         }
         userRepository.delete(userToBeDeleted.get(), 0L);
+    }
+
+    public User findByOid(Long userId) {
+        // getCurrentUser()
+        // user check
+        Optional<User> userById = userRepository.findByOid(userId);
+        if(userById.isEmpty()){
+            // user not found exception is needed.
+        }
+        return userById.get();
     }
 }
