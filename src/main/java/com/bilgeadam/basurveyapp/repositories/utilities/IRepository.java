@@ -5,6 +5,7 @@ import java.util.Optional;
 
 public interface IRepository<T, Id> {
     T save(T entity, Long userOid);
+    List<T> saveAll(List<T> entities, Long userOid);
     T update(T entity, Long userOid);
     void delete(T entity, Long userOid);
     void activate(T entity, Long userOid);

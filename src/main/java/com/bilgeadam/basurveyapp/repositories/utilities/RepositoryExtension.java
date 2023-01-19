@@ -26,6 +26,18 @@ public abstract class RepositoryExtension<T extends BaseEntity, Oid> implements 
     }
 
     @Override
+    public List<T> saveAll(List<T> entities, Long userOid) {
+        for (T entity : entities) {
+            entity.setCreatedAt(new Date());
+            entity.setUpdatedAt(new Date());
+            entity.setCreatedBy(userOid);
+            entity.setUpdatedBy(userOid);
+            entity.setState(State.ACTIVE);
+        }
+        return repository.saveAll(entities);
+    }
+
+    @Override
     public T update(T entity, Long userOid) {
         entity.setUpdatedAt(new Date());
         entity.setUpdatedBy(userOid);
