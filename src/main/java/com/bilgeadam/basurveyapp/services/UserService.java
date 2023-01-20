@@ -18,15 +18,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final UserRepositoryImpl userRepository;
 
     public List<User> getUserList() {
         // getCurrentUser()
         // user check
         return userRepository.findAll().stream()
-            .filter(User::isActive)
-            .collect(Collectors.toList());
+                .filter(User::isActive)
+                .collect(Collectors.toList());
     }
 
     public Page<User> getUserPage(Pageable pageable) {
@@ -39,31 +38,33 @@ public class UserService {
         // getCurrentUser()
         // user check
         User user = User.builder()
-            .firstName(dto.getFirstName())
-            .lastName(dto.getLastName())
-            .email(dto.getEmail())
-            //.auth()
-            .role(Role.valueOf(dto.getRole()))
-            .classrooms(List.of(Classroom.builder().name(dto.getClassroomName()).build()))
-            .build();
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .email(dto.getEmail())
+                //.auth()
+                .role(Role.valueOf(dto.getRole()))
+                .classrooms(List.of(Classroom.builder().name(dto.getClassroomName()).build()))
+                .build();
         return userRepository.save(user, 0L);
     }
+
     public User updateUser(Long userId, UserUpdateRequestDto dto) {
         // getCurrentUser()
         // user check
         Optional<User> userToBeUpdated = userRepository.findByOid(userId);
-        if(userToBeUpdated.isEmpty()){
+        if (userToBeUpdated.isEmpty()) {
             // user not found exception is needed.
         }
         userToBeUpdated.get().setFirstName(dto.getFirstName());
         userToBeUpdated.get().setLastName(dto.getLastName());
         return userRepository.update(userToBeUpdated.get(), 0L);
     }
+
     public void deleteUser(Long userId) {
         // getCurrentUser()
         // user check
         Optional<User> userToBeDeleted = userRepository.findByOid(userId);
-        if(userToBeDeleted.isEmpty()){
+        if (userToBeDeleted.isEmpty()) {
             // user not found exception is needed.
         }
         userRepository.delete(userToBeDeleted.get(), 0L);
@@ -73,7 +74,7 @@ public class UserService {
         // getCurrentUser()
         // user check
         Optional<User> userById = userRepository.findByOid(userId);
-        if(userById.isEmpty()){
+        if (userById.isEmpty()) {
             // user not found exception is needed.
         }
         return userById.get();

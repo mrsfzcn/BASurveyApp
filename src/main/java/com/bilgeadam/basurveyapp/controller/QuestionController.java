@@ -25,29 +25,32 @@ public class QuestionController {
         return "question";
     }
 
-    @PostMapping("/createquestion")
-    public ResponseEntity<Void> createQuestion(@RequestBody @Valid CreateQuestionDto createQuestionDto,@RequestBody @Valid Long userOid){
-        questionService.createQuestion(createQuestionDto,userOid);
+    @PostMapping("/create")
+    public ResponseEntity<Void> createQuestion(@RequestBody @Valid CreateQuestionDto createQuestionDto, @Valid Long userOid) {
+        questionService.createQuestion(createQuestionDto, userOid);
         return ResponseEntity.ok().build();
     }
-    @PostMapping("/updatequestion")
-    public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto, @RequestBody @Valid Long userOid){
-        questionService.updateQuestion(updateQuestionDto,userOid);
+
+    @PostMapping("/update")
+    public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto, @Valid Long userOid) {
+        questionService.updateQuestion(updateQuestionDto, userOid);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/findbyid")
-    public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid QuestionFindByIdRequestDto questionFindByIdRequestDto){
-       return ResponseEntity.ok(questionService.findById(questionFindByIdRequestDto.getQuestionId()));
+    public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid QuestionFindByIdRequestDto questionFindByIdRequestDto) {
+        return ResponseEntity.ok(questionService.findById(questionFindByIdRequestDto.getQuestionId()));
     }
+
     @GetMapping("/findall")
-    public ResponseEntity<List<AllQuestionResponseDto>> findAll(){
+    public ResponseEntity<List<AllQuestionResponseDto>> findAll() {
         List<AllQuestionResponseDto> responseDtoList = questionService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
 
-    @PostMapping("/deletequestion")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId,@RequestBody @Valid Long userOid){
-        return ResponseEntity.ok(questionService.delete(questionId,userOid));
+    @PostMapping("/delete")
+    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId, @Valid Long userOid) {
+        return ResponseEntity.ok(questionService.delete(questionId, userOid));
     }
 
 }

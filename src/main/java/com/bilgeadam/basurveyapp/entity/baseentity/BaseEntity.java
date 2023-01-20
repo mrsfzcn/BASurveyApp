@@ -11,7 +11,6 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Builder
 @RequiredArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity {

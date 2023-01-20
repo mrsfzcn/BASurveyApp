@@ -25,38 +25,34 @@ public class QuestionTypeController {
         return "questiontype";
     }
 
-    @PostMapping("/createquestiontype")
-    public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto,@RequestBody @Valid Long userOid){
-        questionTypeService.createQuestionType(dto,userOid);
+    @PostMapping("/create")
+    public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto, @Valid Long userOid) {
+        questionTypeService.createQuestionType(dto, userOid);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/updatequestiontype")
-    public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto, @RequestBody @Valid Long userOid){
-        questionTypeService.updateQuestionType(dto,userOid);
+    @PostMapping("/update")
+    public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto, @Valid Long userOid) {
+        questionTypeService.updateQuestionType(dto, userOid);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/findbyid")
-    public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid QuestionTypeFindByIdRequestDto dto){
+    public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid QuestionTypeFindByIdRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.findById(dto.getQuestionTypeId()));
 
     }
 
     @PostMapping("/findall")
-    public ResponseEntity<List<AllQuestionTypeResponseDto>> findAllQuestionTypeList(){
+    public ResponseEntity<List<AllQuestionTypeResponseDto>> findAllQuestionTypeList() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
 
-    @PostMapping("/deletequestiontype")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionTypeId,@RequestBody @Valid Long userOid){
-        return ResponseEntity.ok(questionTypeService.delete(questionTypeId,userOid));
+    @PostMapping("/delete")
+    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionTypeId, @Valid Long userOid) {
+        return ResponseEntity.ok(questionTypeService.delete(questionTypeId, userOid));
     }
-
-
-
-
 
 
 }
