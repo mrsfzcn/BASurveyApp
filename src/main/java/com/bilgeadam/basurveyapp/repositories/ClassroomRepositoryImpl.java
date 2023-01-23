@@ -13,4 +13,5 @@ public class ClassroomRepositoryImpl extends RepositoryExtension<Classroom, Long
         super(classroomRepository);
         this.classroomRepository = classroomRepository;
     }
+
 }
