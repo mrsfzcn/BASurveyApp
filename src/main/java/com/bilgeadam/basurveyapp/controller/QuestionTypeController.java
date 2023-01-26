@@ -1,11 +1,10 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionTypeRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.QuestionTypeFindByIdRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.services.QuestionService;
 import com.bilgeadam.basurveyapp.services.QuestionTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +37,8 @@ public class QuestionTypeController {
     }
 
     @PostMapping("/findbyid")
-    public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid QuestionTypeFindByIdRequestDto dto) {
-        return ResponseEntity.ok(questionTypeService.findById(dto.getQuestionTypeId()));
+    public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto dto) {
+        return ResponseEntity.ok(questionTypeService.findById(dto.getOid()));
 
     }
 

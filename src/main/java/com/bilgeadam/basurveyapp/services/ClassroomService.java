@@ -1,16 +1,11 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
-import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
-import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.repositories.ClassroomRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +16,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ClassroomService {
-    private final ClassroomRepositoryImpl classroomRepository;
+    private final IClassroomRepository classroomRepository;
 
     public void createClassroom(CreateClassroomDto createClassroomDto, Long userOid) {
         Classroom classroom = Classroom.builder()
                 .name(createClassroomDto.getName())
                 .users(createClassroomDto.getUsers()).build();
-        classroomRepository.save(classroom, userOid);
+        classroomRepository.save(classroom);
     }
 
     public Boolean updateClassroom(UpdateClassroomDto updateClassroomDto, Long userOid) {
@@ -37,7 +32,7 @@ public class ClassroomService {
         } else {
             updateClassroom.get().setUsers(updateClassroomDto.getUsers());
             Classroom classroom = updateClassroom.get();
-            classroomRepository.update(classroom, userOid);
+            classroomRepository.save(classroom);
             return true;
         }
     }
@@ -76,7 +71,7 @@ public class ClassroomService {
             return false;
         } else {
             Classroom classroom = deleteClassroom.get();
-            classroomRepository.delete(classroom, userOid);
+            classroomRepository.softDelete(classroom);
             return true;
         }
     }

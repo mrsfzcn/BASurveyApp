@@ -7,6 +7,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class QuestionFindByIdRequestDto {
-    Long questionId;
+public class FindByIdRequestDto {
+    Long oid;
 }

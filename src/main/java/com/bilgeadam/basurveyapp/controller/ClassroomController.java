@@ -2,9 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.ClassroomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +35,8 @@ public class ClassroomController {
     }
 
     @GetMapping("/findbyid")
-    public ResponseEntity<ClassroomFindByIdResponseDto> findById(@RequestBody @Valid ClassroomFindByIdRequestDto classroomFindByIdRequestDto) {
-        return ResponseEntity.ok(classroomService.findById(classroomFindByIdRequestDto.getClassroomId()));
+    public ResponseEntity<ClassroomFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
+        return ResponseEntity.ok(classroomService.findById(findByIdRequestDto.getOid()));
     }
 
     @GetMapping("/findall")

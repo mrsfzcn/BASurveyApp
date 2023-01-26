@@ -1,11 +1,10 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.request.QuestionFindByIdRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.services.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +37,8 @@ public class QuestionController {
     }
 
     @GetMapping("/findbyid")
-    public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid QuestionFindByIdRequestDto questionFindByIdRequestDto) {
-        return ResponseEntity.ok(questionService.findById(questionFindByIdRequestDto.getQuestionId()));
+    public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
+        return ResponseEntity.ok(questionService.findById(findByIdRequestDto.getOid()));
     }
 
     @GetMapping("/findall")

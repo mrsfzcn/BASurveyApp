@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IQuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +16,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class QuestionTypeService {
-    private final QuestionTypeRepositoryImpl questionTypeRepository;
+    private final IQuestionTypeRepository questionTypeRepository;
 
     public void createQuestionType(CreateQuestionTypeRequestDto dto, Long userOid) {
         QuestionType questionType = (QuestionType.builder()
                 .questionType(dto.getQuestionType())
                 .build());
-        questionTypeRepository.save(questionType, userOid);
+        questionTypeRepository.save(questionType);
     }
 
     public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto, Long userOid) {
@@ -32,7 +32,7 @@ public class QuestionTypeService {
         } else {
             updateQuestionType.get().setQuestionType(dto.getQuestionType());
             QuestionType questionType = updateQuestionType.get();
-            questionTypeRepository.update(questionType, userOid);
+            questionTypeRepository.save(questionType);
             return true;
         }
     }
@@ -67,7 +67,7 @@ public class QuestionTypeService {
             return false;
         } else {
             QuestionType questionType = deleteQuestionType.get();
-            questionTypeRepository.delete(questionType, userOid);
+            questionTypeRepository.softDelete(questionType);
             return true;
         }
 

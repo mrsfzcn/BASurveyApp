@@ -2,7 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.repositories.ResponseRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +11,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ResponseService {
-    private final ResponseRepositoryImpl responseRepository;
+    private final IResponseRepository responseRepository;
 
     public void createResponse(ResponseRequestDto responseRequestDto, Long userOid){
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
 
                 .build();
-        responseRepository.save(response,userOid);
+        responseRepository.save(response);
     }
 
     public void updateResponse(ResponseRequestDto responseRequestDto,Long userOid){
@@ -28,7 +28,7 @@ public class ResponseService {
         }
         else {
             updatedResponse.get().setResponseString(responseRequestDto.getResponseString());
-            responseRepository.update(updatedResponse.get(),userOid);
+            responseRepository.save(updatedResponse.get());
         }
     }
 
@@ -38,7 +38,7 @@ public class ResponseService {
     }
 
     public void deleteResponseById(ResponseRequestDto responseRequestDto,Long userOid){
-        responseRepository.deleteById(responseRequestDto.getResponseOid(),userOid);
+        responseRepository.softDeleteById(responseRequestDto.getResponseOid());
     }
 
 

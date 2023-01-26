@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
-import com.bilgeadam.basurveyapp.repositories.UserRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepositoryImpl userRepository;
+    private final IUserRepository userRepository;
 
     public List<User> getUserList() {
         // getCurrentUser()
@@ -45,35 +45,35 @@ public class UserService {
                 .role(Role.valueOf(dto.getRole()))
                 .classrooms(List.of(Classroom.builder().name(dto.getClassroomName()).build()))
                 .build();
-        return userRepository.save(user, 0L);
+        return userRepository.save(user);
     }
 
     public User updateUser(Long userId, UserUpdateRequestDto dto) {
         // getCurrentUser()
         // user check
-        Optional<User> userToBeUpdated = userRepository.findByOid(userId);
+        Optional<User> userToBeUpdated = userRepository.findById(userId);
         if (userToBeUpdated.isEmpty()) {
             // user not found exception is needed.
         }
         userToBeUpdated.get().setFirstName(dto.getFirstName());
         userToBeUpdated.get().setLastName(dto.getLastName());
-        return userRepository.update(userToBeUpdated.get(), 0L);
+        return userRepository.save(userToBeUpdated.get());
     }
 
     public void deleteUser(Long userId) {
         // getCurrentUser()
         // user check
-        Optional<User> userToBeDeleted = userRepository.findByOid(userId);
+        Optional<User> userToBeDeleted = userRepository.findById(userId);
         if (userToBeDeleted.isEmpty()) {
             // user not found exception is needed.
         }
-        userRepository.delete(userToBeDeleted.get(), 0L);
+        userRepository.delete(userToBeDeleted.get());
     }
 
     public User findByOid(Long userId) {
         // getCurrentUser()
         // user check
-        Optional<User> userById = userRepository.findByOid(userId);
+        Optional<User> userById = userRepository.findById(userId);
         if (userById.isEmpty()) {
             // user not found exception is needed.
         }

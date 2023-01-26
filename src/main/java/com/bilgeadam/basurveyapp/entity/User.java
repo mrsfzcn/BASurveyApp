@@ -1,6 +1,6 @@
 package com.bilgeadam.basurveyapp.entity;
 
-import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package com.bilgeadam.basurveyapp.entity;
 
-import com.bilgeadam.basurveyapp.entity.baseentity.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

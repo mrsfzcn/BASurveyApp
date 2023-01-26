@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.repositories.QuestionRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
-    private final QuestionRepositoryImpl questionRepository;
+    private final IQuestionRepository questionRepository;
 
     public void createQuestion(CreateQuestionDto createQuestionDto, Long userOid) {
         Question question = Question.builder()
@@ -25,7 +25,7 @@ public class QuestionService {
                 .survey(createQuestionDto.getSurveyOid())
                 .order(createQuestionDto.getOrder())
                 .build();
-        questionRepository.save(question, userOid);
+        questionRepository.save(question);
     }
 
 
@@ -36,7 +36,7 @@ public class QuestionService {
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
             Question question = updateQuestion.get();
-            questionRepository.update(question, userOid);
+            questionRepository.save(question);
             return true;
         }
     }
@@ -76,7 +76,7 @@ public class QuestionService {
             return false;
         } else {
             Question question = deleteQuestion.get();
-            questionRepository.delete(question, userOid);
+            questionRepository.softDelete(question);
             return true;
         }
     }
