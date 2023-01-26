@@ -34,7 +34,7 @@ public class Survey extends BaseEntity {
     private Classroom classroom;
 
     @OneToMany(mappedBy = "survey")
-    private List<Question> question;
+    private List<Question> questions;
 
     @ManyToMany(mappedBy = "surveys")
     private List<User> users;
