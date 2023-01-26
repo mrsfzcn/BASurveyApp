@@ -4,26 +4,23 @@ import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.repositories.ClassroomRepositoryImpl;
-import com.bilgeadam.basurveyapp.repositories.SurveyRepositoryImpl;
+import com.bilgeadam.basurveyapp.repositories.IClassroomRepository;
+import com.bilgeadam.basurveyapp.repositories.ISurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SurveyService {
-    private final SurveyRepositoryImpl surveyRepository;
-    private final ClassroomRepositoryImpl classroomRepository;
+    private final ISurveyRepository surveyRepository;
+    private final IClassroomRepository classroomRepository;
     public List<Survey> getSurveyList() {
 
         return new ArrayList<>(surveyRepository.findAll());
@@ -47,29 +44,29 @@ public class SurveyService {
                 .questions(dto.getQuestions())
                 .courseTopic(dto.getCourseTopic())
                 .build();
-        return surveyRepository.save(survey, 0L);
+        return surveyRepository.save(survey);
     }
     public Survey update(Long surveyId, SurveyUpdateRequestDto dto) {
 
-        Optional<Survey> surveyToBeUpdated = surveyRepository.findByOid(surveyId);
+        Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(surveyId);
         if(surveyToBeUpdated.isEmpty()){
 
         }
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
-        return surveyRepository.update(surveyToBeUpdated.get(), 0L);
+        return surveyRepository.save(surveyToBeUpdated.get());
     }
     public void delete(Long surveyId) {
 
-        Optional<Survey> surveyToBeDeleted = surveyRepository.findByOid(surveyId);
+        Optional<Survey> surveyToBeDeleted = surveyRepository.findActiveById(surveyId);
         if(surveyToBeDeleted.isEmpty()){
 
         }
-        surveyRepository.delete(surveyToBeDeleted.get(), 0L);
+        surveyRepository.softDelete(surveyToBeDeleted.get());
     }
 
     public Survey findByOid(Long surveyId) {
 
-        Optional<Survey> surveyById = surveyRepository.findByOid(surveyId);
+        Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
         if(surveyById.isEmpty()){
 
         }
