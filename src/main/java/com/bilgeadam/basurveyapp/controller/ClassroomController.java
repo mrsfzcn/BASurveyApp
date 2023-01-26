@@ -1,6 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.ClassroomService;
@@ -23,14 +25,14 @@ public class ClassroomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createClassroom(@RequestBody @Valid CreateClassroomDto createClassroomDto, @Valid Long userOid) {
-        classroomService.createClassroom(createClassroomDto, userOid);
+    public ResponseEntity<Void> createClassroom(@RequestBody @Valid CreateClassroomDto createClassroomDto) {
+        classroomService.createClassroom(createClassroomDto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Boolean> updateClassroom(@RequestBody @Valid UpdateClassroomDto updateClassroomDto, @Valid Long userOid) {
-        classroomService.updateClassroom(updateClassroomDto, userOid);
+    public ResponseEntity<Boolean> updateClassroom(@RequestBody @Valid UpdateClassroomDto updateClassroomDto) {
+        classroomService.updateClassroom(updateClassroomDto);
         return ResponseEntity.ok().build();
     }
 
@@ -46,8 +48,8 @@ public class ClassroomController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long classroomId, @Valid Long userOid) {
-        return ResponseEntity.ok(classroomService.delete(classroomId, userOid));
+    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long classroomId) {
+        return ResponseEntity.ok(classroomService.delete(classroomId));
     }
 
 }

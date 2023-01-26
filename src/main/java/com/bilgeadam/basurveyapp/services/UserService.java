@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
-import com.bilgeadam.basurveyapp.repositories.IUserRepository;
+import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,35 +13,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final IUserRepository userRepository;
+    private final UserRepository userRepository;
 
     public List<User> getUserList() {
         // getCurrentUser()
         // user check
-        return userRepository.findAll().stream()
-                .filter(User::isActive)
-                .collect(Collectors.toList());
+        return userRepository.findAllActive();
     }
 
     public Page<User> getUserPage(Pageable pageable) {
         // getCurrentUser()
         // user check
-        return userRepository.findAll(pageable);
+        return userRepository.findAllActive(pageable);
     }
 
     public User createUser(UserCreateRequestDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            // TODO exception
+            throw new RuntimeException("User already exists");
+        }
         // getCurrentUser()
         // user check
         User user = User.builder()
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .email(dto.getEmail())
-                //.auth()
                 .role(Role.valueOf(dto.getRole()))
                 .classrooms(List.of(Classroom.builder().name(dto.getClassroomName()).build()))
                 .build();
@@ -51,9 +51,10 @@ public class UserService {
     public User updateUser(Long userId, UserUpdateRequestDto dto) {
         // getCurrentUser()
         // user check
-        Optional<User> userToBeUpdated = userRepository.findById(userId);
+        Optional<User> userToBeUpdated = userRepository.findActiveById(userId);
         if (userToBeUpdated.isEmpty()) {
-            // user not found exception is needed.
+            // TODO user not found exception is needed.
+            throw new RuntimeException("User is not found");
         }
         userToBeUpdated.get().setFirstName(dto.getFirstName());
         userToBeUpdated.get().setLastName(dto.getLastName());
@@ -63,19 +64,21 @@ public class UserService {
     public void deleteUser(Long userId) {
         // getCurrentUser()
         // user check
-        Optional<User> userToBeDeleted = userRepository.findById(userId);
+        Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
         if (userToBeDeleted.isEmpty()) {
-            // user not found exception is needed.
+            // TODO user not found exception is needed.
+            throw new RuntimeException("User is not found");
         }
-        userRepository.delete(userToBeDeleted.get());
+        userRepository.softDelete(userToBeDeleted.get());
     }
 
     public User findByOid(Long userId) {
         // getCurrentUser()
         // user check
-        Optional<User> userById = userRepository.findById(userId);
+        Optional<User> userById = userRepository.findActiveById(userId);
         if (userById.isEmpty()) {
-            // user not found exception is needed.
+            //TODO user not found exception is needed.
+            throw new RuntimeException("User is not found");
         }
         return userById.get();
     }

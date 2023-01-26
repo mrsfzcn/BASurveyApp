@@ -2,9 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +17,14 @@ import java.util.List;
 public class ResponseController {
     private final ResponseService responseService;
     @PostMapping("/create")
-    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestDto dto, @Valid Long userOid) {
-        responseService.createResponse(dto, userOid);
+    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestDto dto) {
+        responseService.createResponse(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Void> updateResponse(@RequestBody @Valid ResponseRequestDto dto, @Valid Long userOid) {
-        responseService.updateResponse(dto, userOid);
+    public ResponseEntity<Void> updateResponse(@RequestBody @Valid ResponseRequestDto dto) {
+        responseService.updateResponse(dto);
         return ResponseEntity.ok().build();
     }
     @PostMapping("/findbyid")

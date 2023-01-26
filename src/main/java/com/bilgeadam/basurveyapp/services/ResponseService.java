@@ -1,36 +1,33 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.repositories.IResponseRepository;
+import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ResponseService {
-    private final IResponseRepository responseRepository;
+    private final ResponseRepository responseRepository;
 
-    public void createResponse(ResponseRequestDto responseRequestDto, Long userOid){
+    public void createResponse(ResponseRequestDto responseRequestDto){
+        // TODO check if exists
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
-
                 .build();
         responseRepository.save(response);
     }
 
-    public void updateResponse(ResponseRequestDto responseRequestDto,Long userOid){
-        Optional<Response>updatedResponse = responseRepository.findById(responseRequestDto.getResponseOid());
+    public void updateResponse(ResponseRequestDto responseRequestDto){
+        Optional<Response>updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
         if(updatedResponse.isEmpty()){
+            // TODO exception
            throw new RuntimeException("Response not found");
         }
         else {
@@ -40,32 +37,32 @@ public class ResponseService {
     }
 
     public AnswerResponseDto findByIdResponse(Long responseOid){
-        Response response = responseRepository.findById(responseOid).get();
-        AnswerResponseDto dto =  AnswerResponseDto.builder()
+        // TODO exception
+        Response response = responseRepository.findById(responseOid).orElseThrow();
+        return AnswerResponseDto.builder()
                 .responseString(response.getResponseString())
                 .userOid(response.getUser().getOid())
                 .questionOid(response.getQuestion().getOid())
                 .build();
-        return dto;
     }
 
     public List<AnswerResponseDto> findAll() {
-        List<Response> findAllList = responseRepository.findAll();
-        List<AnswerResponseDto> responseDtos = new ArrayList<>();
-        findAllList.forEach(response -> {
-            responseDtos.add(AnswerResponseDto.builder()
-                    .responseString(response.getResponseString())
-                    .userOid(response.getUser().getOid())
-                    .questionOid(response.getQuestion().getOid())
-                    .build());
-        });
-        return responseDtos;
+        List<Response> findAllList = responseRepository.findAllActive();
+        List<AnswerResponseDto> responseDtoList = new ArrayList<>();
+        findAllList.forEach(response ->
+                responseDtoList.add(AnswerResponseDto.builder()
+                .responseString(response.getResponseString())
+                .userOid(response.getUser().getOid())
+                .questionOid(response.getQuestion().getOid())
+                .build()));
+        return responseDtoList;
     }
 
     public Boolean deleteResponseById(Long responseOid){
-      Optional<Response> response= responseRepository.findById(responseOid);
+      Optional<Response> response= responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
-            return false;
+            // TODO exception
+            throw new RuntimeException("Response is not found");
         } else {
             responseRepository.softDeleteById(response.get().getOid());
             return true;

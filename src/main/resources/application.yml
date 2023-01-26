@@ -18,5 +18,7 @@ spring:
       hibernate:
         globally_quoted_identifiers: true
         format_sql: true
+jwt:
+  secret: 546A576E5A7234753778214125442A472D4B6150645367566B58703273357638
 # DBeaver, Microsoft sql server, SSMS 18
 # "Server=90.158.106.204,14333; Database=BASurveyApp_Dev; User Id=developer; Password=Ba12345678+; TrustServerCertificate=True;"
