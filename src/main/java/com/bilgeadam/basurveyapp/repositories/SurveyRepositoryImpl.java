@@ -13,4 +13,6 @@ public class SurveyRepositoryImpl extends RepositoryExtension<Survey, Long> {
         super(surveyRepository);
         this.surveyRepository = surveyRepository;
     }
+
+
 }
