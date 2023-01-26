@@ -33,9 +33,8 @@ public abstract class BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    /*
-        Saves as 0 if auditor is anonymous.
-     */
+
+    // Saves as 0 if auditor is anonymous.
     @CreatedBy
     @Column(name = "created_by")
     private Long createdBy;

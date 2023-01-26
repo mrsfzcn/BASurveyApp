@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.repositories.IQuestionTypeRepository;
+import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +16,21 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class QuestionTypeService {
-    private final IQuestionTypeRepository questionTypeRepository;
+    private final QuestionTypeRepository questionTypeRepository;
 
-    public void createQuestionType(CreateQuestionTypeRequestDto dto, Long userOid) {
+    public void createQuestionType(CreateQuestionTypeRequestDto dto) {
+        // TODO Check if exists
         QuestionType questionType = (QuestionType.builder()
                 .questionType(dto.getQuestionType())
                 .build());
         questionTypeRepository.save(questionType);
     }
 
-    public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto, Long userOid) {
-        Optional<QuestionType> updateQuestionType = questionTypeRepository.findById(dto.getQuestionTypeOid());
+    public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto) {
+        Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(dto.getQuestionTypeOid());
         if (updateQuestionType.isEmpty()) {
-            return false;
+            // TODO exception
+            throw new RuntimeException("QuestionType is not found");
         } else {
             updateQuestionType.get().setQuestionType(dto.getQuestionType());
             QuestionType questionType = updateQuestionType.get();
@@ -38,33 +40,31 @@ public class QuestionTypeService {
     }
 
     public QuestionTypeFindByIdResponseDto findById(Long questionTypeId) {
-        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findById(questionTypeId);
+        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionTypeId);
         if (optionalQuestionType.isEmpty()) {
-            return null;
+            // TODO exception
+            throw new RuntimeException("QuestionType is not found");
         } else {
-            QuestionTypeFindByIdResponseDto dto = QuestionTypeFindByIdResponseDto.builder()
+            return QuestionTypeFindByIdResponseDto.builder()
                     .questionType(optionalQuestionType.get().getQuestionType())
                     .build();
-            return dto;
         }
     }
 
     public List<AllQuestionTypeResponseDto> findAll() {
-        List<QuestionType> findAllList = questionTypeRepository.findAll();
+        List<QuestionType> findAllList = questionTypeRepository.findAllActive();
         List<AllQuestionTypeResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(questionType -> {
-            responseDtoList.add(AllQuestionTypeResponseDto.builder()
-                    .questionType(questionType.getQuestionType())
-                    .build());
-        });
+        findAllList.forEach(questionType ->
+                responseDtoList.add(AllQuestionTypeResponseDto.builder()
+                .questionType(questionType.getQuestionType())
+                .build()));
         return responseDtoList;
     }
 
-    public Boolean delete(Long questionTypeId, Long userOid) {
-
-        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findById(questionTypeId);
+    public Boolean delete(Long questionTypeId) {
+        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findActiveById(questionTypeId);
         if (deleteQuestionType.isEmpty()) {
-            return false;
+            throw new RuntimeException("QuestionType is not found");
         } else {
             QuestionType questionType = deleteQuestionType.get();
             questionTypeRepository.softDelete(questionType);

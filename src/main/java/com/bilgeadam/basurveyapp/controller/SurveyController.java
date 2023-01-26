@@ -37,7 +37,7 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
     @PostMapping("/create")
-    ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) throws Exception {
+    ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
     @PostMapping("/update/{surveyId}")

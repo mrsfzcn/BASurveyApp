@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.repositories.IClassroomRepository;
+import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +16,21 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ClassroomService {
-    private final IClassroomRepository classroomRepository;
+    private final ClassroomRepository classroomRepository;
 
-    public void createClassroom(CreateClassroomDto createClassroomDto, Long userOid) {
+    public void createClassroom(CreateClassroomDto createClassroomDto) {
+        //TODO check if exists
         Classroom classroom = Classroom.builder()
                 .name(createClassroomDto.getName())
                 .users(createClassroomDto.getUsers()).build();
         classroomRepository.save(classroom);
     }
 
-    public Boolean updateClassroom(UpdateClassroomDto updateClassroomDto, Long userOid) {
-        Optional<Classroom> updateClassroom = classroomRepository.findById(updateClassroomDto.getClassroomOid());
+    public Boolean updateClassroom(UpdateClassroomDto updateClassroomDto) {
+        Optional<Classroom> updateClassroom = classroomRepository.findActiveById(updateClassroomDto.getClassroomOid());
         if (updateClassroom.isEmpty()) {
-            return false;
+            // TODO better exception
+            throw new RuntimeException("Classroom is not found");
         } else {
             updateClassroom.get().setUsers(updateClassroomDto.getUsers());
             Classroom classroom = updateClassroom.get();
@@ -38,22 +40,19 @@ public class ClassroomService {
     }
 
     public ClassroomFindByIdResponseDto findById(Long classroomId) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findById(classroomId);
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(classroomId);
         if (optionalClassroom.isEmpty()) {
-            return null;
-        } else {
-            ClassroomFindByIdResponseDto dto = ClassroomFindByIdResponseDto.builder()
-                    .name(optionalClassroom.get().getName())
-                    .users(optionalClassroom.get().getUsers())
-                    .build();
-
-            return dto;
+            // TODO better exception
+            throw new RuntimeException("Classroom is not found");
         }
-
+        return ClassroomFindByIdResponseDto.builder()
+                .name(optionalClassroom.get().getName())
+                .users(optionalClassroom.get().getUsers())
+                .build();
     }
 
     public List<AllClassroomsResponseDto> findAll() {
-        List<Classroom> findAllList = classroomRepository.findAll();
+        List<Classroom> findAllList = classroomRepository.findAllActive();
         List<AllClassroomsResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(classroom -> {
             responseDtoList.add(AllClassroomsResponseDto.builder()
@@ -64,11 +63,11 @@ public class ClassroomService {
         return responseDtoList;
     }
 
-    public Boolean delete(Long classroomId, Long userOid) {
-
-        Optional<Classroom> deleteClassroom = classroomRepository.findById(classroomId);
+    public Boolean delete(Long classroomId) {
+        Optional<Classroom> deleteClassroom = classroomRepository.findActiveById(classroomId);
         if (deleteClassroom.isEmpty()) {
-            return false;
+            // TODO better exception
+            throw new RuntimeException("Classroom is not found");
         } else {
             Classroom classroom = deleteClassroom.get();
             classroomRepository.softDelete(classroom);

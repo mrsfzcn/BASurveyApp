@@ -25,14 +25,14 @@ public class QuestionTypeController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto, @Valid Long userOid) {
-        questionTypeService.createQuestionType(dto, userOid);
+    public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
+        questionTypeService.createQuestionType(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto, @Valid Long userOid) {
-        questionTypeService.updateQuestionType(dto, userOid);
+    public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto) {
+        questionTypeService.updateQuestionType(dto);
         return ResponseEntity.ok().build();
     }
 
@@ -49,8 +49,8 @@ public class QuestionTypeController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionTypeId, @Valid Long userOid) {
-        return ResponseEntity.ok(questionTypeService.delete(questionTypeId, userOid));
+    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionTypeId) {
+        return ResponseEntity.ok(questionTypeService.delete(questionTypeId));
     }
 
 
