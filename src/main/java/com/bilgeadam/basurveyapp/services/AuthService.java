@@ -37,7 +37,9 @@ public class AuthService {
         User auth = userRepository.save(User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.STUDENT)
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .role(request.getRole())
                 .build());
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(auth))

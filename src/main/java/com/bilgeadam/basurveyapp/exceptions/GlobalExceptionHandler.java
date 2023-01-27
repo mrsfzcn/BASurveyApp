@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.exceptions;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         log.warn("Incoming data validation failed. {}", exception.getMessage());
         return createExceptionInfoResponse(DATA_NOT_VALID);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException exception) {
+        log.warn("Access denied, user role unauthorized. {}", exception.getMessage());
+        return createExceptionInfoResponse(ACCESS_DENIED);
     }
 
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType) {

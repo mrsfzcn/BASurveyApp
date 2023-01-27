@@ -39,7 +39,5 @@ public class RegisterRequestDto {
     @Size(min = 2, max = 128)
     private String lastName;
     @NotNull
-    @NotBlank
-    @Size(min = 5, max = 17)
     private Role role;
 }

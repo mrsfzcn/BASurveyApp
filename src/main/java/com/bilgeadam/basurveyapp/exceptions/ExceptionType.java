@@ -33,6 +33,7 @@ public enum ExceptionType {
     /*
         Authentication errors.
      */
+    ACCESS_DENIED(2000, "Access denied.", UNAUTHORIZED),
     LOGIN_ERROR_USERNAME_DOES_NOT_EXIST(2001, "Username does not exist.", NOT_FOUND),
     LOGIN_ERROR_WRONG_PASSWORD(2002, "Wrong password.", BAD_REQUEST),
 
