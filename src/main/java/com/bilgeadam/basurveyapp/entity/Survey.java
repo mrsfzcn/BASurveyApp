@@ -33,9 +33,9 @@ public class Survey extends BaseEntity {
     @JoinColumn(name = "classroom_oid")
     private Classroom classroom;
 
-    @OneToMany(mappedBy = "survey")
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questions;
 
-    @ManyToMany(mappedBy = "surveys")
+    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<User> users;
 }
