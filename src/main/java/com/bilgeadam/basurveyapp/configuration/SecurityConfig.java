@@ -29,13 +29,27 @@ public class SecurityConfig {
     /**
      * @author Eralp Nitelik
      */
+
+    private static final String[] WHITELIST = {
+            "/auth/**",
+            "/test",
+            "/test/**",
+            "/swagger-ui/**",
+            "/bus/v3/api-docs/**",
+            "/swagger-resources/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/v2/api-docs/**",
+            "/v3/api-docs/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .csrf().disable()
                 // requests below do not need authentication.
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**", "/test", "/test/**")
+                .requestMatchers(WHITELIST)
                 .permitAll()
                 // all other requests require authentication.
                 .anyRequest()

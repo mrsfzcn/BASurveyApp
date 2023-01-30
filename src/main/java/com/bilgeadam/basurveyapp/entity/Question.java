@@ -23,5 +23,6 @@ public class Question extends BaseEntity {
     @JoinColumn(referencedColumnName = "oid", name = "question_type")
     private QuestionType questionType;
 
+    @Column(name = "question_order")
     private Integer order;
 }

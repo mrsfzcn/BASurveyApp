@@ -6,18 +6,19 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/BASurveyDB
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: password
+    url: jdbc:sqlserver://90.158.106.204:14333;databaseName=BASurveyApp_Dev;trustServerCertificate=true;
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    username: developer
+    password: Ba12345678+
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         globally_quoted_identifiers: true
         format_sql: true
+        dialect: org.hibernate.dialect.SQLServerDialect
 jwt:
   secret: 546A576E5A7234753778214125442A472D4B6150645367566B58703273357638
 # DBeaver, Microsoft sql server, SSMS 18
