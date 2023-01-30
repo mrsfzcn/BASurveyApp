@@ -1,13 +1,17 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +56,16 @@ public class SurveyController {
         }catch (Exception ex){
             return ResponseEntity.badRequest().build();
         }
+    }
+    @PostMapping("/response/{surveyId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    ResponseEntity<Survey> responseSurveyQuestions(@PathVariable Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto){
+        return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId,dto));
+    }
+    @PutMapping("/update/{surveyId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto){
+        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId,dto));
     }
 }
 
