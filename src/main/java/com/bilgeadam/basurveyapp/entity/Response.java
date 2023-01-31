@@ -12,14 +12,14 @@ import lombok.*;
 @Builder
 @Table(name = "responses")
 public class Response extends BaseEntity {
-    @ManyToOne
-    @JoinColumn(referencedColumnName = "oid", name = "question")
-    private Question question;
-
-    @ManyToOne
-    @JoinColumn(name="user_oid", nullable=false)
-    private User user;
 
     @Column(name = "response_string", nullable = false)
     private String responseString;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(referencedColumnName = "oid", name = "question")
+    private Question question;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="user_oid", nullable=false)
+    private User user;
+
 }

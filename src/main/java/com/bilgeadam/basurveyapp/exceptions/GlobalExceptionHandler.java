@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,12 @@ public class GlobalExceptionHandler {
         log.warn("Unique key already exists on database. {}", exception.getMessage());
         return createExceptionInfoResponse(REGISTER_ERROR_DATA_EXISTS);
     }
-
+    @ResponseBody
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        log.warn("Unique key already exists on database. {}", exception.getMessage());
+        return createExceptionInfoResponse(RESOURCE_NOT_FOUND);
+    }
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
