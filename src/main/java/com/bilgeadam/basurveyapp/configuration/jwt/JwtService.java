@@ -38,7 +38,9 @@ public class JwtService {
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
-
+    public String generateMailToken(String email, Long surveyOid) {
+        return "emailToken";
+    }
     public boolean isTokenValid(String jwtToken, UserDetails userDetails) {
         final String username = extractUsername(jwtToken);
         return isTokenNotExpired(jwtToken) && username.equals(userDetails.getUsername());

@@ -1,5 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.EmailService;
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,8 @@ public class SurveyService {
     private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final JwtService jwtService;
 
     public List<Survey> getSurveyList() {
         return new ArrayList<>(surveyRepository.findAllActive());
@@ -52,7 +57,6 @@ public class SurveyService {
                 .surveyTitle(dto.getSurveyTitle())
                 .startDate(dto.getStartDate())
                 .endDate(dto.getEndDate())
-                .classroom(classroomOptional.get())
                 .questions(dto.getQuestions())
                 .courseTopic(dto.getCourseTopic())
                 .build();
@@ -152,4 +156,22 @@ public class SurveyService {
         return surveyOptional.get();
     }
 
+    public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) {
+        // todo test yapılmadı
+        Survey survey = surveyRepository.findActiveById(surveyId)
+            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+        if(survey.getEndDate().before(new Date())){
+            throw new ResourceNotFoundException("Survey is Expired.");
+        }
+        Classroom classroom = classroomRepository.findActiveById(classroomId)
+            .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
+
+        survey.getClassrooms().add(classroom);
+
+        Map<String,String> emailTokenMap = classroom.getUsers()
+            .parallelStream()
+            .collect(Collectors.toMap(user -> user.getEmail(), user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
+        emailService.sendSurveyMail(emailTokenMap);
+        return surveyRepository.save(survey);
+    }
 }
