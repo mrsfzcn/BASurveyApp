@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -71,7 +72,11 @@ public class SurveyController {
     @PutMapping("/{surveyId}/assign/{classroomId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     ResponseEntity<Survey> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId,@PathVariable("classroomId") Long classroomId){
-        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
+        try {
+            return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 
