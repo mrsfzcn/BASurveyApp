@@ -40,6 +40,7 @@ public class SurveyController {
     ResponseEntity<Survey> findById(@PathVariable("surveyId") Long surveyId){
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));

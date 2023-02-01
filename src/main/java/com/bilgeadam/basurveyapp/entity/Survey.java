@@ -41,7 +41,7 @@ public class Survey extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Classroom> classrooms;
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

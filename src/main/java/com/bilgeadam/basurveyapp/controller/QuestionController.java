@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.services.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class QuestionController {
         return "question";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<Void> createQuestion(@RequestBody @Valid CreateQuestionDto createQuestionDto) {
         questionService.createQuestion(createQuestionDto);
