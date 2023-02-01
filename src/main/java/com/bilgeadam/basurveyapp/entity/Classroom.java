@@ -26,7 +26,7 @@ public class Classroom extends BaseEntity {
 
     @ManyToMany(mappedBy = "classrooms", fetch = FetchType.EAGER)
     private List<User> users;
-    @ManyToMany(mappedBy = "classrooms", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "classroom_survey",
         joinColumns = @JoinColumn(name = "classroom_oid"),
         inverseJoinColumns = @JoinColumn(name = "survey_oid"))

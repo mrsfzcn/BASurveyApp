@@ -35,9 +35,12 @@ public class SecurityConfig {
             "/test",
             "/test/**",
             "/swagger-ui/**",
+            "/swagger-ui.html",
             "/bus/v3/api-docs/**",
             "/swagger-resources/**",
-            "/swagger-resources/**",
+            "/configuration/security",
+            "/swagger-resources/configuration/ui",
+            "/swagger-resources/configuration/security",
             "/webjars/**",
             "/v2/api-docs/**",
             "/v3/api-docs/**"
