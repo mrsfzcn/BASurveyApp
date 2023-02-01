@@ -16,6 +16,7 @@ import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -156,7 +157,7 @@ public class SurveyService {
         return surveyOptional.get();
     }
 
-    public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) {
+    public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) throws MessagingException {
         // todo test yapılmadı
         Survey survey = surveyRepository.findActiveById(surveyId)
             .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
@@ -170,7 +171,7 @@ public class SurveyService {
 
         Map<String,String> emailTokenMap = classroom.getUsers()
             .parallelStream()
-            .collect(Collectors.toMap(user -> user.getEmail(), user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
+            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
         emailService.sendSurveyMail(emailTokenMap);
         return surveyRepository.save(survey);
     }

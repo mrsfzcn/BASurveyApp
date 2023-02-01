@@ -1,40 +1,47 @@
 package com.bilgeadam.basurveyapp.configuration;
 
-import lombok.RequiredArgsConstructor;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
 
-//    private final JavaMailSender javaMailSender;
-//
-//    private static final String FROM = "hrmsapplicationteam1@gmail.com";
-//    private static final String SUBJECT = "Şifremi unuttum! HR Manager";
-//    private static final String PASSWORD_RESET_HTML_BODY = "<h1>Şifre değiştirme talebiniz alınmıştır</h1><a href='https://hrmanagerapp.azurewebsites.net/#/sifreolustur/$tokenValue'>Buraya tıklayarak şifrenizi değiştirebilirsiniz!</a><br/><br/>Bizi tercih ettiğiniz için teşekkür ederiz!";
+    @Autowired
+    private JavaMailSender javaMailSender;
+    @Autowired
+    private SimpleMailMessage preConfiguredMessage;
 
-    public void sendSurveyMail(Map<String,String> mailTokenMap) /**throws MessagingException*/ {
+    private static final String FROM = "hrmsapplicationteam1@gmail.com";
+    private static final String SUBJECT = "BilgeAdam Değerlendirme Anketi";
 
-//        MimeMessageHelper helper = new MimeMessageHelper(javaMailSender.createMimeMessage(), "utf-8");
-//
-//        helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", token), true);
-//        helper.setTo(email);
-//        helper.setSubject(SUBJECT);
-//        helper.setFrom(FROM);
-//
-//        javaMailSender.send(helper.getMimeMessage());
 
-        // Recommended to use as below...!
+    private static final String PASSWORD_RESET_HTML_BODY =
+        "<h1>BilgeAdam Akademi Değerlendirme Anketi</h1>" +
+        "<a href='http://localhost:80/survey/$tokenValue'>" +
+            "Buraya link değişecek!" +
+        "</a>" +
+        "<br/><br/>" +
+        "Bizi tercih ettiğiniz için teşekkür ederiz!";
 
-//        MimeMessageHelper helper = new MimeMessageHelper(javaMailSender.createMimeMessage(), "utf-8");
-//        for(String mailToken : mailTokenMap.keySet()){
-//            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", mailTokenMap.get(mailToken)), true);
-//            helper.setTo(mailToken);
-//            helper.setSubject(SUBJECT);
-//            helper.setFrom(FROM);
-//            javaMailSender.send(helper.getMimeMessage());
-//        }
+
+    public void sendSurveyMail(Map<String,String> mailTokenMap) throws MessagingException {
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
+            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
+            helper.setTo(entry.getKey());
+            helper.setSubject(SUBJECT);
+            helper.setFrom(FROM);
+            javaMailSender.send(helper.getMimeMessage());
+        }
     }
 }
