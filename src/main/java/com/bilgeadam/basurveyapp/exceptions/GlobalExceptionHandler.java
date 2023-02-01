@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +74,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException exception) {
         log.warn("Access denied, user role unauthorized. {}", exception.getMessage());
         return createExceptionInfoResponse(ACCESS_DENIED);
+    }
+    @ResponseBody
+    @ExceptionHandler(ResponseNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> responseNotFoundException(ResourceNotFoundException exception) {
+        log.warn("Response not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(RESPONSE_NOT_FOUND);
     }
 
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType) {

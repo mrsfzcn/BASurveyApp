@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Response;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class ResponseService {
     private final ResponseRepository responseRepository;
 
     public void createResponse(ResponseRequestDto responseRequestDto){
-        // TODO check if exists
+        // The same answer can be recreated over and over again. There not will be exist checking
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
                 .build();
@@ -27,8 +28,7 @@ public class ResponseService {
     public void updateResponse(ResponseRequestDto responseRequestDto){
         Optional<Response>updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
         if(updatedResponse.isEmpty()){
-            // TODO exception
-           throw new RuntimeException("Response not found");
+           throw new ResponseNotFoundException("There's a error while finding response");
         }
         else {
             updatedResponse.get().setResponseString(responseRequestDto.getResponseString());
@@ -37,12 +37,14 @@ public class ResponseService {
     }
 
     public AnswerResponseDto findByIdResponse(Long responseOid){
-        // TODO exception
-        Response response = responseRepository.findById(responseOid).orElseThrow();
+        Optional <Response> response = responseRepository.findById(responseOid);
+        if(response.isEmpty()){
+            throw new ResponseNotFoundException("There's a error while finding response");
+        }
         return AnswerResponseDto.builder()
-                .responseString(response.getResponseString())
-                .userOid(response.getUser().getOid())
-                .questionOid(response.getQuestion().getOid())
+                .responseString(response.get().getResponseString())
+                .userOid(response.get().getUser().getOid())
+                .questionOid(response.get().getQuestion().getOid())
                 .build();
     }
 
@@ -61,8 +63,7 @@ public class ResponseService {
     public Boolean deleteResponseById(Long responseOid){
       Optional<Response> response= responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
-            // TODO exception
-            throw new RuntimeException("Response is not found");
+            throw new ResponseNotFoundException("There's a error while finding response");
         } else {
             responseRepository.softDeleteById(response.get().getOid());
             return true;

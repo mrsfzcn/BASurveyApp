@@ -25,6 +25,7 @@ public enum ExceptionType {
     INTERNAL_ERROR(9001, "Internal Server Error", INTERNAL_SERVER_ERROR),
     BAD_REQUEST_ERROR(9002, "Invalid Parameter Error", BAD_REQUEST),
     RESOURCE_NOT_FOUND(9003, "Resource is not Found", BAD_REQUEST),
+    RESPONSE_NOT_FOUND(9004, "Response is not Found", BAD_REQUEST),
     /*
         Validation errors.
      */
