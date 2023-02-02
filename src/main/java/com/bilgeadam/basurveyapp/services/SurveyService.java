@@ -162,7 +162,7 @@ public class SurveyService {
 
         Map<String,String> emailTokenMap = classroom.getUsers()
             .parallelStream()
-            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
+            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateSurveyEmailToken(survey.getOid(),user.getEmail(), survey.getEndDate())));
         emailService.sendSurveyMail(emailTokenMap);
         return surveyRepository.save(survey);
     }
