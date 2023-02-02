@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
@@ -82,6 +83,22 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(RESPONSE_NOT_FOUND);
     }
 
+    /* //kendi belirlediğin exception olarak yakala acces denied ı
+    @ExceptionHandler(QuestionNottext.....class)
+    public ResponseEntity<ExceptionResponse> handleQuestionNottextException(QuestionNottextException exception) {
+        log.warn("Access denied, uyarın neysze onu yaz. {}", exception.getMessage());
+        return createExceptionInfoResponse(ACCESS_DENIED);
+    }*/
+
+    @ResponseBody
+    @ExceptionHandler(QuestionNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionNotFoundException(QuestionNotFoundException exception) {
+        log.warn("Question is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTION_NOT_FOUND);
+    }
+
+
+
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType) {
         return new ResponseEntity<>(ExceptionResponse.builder()
                 .exceptionCode(exceptionType.getCode())
@@ -89,4 +106,7 @@ public class GlobalExceptionHandler {
                 .httpStatus(exceptionType.getHttpStatus().value())
                 .build(), exceptionType.getHttpStatus());
     }
+
+
+
 }
