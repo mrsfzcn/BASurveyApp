@@ -76,4 +76,24 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public String generateSurveyEmailToken(Long surveyOid, String userEmail, Date surveyDuration) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("surveyOid", surveyOid);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userEmail)
+                .setIssuedAt(new Date())
+                .setExpiration(surveyDuration)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+    public String extractEmail(String jwtToken) {
+        return extractClaim(jwtToken, Claims::getSubject);
+    }
+
+    public Long extractSurveyOid(String jwtToken) {
+        final Claims claims = extractAllClaims(jwtToken);
+        return (Long) claims.get("surveyOid");
+    }
 }
