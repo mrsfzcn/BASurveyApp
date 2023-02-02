@@ -32,7 +32,7 @@ public class QuestionController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         questionService.updateQuestion(updateQuestionDto);
         return ResponseEntity.ok().build();
@@ -49,7 +49,7 @@ public class QuestionController {
         return ResponseEntity.ok(responseDtoList);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId) {
         return ResponseEntity.ok(questionService.delete(questionId));
     }
