@@ -5,6 +5,8 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,8 +35,7 @@ public class UserService {
 
     public User createUser(UserCreateRequestDto dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            // TODO exception
-            throw new RuntimeException("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
         // getCurrentUser()
         // user check
@@ -53,8 +54,7 @@ public class UserService {
         // user check
         Optional<User> userToBeUpdated = userRepository.findActiveById(userId);
         if (userToBeUpdated.isEmpty()) {
-            // TODO user not found exception is needed.
-            throw new RuntimeException("User is not found");
+            throw new ResourceNotFoundException("User is not found");
         }
         userToBeUpdated.get().setFirstName(dto.getFirstName());
         userToBeUpdated.get().setLastName(dto.getLastName());
@@ -66,8 +66,7 @@ public class UserService {
         // user check
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
         if (userToBeDeleted.isEmpty()) {
-            // TODO user not found exception is needed.
-            throw new RuntimeException("User is not found");
+            throw new ResourceNotFoundException("User is not found");
         }
         userRepository.softDelete(userToBeDeleted.get());
     }
@@ -77,8 +76,7 @@ public class UserService {
         // user check
         Optional<User> userById = userRepository.findActiveById(userId);
         if (userById.isEmpty()) {
-            //TODO user not found exception is needed.
-            throw new RuntimeException("User is not found");
+            throw new ResourceNotFoundException("User is not found");
         }
         return userById.get();
     }
