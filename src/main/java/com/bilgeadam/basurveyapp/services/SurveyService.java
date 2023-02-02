@@ -45,11 +45,7 @@ public class SurveyService {
     }
 
     public Survey create(SurveyCreateRequestDto dto) {
-        Optional<Classroom> classroomOptional = classroomRepository.findById(dto.getClassroomId());
-        if (classroomOptional.isEmpty()) {
-            // TODO specific exception
-            throw new RuntimeException("Classroom is not found");
-        }
+
         Survey survey = Survey.builder()
                 .surveyTitle(dto.getSurveyTitle())
                 .startDate(dto.getStartDate())
@@ -64,8 +60,7 @@ public class SurveyService {
 
         Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(surveyId);
         if (surveyToBeUpdated.isEmpty()) {
-            // TODO specific exception
-            throw new RuntimeException("Classroom is not found");
+            throw new ResourceNotFoundException("Survey is not found");
         }
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
         return surveyRepository.save(surveyToBeUpdated.get());
@@ -75,8 +70,7 @@ public class SurveyService {
 
         Optional<Survey> surveyToBeDeleted = surveyRepository.findActiveById(surveyId);
         if (surveyToBeDeleted.isEmpty()) {
-            // TODO specific exception
-            throw new RuntimeException("Classroom is not found");
+            throw new ResourceNotFoundException("Survey is not found");
         }
         surveyRepository.softDelete(surveyToBeDeleted.get());
     }
@@ -85,8 +79,7 @@ public class SurveyService {
 
         Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
         if (surveyById.isEmpty()) {
-            // TODO specific exception
-            throw new RuntimeException("Classroom is not found");
+            throw new ResourceNotFoundException("Survey is not found");
         }
         return surveyById.get();
     }
@@ -131,16 +124,14 @@ public class SurveyService {
     public Survey updateSurveyAnswers(Long surveyId, SurveyUpdateResponseRequestDto dto) {
 
         // todo test yapılmadı
-        Optional<Survey> surveyOptional = surveyRepository.findActiveById(surveyId);
-        if(surveyOptional.isEmpty()){
-            throw new ResourceNotFoundException("Survey is not Found.");
-        }
-        if(surveyOptional.get().getEndDate().before(new Date())){
+        Survey survey = surveyRepository.findActiveById(surveyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+        if(survey.getEndDate().before(new Date())){
             throw new ResourceNotFoundException("Survey is Expired.");
         }
         Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
         Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
-        List<Response> currentUserResponses = surveyOptional.get().getQuestions()
+        List<Response> currentUserResponses = survey.getQuestions()
             .stream()
             .flatMap(question -> question.getResponses().stream())
             .filter(response -> response.getOid().equals(currentUserId))
@@ -150,7 +141,7 @@ public class SurveyService {
             .filter(response -> dto.getUpdateAnswerMap().containsKey(response.getOid()))
             .forEach(response -> response.setResponseString(dto.getUpdateAnswerMap().get(response.getOid())));
         responseRepository.saveAll(currentUserResponses);
-        return surveyOptional.get();
+        return survey;
     }
 
     public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) throws MessagingException {

@@ -29,14 +29,17 @@ public class SurveyController {
         return "survey";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
     ResponseEntity<List<Survey>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/page")
     ResponseEntity<Page<Survey>> getSurveyPage(Pageable pageable) {
         return ResponseEntity.ok(surveyService.getSurveyPage(pageable));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/{surveyId}")
     ResponseEntity<Survey> findById(@PathVariable("surveyId") Long surveyId){
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
@@ -46,25 +49,23 @@ public class SurveyController {
     ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
-    @PostMapping("/update/{surveyId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PutMapping ("/update/{surveyId}")
     ResponseEntity<Survey> update(@PathVariable("surveyId") Long surveyId, @RequestBody SurveyUpdateRequestDto dto){
         return ResponseEntity.ok(surveyService.update(surveyId, dto));
     }
-    @PutMapping("/delete/{surveyId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @DeleteMapping ("/delete/{surveyId}")
     ResponseEntity<Void> delete(@PathVariable("surveyId") Long surveyId){
-        try{
-            surveyService.delete(surveyId);
-            return ResponseEntity.ok().build();
-        }catch (Exception ex){
-            return ResponseEntity.badRequest().build();
-        }
+        surveyService.delete(surveyId);
+        return ResponseEntity.ok().build();
     }
     @PostMapping("/response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
     ResponseEntity<Survey> responseSurveyQuestions(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto){
         return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId,dto));
     }
-    @PutMapping("/update/{surveyId}")
+    @PutMapping("/update-survey-response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
     ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto){
         return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId,dto));
