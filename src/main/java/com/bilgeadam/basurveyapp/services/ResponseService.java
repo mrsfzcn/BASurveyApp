@@ -82,12 +82,12 @@ public class ResponseService {
     }
 
     public Boolean saveAll( String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList){
-        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(token));// tokendan gelen id var gibi kabul edildi.
+        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(token));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
 
         if(user.isPresent()) {
             responseRequestSaveDtoList.forEach(response -> { //gelenleri listeye kaydetmek için for each kullanıldı.
                 responseRepository.save(Response.builder()
-                        .user(user.get()) //tokendan gelen userı, teker teker büğtün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
+                        .user(user.get()) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
                         .responseString(response.getResponseString())
                         .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(()-> new QuestionNotFoundException("Question not found"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a
                         .build());

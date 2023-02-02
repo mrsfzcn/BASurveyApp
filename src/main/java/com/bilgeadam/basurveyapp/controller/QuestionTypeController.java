@@ -30,25 +30,25 @@ public class QuestionTypeController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto) {
         questionTypeService.updateQuestionType(dto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/findbyid")
+    @GetMapping("/findbyid")
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.findById(dto.getOid()));
 
     }
 
-    @PostMapping("/findall")
+    @GetMapping("/findall")
     public ResponseEntity<List<AllQuestionTypeResponseDto>> findAllQuestionTypeList() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
 
-    @PostMapping("/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionTypeId) {
         return ResponseEntity.ok(questionTypeService.delete(questionTypeId));
     }
