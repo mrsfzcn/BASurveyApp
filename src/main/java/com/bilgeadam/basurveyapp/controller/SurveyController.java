@@ -78,5 +78,11 @@ public class SurveyController {
             throw new RuntimeException(e);
         }
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @GetMapping("/findSurveyByClassroomOid")
+    ResponseEntity <List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid){
+        return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
+    }
+
 }
 
