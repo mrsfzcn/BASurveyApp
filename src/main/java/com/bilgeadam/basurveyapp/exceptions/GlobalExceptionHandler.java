@@ -1,9 +1,6 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -57,12 +54,14 @@ public class GlobalExceptionHandler {
         log.warn("Unique key already exists on database. {}", exception.getMessage());
         return createExceptionInfoResponse(REGISTER_ERROR_DATA_EXISTS);
     }
+
     @ResponseBody
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
         log.warn("Unique key already exists on database. {}", exception.getMessage());
         return createExceptionInfoResponse(RESOURCE_NOT_FOUND);
     }
+
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
@@ -76,6 +75,7 @@ public class GlobalExceptionHandler {
         log.warn("Access denied, user role unauthorized. {}", exception.getMessage());
         return createExceptionInfoResponse(ACCESS_DENIED);
     }
+
     @ResponseBody
     @ExceptionHandler(ResponseNotFoundException.class)
     public ResponseEntity<ExceptionResponse> responseNotFoundException(ResourceNotFoundException exception) {
@@ -97,7 +97,19 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(QUESTION_NOT_FOUND);
     }
 
+    @ResponseBody
+    @ExceptionHandler(ClassroomNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleClassroomNotFoundException(ClassroomNotFoundException exception) {
+        log.warn("Classroom is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(CLASSROOM_NOT_FOUND);
+    }
 
+    @ResponseBody
+    @ExceptionHandler(ClassroomExistException.class)
+    public ResponseEntity<ExceptionResponse> handleClassroomExistException(ClassroomExistException exception) {
+        log.warn("Classroom is already exist. {}", exception.getMessage());
+        return createExceptionInfoResponse(CLASSROOM_ALREADY_EXISTS);
+    }
 
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType) {
         return new ResponseEntity<>(ExceptionResponse.builder()
@@ -106,7 +118,5 @@ public class GlobalExceptionHandler {
                 .httpStatus(exceptionType.getHttpStatus().value())
                 .build(), exceptionType.getHttpStatus());
     }
-
-
 
 }
