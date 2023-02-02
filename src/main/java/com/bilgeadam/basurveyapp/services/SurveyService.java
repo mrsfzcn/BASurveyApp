@@ -158,4 +158,22 @@ public class SurveyService {
         emailService.sendSurveyMail(emailTokenMap);
         return surveyRepository.save(survey);
     }
+
+    public List<Survey> findByClassroomOid(Long clasroomOid){
+        Optional<Classroom>classroomOptional=classroomRepository.findActiveById(clasroomOid);
+       if(classroomOptional.isEmpty()) {
+           throw new ResourceNotFoundException("Classroom is not found.");
+       }
+        List<Survey>surveyList=surveyRepository.findAllActive();
+        List<Survey>surveysWithTheOidsOfTheClasses= surveyList
+                .stream()
+                .filter(survey -> survey.getClassrooms()
+                        .stream()
+                        .map(c -> c.getOid())
+                        .toList().contains(classroomOptional.get().getOid()))
+                .toList();
+        return surveysWithTheOidsOfTheClasses;
+    }
+
+
 }
