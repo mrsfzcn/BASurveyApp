@@ -1,10 +1,12 @@
 package com.bilgeadam.basurveyapp.configuration.jwt;
 
+import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,10 @@ import java.util.function.Function;
  * @author Eralp Nitelik
  */
 @Service
+@RequiredArgsConstructor
 public class JwtService {
+    private final UserRepository userRepository;
+
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
@@ -77,6 +82,10 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /*
+        Email Related Token Methods!
+     */
+
     public String generateSurveyEmailToken(Long surveyOid, String userEmail, Date surveyDuration) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("surveyOid", surveyOid);
@@ -88,6 +97,12 @@ public class JwtService {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    public boolean isSurveyEmailTokenValid(String jwtToken) {
+        final String email = extractEmail(jwtToken);
+        return isTokenNotExpired(jwtToken) && userRepository.findByEmail(email).isPresent();
+    }
+
     public String extractEmail(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
     }
