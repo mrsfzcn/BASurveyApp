@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +45,10 @@ public class ResponseController {
     @DeleteMapping
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
+    }
+    @PutMapping("/saveall/{token}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<Boolean> saveAll(@RequestParam @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
+        return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));//tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
     }
 }

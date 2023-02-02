@@ -26,6 +26,8 @@ public enum ExceptionType {
     BAD_REQUEST_ERROR(9002, "Invalid Parameter Error", BAD_REQUEST),
     RESOURCE_NOT_FOUND(9003, "Resource is not Found", BAD_REQUEST),
     RESPONSE_NOT_FOUND(9004, "Response is not Found", BAD_REQUEST),
+
+    QUESTION_NOT_FOUND(9005,"Question is not Found", BAD_REQUEST),
     /*
         Validation errors.
      */
@@ -42,7 +44,6 @@ public enum ExceptionType {
         Register errors.
      */
     REGISTER_ERROR_DATA_EXISTS(3001, "Data already exists.", BAD_REQUEST);
-
 
     private int code;
     private String message;
