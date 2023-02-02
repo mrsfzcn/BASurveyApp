@@ -95,6 +95,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleQuestionNotFoundException(QuestionNotFoundException exception) {
         log.warn("Question is not found. {}", exception.getMessage());
         return createExceptionInfoResponse(QUESTION_NOT_FOUND);
+
+    }
+    @ResponseBody
+    @ExceptionHandler(AlreadyAnsweredSurveyException.class)
+    public ResponseEntity<ExceptionResponse> handleAlreadyAnsweredSurveyException(AlreadyAnsweredSurveyException exception) {
+        log.warn("User has already answered. {}", exception.getMessage());
+        return createExceptionInfoResponse(SURVEY_ALREADY_ANSWERED);
+    }
+    @ResponseBody
+    @ExceptionHandler(UserDoesNotExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleUserDoesNotExistsException(UserDoesNotExistsException exception) {
+        log.warn("User deleted or doesnt exist. {}", exception.getMessage());
+        return createExceptionInfoResponse(USER_DOES_NOT_EXIST);
     }
 
     @ResponseBody

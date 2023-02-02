@@ -1,14 +1,15 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
+import com.bilgeadam.basurveyapp.dto.request.ResponseUpdatableResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,7 @@ public class ResponseService {
     private final JwtService jwtService;
 
 
-
-    public void createResponse(ResponseRequestDto responseRequestDto){
+    public void createResponse(ResponseRequestDto responseRequestDto) {
         // The same answer can be recreated over and over again. There not will be exist checking
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
@@ -36,20 +37,19 @@ public class ResponseService {
         responseRepository.save(response);
     }
 
-    public void updateResponse(ResponseRequestDto responseRequestDto){
-        Optional<Response>updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
-        if(updatedResponse.isEmpty()){
-           throw new ResponseNotFoundException("There's a error while finding response");
-        }
-        else {
+    public void updateResponse(ResponseRequestDto responseRequestDto) {
+        Optional<Response> updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
+        if (updatedResponse.isEmpty()) {
+            throw new ResponseNotFoundException("There's a error while finding response");
+        } else {
             updatedResponse.get().setResponseString(responseRequestDto.getResponseString());
             responseRepository.save(updatedResponse.get());
         }
     }
 
-    public AnswerResponseDto findByIdResponse(Long responseOid){
-        Optional <Response> response = responseRepository.findById(responseOid);
-        if(response.isEmpty()){
+    public AnswerResponseDto findByIdResponse(Long responseOid) {
+        Optional<Response> response = responseRepository.findById(responseOid);
+        if (response.isEmpty()) {
             throw new ResponseNotFoundException("There's a error while finding response");
         }
         return AnswerResponseDto.builder()
@@ -64,15 +64,15 @@ public class ResponseService {
         List<AnswerResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(response ->
                 responseDtoList.add(AnswerResponseDto.builder()
-                .responseString(response.getResponseString())
-                .userOid(response.getUser().getOid())
-                .questionOid(response.getQuestion().getOid())
-                .build()));
+                        .responseString(response.getResponseString())
+                        .userOid(response.getUser().getOid())
+                        .questionOid(response.getQuestion().getOid())
+                        .build()));
         return responseDtoList;
     }
 
-    public Boolean deleteResponseById(Long responseOid){
-      Optional<Response> response= responseRepository.findActiveById(responseOid);
+    public Boolean deleteResponseById(Long responseOid) {
+        Optional<Response> response = responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
             throw new ResponseNotFoundException("There's a error while finding response");
         } else {
@@ -81,21 +81,35 @@ public class ResponseService {
         }
     }
 
-    public Boolean saveAll( String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList){
+    public Boolean saveAll(String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(token));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
 
-        if(user.isPresent()) {
+        if (user.isPresent() && !responseRepository.isSurveyAnsweredByUser(user.orElseThrow(() -> new AlreadyAnsweredSurveyException("User has already answered.")).getOid())) {
             responseRequestSaveDtoList.forEach(response -> { //gelenleri listeye kaydetmek için for each kullanıldı.
                 responseRepository.save(Response.builder()
                         .user(user.get()) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
                         .responseString(response.getResponseString())
-                        .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(()-> new QuestionNotFoundException("Question not found"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a
+                        .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("Question not found"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a
                         .build());
             });
             return true;
+        } else {
+            return false;
         }
-        else{
-             return false;
-        }
+    }
+
+    public List<ResponseUpdatableResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+        userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
+        userRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
+        return responseRepository
+                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(dto.getSurveyOid()))
+                .stream()
+                .map(response -> ResponseUpdatableResponseDto.builder()
+                        .oid(response.getOid())
+                        .responseString(response.getResponseString())
+                        .questionOid(response.getQuestion().getOid())
+                        .userOid(response.getUser().getOid())
+                        .build()
+                ).collect(Collectors.toList());
     }
 }
