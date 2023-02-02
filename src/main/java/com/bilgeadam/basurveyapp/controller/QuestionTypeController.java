@@ -23,7 +23,7 @@ public class QuestionTypeController {
     public String test() {
         return "questiontype";
     }
-
+//
     @PostMapping("/create")
     public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
         questionTypeService.createQuestionType(dto);
