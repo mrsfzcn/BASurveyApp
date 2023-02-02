@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.UserCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
@@ -36,11 +35,6 @@ public class UserController {
     @GetMapping("/{userId}")
     ResponseEntity<User> findById(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.findByOid(userId));
-    }
-
-    @PostMapping("/create")
-    ResponseEntity<User> createUser(@RequestBody UserCreateRequestDto dto) {
-        return ResponseEntity.ok(userService.createUser(dto));
     }
 
     @PostMapping("/update/{userId}")

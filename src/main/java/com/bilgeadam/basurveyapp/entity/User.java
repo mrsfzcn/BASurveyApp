@@ -30,15 +30,9 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_classroom",
-            joinColumns = @JoinColumn(name = "user_oid"),
-            inverseJoinColumns = @JoinColumn(name = "classroom_oid"))
+    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Classroom> classrooms;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_survey",
-            joinColumns = @JoinColumn(name = "user_oid"),
-            inverseJoinColumns = @JoinColumn(name = "survey_oid"))
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Survey> surveys;
 
     @Override

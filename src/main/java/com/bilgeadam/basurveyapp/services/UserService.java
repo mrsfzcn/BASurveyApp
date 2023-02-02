@@ -1,10 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.UserCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,23 +26,6 @@ public class UserService {
         // getCurrentUser()
         // user check
         return userRepository.findAllActive(pageable);
-    }
-
-    public User createUser(UserCreateRequestDto dto) {
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            // TODO exception
-            throw new RuntimeException("User already exists");
-        }
-        // getCurrentUser()
-        // user check
-        User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .role(Role.valueOf(dto.getRole()))
-                .classrooms(List.of(Classroom.builder().name(dto.getClassroomName()).build()))
-                .build();
-        return userRepository.save(user);
     }
 
     public User updateUser(Long userId, UserUpdateRequestDto dto) {
