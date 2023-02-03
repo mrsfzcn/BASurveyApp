@@ -104,6 +104,12 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(SURVEY_ALREADY_ANSWERED);
     }
     @ResponseBody
+    @ExceptionHandler(UserInsufficientanswerException.class)
+    public ResponseEntity<ExceptionResponse> handleUserInsufficientanswerException(UserInsufficientanswerException exception) {
+        log.warn("User must answer all the questions. {}", exception.getMessage());
+        return createExceptionInfoResponse(USER_INSUFFICIENT_ANSWER);
+    }
+    @ResponseBody
     @ExceptionHandler(UserDoesNotExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserDoesNotExistsException(UserDoesNotExistsException exception) {
         log.warn("User deleted or doesnt exist. {}", exception.getMessage());

@@ -6,8 +6,14 @@ import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
-import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Response;
+import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientanswerException;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
@@ -82,18 +88,27 @@ public class SurveyService {
 
     public Survey responseSurveyQuestions(Long surveyId, SurveyResponseQuestionRequestDto dto) {
 
-        // todo test yapılmadı
-        Optional<Survey> surveyOptional = surveyRepository.findActiveById(surveyId);
-        if(surveyOptional.isEmpty()){
-            throw new ResourceNotFoundException("Survey is not Found.");
+        Survey survey = surveyRepository.findActiveById(surveyId)
+            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
+
+        if(survey.getQuestions().size() != dto.getResponses().size()){
+            throw new UserInsufficientanswerException("User must response all the questions.");
         }
+
         Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
         Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
-        Optional<User> currentUserOptional = userRepository.findActiveById(currentUserId);
-        if (currentUserOptional.isEmpty()){
-            throw new ResourceNotFoundException("User is not found");
+        User currentUser = userRepository.findActiveById(currentUserId)
+            .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+
+        List<Long> participantIdList = survey.getUsers()
+            .parallelStream()
+            .map(User::getOid)
+            .toList();
+        if(participantIdList.contains(currentUserId)){
+            throw new AlreadyAnsweredSurveyException("User cannot answer a survey more than once.");
         }
-        List<Question> surveyQuestions = surveyOptional.get().getQuestions();
+
+        List<Question> surveyQuestions = survey.getQuestions();
         List<Response> responses = dto.getResponses().keySet()
             .parallelStream()
             .map((id -> Response.builder()
@@ -103,7 +118,7 @@ public class SurveyService {
                     .filter(question -> question.getOid().equals(id))
                     .findAny()
                     .orElse(null))
-                .user(currentUserOptional.get())
+                .user(currentUser)
                 .build()))
             .toList();
         for(Response response : responses){
@@ -111,15 +126,14 @@ public class SurveyService {
                 .parallelStream()
                 .filter(question -> question.getOid().equals(response.getQuestion().getOid()))
                 .findAny();
-            if(questionOptional.isPresent()){
-                questionOptional.get().getResponses().add(response);
-            }
+            questionOptional.ifPresent(question -> question.getResponses().add(response));
         }
-        return surveyRepository.save(surveyOptional.get());
+        currentUser.getSurveys().add(survey);
+
+        return surveyRepository.save(survey);
     }
     public Survey updateSurveyAnswers(Long surveyId, SurveyUpdateResponseRequestDto dto) {
 
-        // todo test yapılmadı
         Survey survey = surveyRepository.findActiveById(surveyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
         if(survey.getEndDate().before(new Date())){
@@ -127,11 +141,13 @@ public class SurveyService {
         }
         Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
         Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
+
         List<Response> currentUserResponses = survey.getQuestions()
             .stream()
             .flatMap(question -> question.getResponses().stream())
-            .filter(response -> response.getOid().equals(currentUserId))
+            .filter(response -> response.getUser().getOid().equals(currentUserId))
             .collect(Collectors.toList());
+
         currentUserResponses
             .parallelStream()
             .filter(response -> dto.getUpdateAnswerMap().containsKey(response.getOid()))
@@ -141,7 +157,7 @@ public class SurveyService {
     }
 
     public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) throws MessagingException {
-        // todo test yapılmadı
+
         Survey survey = surveyRepository.findActiveById(surveyId)
             .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
         if(survey.getEndDate().before(new Date())){
@@ -160,12 +176,13 @@ public class SurveyService {
     }
 
     public List<Survey> findByClassroomOid(Long clasroomOid){
-        Optional<Classroom>classroomOptional=classroomRepository.findActiveById(clasroomOid);
+
+        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(clasroomOid);
        if(classroomOptional.isEmpty()) {
            throw new ResourceNotFoundException("Classroom is not found.");
        }
-        List<Survey>surveyList=surveyRepository.findAllActive();
-        List<Survey>surveysWithTheOidsOfTheClasses= surveyList
+        List<Survey> surveyList = surveyRepository.findAllActive();
+        List<Survey> surveysWithTheOidsOfTheClasses = surveyList
                 .stream()
                 .filter(survey -> survey.getClassrooms()
                         .stream()

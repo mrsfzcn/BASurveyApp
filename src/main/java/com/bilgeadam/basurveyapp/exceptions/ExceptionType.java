@@ -31,6 +31,7 @@ public enum ExceptionType {
     CLASSROOM_ALREADY_EXISTS(9007, "Classroom is already exists", BAD_REQUEST),
     SURVEY_ALREADY_ANSWERED(9008, "This user already has answers for this survey.", BAD_REQUEST),
     USER_DOES_NOT_EXIST(9009, "No such user.", BAD_REQUEST),
+    USER_INSUFFICIENT_ANSWER(9010,"User must answer all the questions.",BAD_REQUEST),
     /*
         Validation errors.
      */
