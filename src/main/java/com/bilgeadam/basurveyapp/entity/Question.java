@@ -18,12 +18,12 @@ public class Question extends BaseEntity {
     private String questionString;
     @Column(name = "question_order")
     private Integer order;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(referencedColumnName = "oid", name = "question_type")
     private QuestionType questionType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Response> responses;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "oid", name = "survey")
     private Survey survey;
 
