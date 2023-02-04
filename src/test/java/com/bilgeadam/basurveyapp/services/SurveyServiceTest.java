@@ -63,7 +63,7 @@ class SurveyServiceTest {
     private UserRepository userRepository;
     @Spy
     private EmailService emailService;
-    @Spy
+    @Mock
     private JwtService jwtService;
     @Spy
     private PasswordEncoder passwordEncoder;
