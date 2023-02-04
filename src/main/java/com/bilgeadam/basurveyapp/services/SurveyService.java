@@ -13,7 +13,7 @@ import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientanswerException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientAnswerException;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
@@ -92,7 +92,7 @@ public class SurveyService {
             .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
 
         if(survey.getQuestions().size() != dto.getResponses().size()){
-            throw new UserInsufficientanswerException("User must response all the questions.");
+            throw new UserInsufficientAnswerException("User must response all the questions.");
         }
 
         Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
@@ -101,7 +101,7 @@ public class SurveyService {
             .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
         List<Long> participantIdList = survey.getUsers()
-            .parallelStream()
+            .stream()
             .map(User::getOid)
             .toList();
         if(participantIdList.contains(currentUserId)){
@@ -128,6 +128,7 @@ public class SurveyService {
                 .findAny();
             questionOptional.ifPresent(question -> question.getResponses().add(response));
         }
+        survey.getUsers().add(currentUser);
         currentUser.getSurveys().add(survey);
 
         return surveyRepository.save(survey);

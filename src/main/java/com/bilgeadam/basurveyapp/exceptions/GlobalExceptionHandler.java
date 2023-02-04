@@ -104,8 +104,8 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(SURVEY_ALREADY_ANSWERED);
     }
     @ResponseBody
-    @ExceptionHandler(UserInsufficientanswerException.class)
-    public ResponseEntity<ExceptionResponse> handleUserInsufficientanswerException(UserInsufficientanswerException exception) {
+    @ExceptionHandler(UserInsufficientAnswerException.class)
+    public ResponseEntity<ExceptionResponse> handleUserInsufficientanswerException(UserInsufficientAnswerException exception) {
         log.warn("User must answer all the questions. {}", exception.getMessage());
         return createExceptionInfoResponse(USER_INSUFFICIENT_ANSWER);
     }
