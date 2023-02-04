@@ -9,5 +9,5 @@ import java.util.Map;
 @Setter
 public class SurveyResponseQuestionRequestDto {
 
-    private Map<Long,String> responses;
+    private Map<Long,String> createResponses;
 }
