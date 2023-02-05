@@ -159,6 +159,7 @@ class SurveyServiceTest {
 
     @Test
     void responseSurveyQuestions_ShouldThrowResourceNotFoundException_WhenSurveyIsNotValid() {
+        //given
         User can = User.builder()
             .firstName("Can")
             .lastName("Demirhan")
@@ -626,7 +627,6 @@ class SurveyServiceTest {
 
         question1.setSurvey(javaSurvey);
         question2.setSurvey(javaSurvey);
-
 
         //when
         when(surveyRepository.findActiveById(any())).thenReturn(Optional.of(javaSurvey));
