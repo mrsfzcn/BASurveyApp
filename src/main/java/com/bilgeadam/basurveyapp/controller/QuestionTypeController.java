@@ -38,6 +38,7 @@ public class QuestionTypeController {
         questionTypeService.updateQuestionType(dto);
         return ResponseEntity.ok().build();
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/findbyid")
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto dto) {
