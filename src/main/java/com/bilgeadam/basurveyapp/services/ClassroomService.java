@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
+import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClassroomService {
     private final ClassroomRepository classroomRepository;
+    private final UserRepository userRepository;
 
     public void createClassroom(CreateClassroomDto createClassroomDto) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveByName(createClassroomDto.getName());
         if (optionalClassroom.isPresent()) {
-            throw new ClassroomExistException("Classroom is already exist");
+            throw new ClassroomExistException("Classroom already exists");
         }
         Classroom classroom = Classroom.builder()
                 .name(createClassroomDto.getName())
-                .users(createClassroomDto.getUsers()).build();
+                .users(userRepository.findAllByEmails(createClassroomDto.getUserEmails())).build();
         classroomRepository.save(classroom);
     }
 
