@@ -76,13 +76,6 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(ACCESS_DENIED);
     }
 
-    @ResponseBody
-    @ExceptionHandler(ResponseNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> responseNotFoundException(ResourceNotFoundException exception) {
-        log.warn("Response not found. {}", exception.getMessage());
-        return createExceptionInfoResponse(RESPONSE_NOT_FOUND);
-    }
-
     /* //kendi belirlediğin exception olarak yakala acces denied ı
     @ExceptionHandler(QuestionNottext.....class)
     public ResponseEntity<ExceptionResponse> handleQuestionNottextException(QuestionNottextException exception) {
@@ -142,5 +135,4 @@ public class GlobalExceptionHandler {
                 .httpStatus(exceptionType.getHttpStatus().value())
                 .build(), exceptionType.getHttpStatus());
     }
-
 }

@@ -13,6 +13,8 @@ import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientAnswerException;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
@@ -22,6 +24,8 @@ import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -145,7 +149,6 @@ public class SurveyService {
         }
         Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
         Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
-
         List<Response> currentUserResponses = survey.getQuestions()
             .stream()
             .flatMap(question -> question.getResponses().stream())
@@ -157,7 +160,6 @@ public class SurveyService {
             .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
             .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
         responseRepository.saveAll(currentUserResponses);
-
         return survey;
     }
     public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) {
@@ -183,22 +185,43 @@ public class SurveyService {
         return surveyRepository.save(survey);
     }
 
-    public List<Survey> findByClassroomOid(Long clasroomOid){
+    public List<Survey> findByClassroomOid(Long classroomOid) {
 
-        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(clasroomOid);
-       if(classroomOptional.isEmpty()) {
-           throw new ResourceNotFoundException("Classroom is not found.");
-       }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
 
+
+        Long userOid = (Long) authentication.getCredentials();
+        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        if (user.getRole() == Role.ASSISTANT_TRAINER || user.getRole() == Role.MASTER_TRAINER) {
+
+            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
+
+            if (!classroom.getUsers().contains(user)) {
+                throw new AccessDeniedException("authentication failure.");
+            }
+        }
+
+
+        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
+        if (classroomOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Classroom is not found.");
+        }
         List<Survey> surveyList = surveyRepository.findAllActive();
-        List<Survey> surveyOfGivenClassroom = surveyList
+        List<Survey> surveysWithTheOidsOfTheClasses = surveyList
                 .stream()
                 .filter(survey -> survey.getClassrooms()
-                    .stream()
-                    .map(Classroom::getOid)
-                    .toList().contains(classroomOptional.get().getOid()))
+                        .stream()
+                        .map(BaseEntity::getOid)
+                        .toList().contains(classroomOptional.get().getOid()))
                 .toList();
-        return surveyOfGivenClassroom;
+        return surveysWithTheOidsOfTheClasses;
     }
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
 

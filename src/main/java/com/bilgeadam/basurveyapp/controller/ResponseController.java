@@ -55,4 +55,10 @@ public class ResponseController {
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @GetMapping("/findResponseByClassroomOid")
+    public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
+        return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
+    }
 }
