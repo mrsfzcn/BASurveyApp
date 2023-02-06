@@ -95,13 +95,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleQuestionNotFoundException(QuestionNotFoundException exception) {
         log.warn("Question is not found. {}", exception.getMessage());
         return createExceptionInfoResponse(QUESTION_NOT_FOUND);
-
     }
     @ResponseBody
     @ExceptionHandler(AlreadyAnsweredSurveyException.class)
     public ResponseEntity<ExceptionResponse> handleAlreadyAnsweredSurveyException(AlreadyAnsweredSurveyException exception) {
         log.warn("User has already answered. {}", exception.getMessage());
         return createExceptionInfoResponse(SURVEY_ALREADY_ANSWERED);
+    }
+    @ResponseBody
+    @ExceptionHandler(QuestionsAndResponsesDoesNotMatchException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionsAndResponsesDoesNotMatchException(QuestionsAndResponsesDoesNotMatchException exception) {
+        log.warn("User has already answered. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH);
+    }
+    @ResponseBody
+    @ExceptionHandler(UserInsufficientAnswerException.class)
+    public ResponseEntity<ExceptionResponse> handleUserInsufficientanswerException(UserInsufficientAnswerException exception) {
+        log.warn("User must answer all the questions. {}", exception.getMessage());
+        return createExceptionInfoResponse(USER_INSUFFICIENT_ANSWER);
     }
     @ResponseBody
     @ExceptionHandler(UserDoesNotExistsException.class)
