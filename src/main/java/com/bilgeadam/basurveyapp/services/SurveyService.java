@@ -186,7 +186,6 @@ public class SurveyService {
     }
 
     public List<Survey> findByClassroomOid(Long classroomOid) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("authentication failure.");
@@ -194,21 +193,15 @@ public class SurveyService {
         if ("anonymousUser".equals(authentication.getPrincipal())) {
             throw new AccessDeniedException("authentication failure.");
         }
-
-
         Long userOid = (Long) authentication.getCredentials();
         User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
         if (user.getRole() == Role.ASSISTANT_TRAINER || user.getRole() == Role.MASTER_TRAINER) {
-
             Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
-
             if (!classroom.getUsers().contains(user)) {
                 throw new AccessDeniedException("authentication failure.");
             }
         }
-
-
         Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
         if (classroomOptional.isEmpty()) {
             throw new ResourceNotFoundException("Classroom is not found.");

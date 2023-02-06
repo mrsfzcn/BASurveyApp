@@ -36,8 +36,6 @@ public class ResponseService {
 
 
     public void createResponse(ResponseRequestDto responseRequestDto) {
-        // The same answer can be recreated over and over again. There not will be existed checking
-    public void createResponse(ResponseRequestDto responseRequestDto) {
         // The same answer can be recreated over and over again. There not will be exist checking
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
@@ -45,11 +43,6 @@ public class ResponseService {
         responseRepository.save(response);
     }
 
-    public void updateResponse(ResponseRequestDto responseRequestDto) {
-        Optional<Response> updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
-        if (updatedResponse.isEmpty()) {
-            throw new ResponseNotFoundException("There's a error while finding response");
-        } else {
     public void updateResponse(ResponseRequestDto responseRequestDto) {
         Optional<Response> updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
         if (updatedResponse.isEmpty()) {
@@ -61,11 +54,7 @@ public class ResponseService {
     }
 
     public AnswerResponseDto findByIdResponse(Long responseOid) {
-        Optional<Response> response = responseRepository.findById(responseOid);
-        if (response.isEmpty()) {
-            throw new ResponseNotFoundException("There's a error while finding response");
-    public AnswerResponseDto findByIdResponse(Long responseOid) {
-        Optional<Response> response = responseRepository.findById(responseOid);
+        Optional<Response> response = responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding response");
         }
