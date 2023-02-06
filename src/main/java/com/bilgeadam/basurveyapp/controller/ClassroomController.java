@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.AddUserToClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
@@ -33,11 +34,19 @@ public class ClassroomController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
-    @PutMapping("/update")
-    public ResponseEntity<Boolean> updateClassroom(@RequestBody @Valid UpdateClassroomDto updateClassroomDto) {
-        classroomService.updateClassroom(updateClassroomDto);
+    @PutMapping("/addUserToClassroom")
+    public ResponseEntity<Boolean> addUsers(@RequestBody @Valid AddUserToClassroomDto addUserToClassroomDto) {
+        classroomService.addUserToClassroom(addUserToClassroomDto);
         return ResponseEntity.ok().build();
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
+    @DeleteMapping("/deleteUserFromClassroom")
+    public ResponseEntity<Boolean> deleteUsers(@RequestBody @Valid AddUserToClassroomDto addUserToClassroomDto) {
+        classroomService.deleteUserFromClassroom(addUserToClassroomDto);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/findbyid")

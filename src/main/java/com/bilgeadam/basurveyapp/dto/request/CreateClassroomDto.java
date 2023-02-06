@@ -13,6 +13,5 @@ import java.util.List;
 public class CreateClassroomDto {
 
     String name;
-    List<String> userEmails;
 
 }
