@@ -5,7 +5,10 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
+import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
+import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +20,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final QuestionTypeRepository questionTypeRepository;
+    private final SurveyRepository surveyRepository;
 
     public void createQuestion(CreateQuestionDto createQuestionDto) {
         // TODO check if exists
         Question question = Question.builder()
                 .questionString(createQuestionDto.getQuestionString())
-                .questionType(createQuestionDto.getQuestionTypeOid())
-                .survey(createQuestionDto.getSurveyOid())
+                .questionType(
+                        questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid())
+                                .orElseThrow(() -> new ResourceNotFoundException("Question type does not exists")))
+                .survey(
+                        surveyRepository.findActiveById(createQuestionDto.getSurveyOid())
+                                .orElseThrow(() -> new ResourceNotFoundException("Survey does not exists")))
                 .order(createQuestionDto.getOrder())
                 .build();
         questionRepository.save(question);
@@ -64,9 +73,9 @@ public class QuestionService {
         List<AllQuestionResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(question ->
                 responseDtoList.add(AllQuestionResponseDto.builder()
-                .questionString(question.getQuestionString())
-                .order(question.getOrder())
-                .build()));
+                        .questionString(question.getQuestionString())
+                        .order(question.getOrder())
+                        .build()));
         return responseDtoList;
     }
 

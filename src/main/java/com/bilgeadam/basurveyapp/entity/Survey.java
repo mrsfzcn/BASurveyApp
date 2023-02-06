@@ -5,6 +5,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -27,6 +29,7 @@ import java.util.List;
 @Builder
 @Table(name = "surveys")
 public class Survey extends BaseEntity {
+
     @Column(name = "survey_title")
     private String surveyTitle;
 
@@ -41,12 +44,15 @@ public class Survey extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
-    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "surveys_classrooms",
+        joinColumns = @JoinColumn(name = "survey_oid"),
+        inverseJoinColumns = @JoinColumn(name = "classroom_oid"))
     private List<Classroom> classrooms;
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Question> questions;
 
-    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "surveys", fetch = FetchType.LAZY)
     private List<User> users;
 }

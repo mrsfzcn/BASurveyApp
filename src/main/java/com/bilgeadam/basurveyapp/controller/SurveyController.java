@@ -73,11 +73,13 @@ public class SurveyController {
     @PutMapping("/{surveyId}/assign/{classroomId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     ResponseEntity<Survey> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId,@PathVariable("classroomId") Long classroomId){
-        try {
-            return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @GetMapping("/findSurveyByClassroomOid")
+    ResponseEntity <List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid){
+        return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
+    }
+
 }
 

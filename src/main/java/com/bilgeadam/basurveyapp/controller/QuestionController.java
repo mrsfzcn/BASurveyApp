@@ -31,25 +31,25 @@ public class QuestionController {
         questionService.createQuestion(createQuestionDto);
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping("/update")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PutMapping("/update")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         questionService.updateQuestion(updateQuestionDto);
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
         return ResponseEntity.ok(questionService.findById(findByIdRequestDto.getOid()));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
     public ResponseEntity<List<AllQuestionResponseDto>> findAll() {
         List<AllQuestionResponseDto> responseDtoList = questionService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
-
-    @PostMapping("/delete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId) {
         return ResponseEntity.ok(questionService.delete(questionId));
     }

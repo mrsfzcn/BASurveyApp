@@ -5,7 +5,6 @@ import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;

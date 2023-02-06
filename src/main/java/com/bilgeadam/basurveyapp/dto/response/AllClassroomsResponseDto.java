@@ -12,5 +12,6 @@ import java.util.List;
 @Builder
 public class AllClassroomsResponseDto {
     String name;
+    // TODO fix return type
     List<User> users;
 }

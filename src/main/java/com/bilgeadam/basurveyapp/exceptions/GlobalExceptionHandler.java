@@ -54,12 +54,14 @@ public class GlobalExceptionHandler {
         log.warn("Unique key already exists on database. {}", exception.getMessage());
         return createExceptionInfoResponse(REGISTER_ERROR_DATA_EXISTS);
     }
+
     @ResponseBody
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
         log.warn("Unique key already exists on database. {}", exception.getMessage());
         return createExceptionInfoResponse(RESOURCE_NOT_FOUND);
     }
+
     @ResponseBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
@@ -72,12 +74,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException exception) {
         log.warn("Access denied, user role unauthorized. {}", exception.getMessage());
         return createExceptionInfoResponse(ACCESS_DENIED);
-    }
-    @ResponseBody
-    @ExceptionHandler(ResponseNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> responseNotFoundException(ResourceNotFoundException exception) {
-        log.warn("Response not found. {}", exception.getMessage());
-        return createExceptionInfoResponse(RESPONSE_NOT_FOUND);
     }
 
     /* //kendi belirlediğin exception olarak yakala acces denied ı
@@ -99,8 +95,44 @@ public class GlobalExceptionHandler {
         log.warn("Question type is not found. {}", exception.getMessage());
         return createExceptionInfoResponse(QUESTION_TYPE_NOT_FOUND);
     }
+    @ResponseBody
+    @ExceptionHandler(AlreadyAnsweredSurveyException.class)
+    public ResponseEntity<ExceptionResponse> handleAlreadyAnsweredSurveyException(AlreadyAnsweredSurveyException exception) {
+        log.warn("User has already answered. {}", exception.getMessage());
+        return createExceptionInfoResponse(SURVEY_ALREADY_ANSWERED);
+    }
+    @ResponseBody
+    @ExceptionHandler(QuestionsAndResponsesDoesNotMatchException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionsAndResponsesDoesNotMatchException(QuestionsAndResponsesDoesNotMatchException exception) {
+        log.warn("User has already answered. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH);
+    }
+    @ResponseBody
+    @ExceptionHandler(UserInsufficientAnswerException.class)
+    public ResponseEntity<ExceptionResponse> handleUserInsufficientanswerException(UserInsufficientAnswerException exception) {
+        log.warn("User must answer all the questions. {}", exception.getMessage());
+        return createExceptionInfoResponse(USER_INSUFFICIENT_ANSWER);
+    }
+    @ResponseBody
+    @ExceptionHandler(UserDoesNotExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleUserDoesNotExistsException(UserDoesNotExistsException exception) {
+        log.warn("User deleted or doesnt exist. {}", exception.getMessage());
+        return createExceptionInfoResponse(USER_DOES_NOT_EXIST);
+    }
 
+    @ResponseBody
+    @ExceptionHandler(ClassroomNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleClassroomNotFoundException(ClassroomNotFoundException exception) {
+        log.warn("Classroom is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(CLASSROOM_NOT_FOUND);
+    }
 
+    @ResponseBody
+    @ExceptionHandler(ClassroomExistException.class)
+    public ResponseEntity<ExceptionResponse> handleClassroomExistException(ClassroomExistException exception) {
+        log.warn("Classroom is already exist. {}", exception.getMessage());
+        return createExceptionInfoResponse(CLASSROOM_ALREADY_EXISTS);
+    }
 
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType) {
         return new ResponseEntity<>(ExceptionResponse.builder()
@@ -109,7 +141,4 @@ public class GlobalExceptionHandler {
                 .httpStatus(exceptionType.getHttpStatus().value())
                 .build(), exceptionType.getHttpStatus());
     }
-
-
-
 }
