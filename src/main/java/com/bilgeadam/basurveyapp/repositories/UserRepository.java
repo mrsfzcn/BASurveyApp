@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UserRepository extends BaseRepository<User,Long> {
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email = ?1")
     Optional<User> findByEmail(String email);
+
+
 }

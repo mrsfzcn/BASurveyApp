@@ -45,4 +45,10 @@ public class ResponseController {
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @GetMapping("/findResponseByClassroomOid")
+    public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
+        return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
+    }
 }
