@@ -28,6 +28,8 @@ public enum ExceptionType {
     RESPONSE_NOT_FOUND(9004, "Response is not Found", BAD_REQUEST),
 
     QUESTION_NOT_FOUND(9005,"Question is not Found", BAD_REQUEST),
+
+    QUESTION_TYPE_NOT_FOUND(9006,"Question type is not Found", BAD_REQUEST),
     /*
         Validation errors.
      */
