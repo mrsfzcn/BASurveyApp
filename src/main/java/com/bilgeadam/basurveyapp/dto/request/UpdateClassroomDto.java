@@ -12,5 +12,5 @@ import java.util.List;
 @Builder
 public class UpdateClassroomDto {
     Long classroomOid;
-    List<User> users;
+    Long userOid;
 }

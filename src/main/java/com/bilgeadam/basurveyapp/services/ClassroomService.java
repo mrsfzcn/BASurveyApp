@@ -1,14 +1,18 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.dto.request.AddUserToClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,22 +33,37 @@ public class ClassroomService {
         }
         Classroom classroom = Classroom.builder()
                 .name(createClassroomDto.getName())
-                .users(userRepository.findAllByEmails(createClassroomDto.getUserEmails())).build();
+                .build();
         classroomRepository.save(classroom);
     }
 
-    public Boolean updateClassroom(UpdateClassroomDto updateClassroomDto) {
-        Optional<Classroom> updateClassroom = classroomRepository.findActiveById(updateClassroomDto.getClassroomOid());
-        if (updateClassroom.isEmpty()) {
+    @Transactional
+    //todo email listesi üzerinden user'a ulaşma
+    public void addUserToClassroom(AddUserToClassroomDto addUserToClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUserToClassroomDto.getClassroomOid());
+        Optional<User> optionalUser = userRepository.findActiveById(addUserToClassroomDto.getUserOid());
+        if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
-        } else {
-            updateClassroom.get().setUsers(updateClassroomDto.getUsers());
-            Classroom classroom = updateClassroom.get();
-            classroomRepository.save(classroom);
-            return true;
+        } else if (optionalUser.isEmpty()) {
+            throw new UserDoesNotExistsException("User is not found");
         }
+        Classroom classroom = optionalClassroom.get();
+        User user = optionalUser.get();
+        classroom.getUsers().add(user);
+        classroomRepository.save(classroom);
     }
 
+    @Transactional
+    public void deleteUserFromClassroom(AddUserToClassroomDto addUserToClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUserToClassroomDto.getClassroomOid());
+        if (optionalClassroom.isEmpty()) {
+            throw new ClassroomNotFoundException("Classroom is not found");
+        }
+        Classroom classroom = optionalClassroom.get();
+        classroom.getUsers().remove(addUserToClassroomDto.getUserOid());
+    }
+
+    //todo dtolara bakılacak
     public ClassroomFindByIdResponseDto findById(Long classroomId) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(classroomId);
         if (optionalClassroom.isEmpty()) {
