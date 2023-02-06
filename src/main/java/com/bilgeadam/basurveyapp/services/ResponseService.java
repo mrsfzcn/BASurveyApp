@@ -4,13 +4,13 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
-import com.bilgeadam.basurveyapp.dto.request.ResponseUpdatableResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
+import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,7 @@ public class ResponseService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final SurveyRepository surveyRepository;
 
 
     public void createResponse(ResponseRequestDto responseRequestDto) {
@@ -98,14 +99,13 @@ public class ResponseService {
         }
     }
 
-    public List<ResponseUpdatableResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+    public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
-        userRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
+        surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
         return responseRepository
                 .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(dto.getSurveyOid()))
                 .stream()
-                .map(response -> ResponseUpdatableResponseDto.builder()
-                        .oid(response.getOid())
+                .map(response -> AnswerResponseDto.builder()
                         .responseString(response.getResponseString())
                         .questionOid(response.getQuestion().getOid())
                         .userOid(response.getUser().getOid())
