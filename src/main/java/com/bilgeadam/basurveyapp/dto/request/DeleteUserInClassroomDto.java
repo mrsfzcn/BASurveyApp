@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class UserActionsInClassroomDto {
+public class DeleteUserInClassroomDto {
 
     private Long classroomOid;
     private String userEmail;

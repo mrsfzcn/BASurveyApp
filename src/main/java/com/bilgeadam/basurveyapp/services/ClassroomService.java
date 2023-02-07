@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.UserActionsInClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
@@ -39,24 +40,25 @@ public class ClassroomService {
     }
 
     @Transactional
-    public void addUserToClassroom(UserActionsInClassroomDto userActionsInClassroomDto) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(userActionsInClassroomDto.getClassroomOid());
-        Optional<User> optionalUser = userRepository.findByEmail(userActionsInClassroomDto.getUserEmail());
+    public void addUserToClassroom(AddUsersToClassroomDto addUsersToClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUsersToClassroomDto.getClassroomOid());
+        List<User> userList = userRepository.findAllByEmails(addUsersToClassroomDto.getUserEmails());
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
-        } else if (optionalUser.isEmpty()) {
+        } else if (userList.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
         Classroom classroom = optionalClassroom.get();
-        User user = optionalUser.get();
-        classroom.getUsers().add(user);
+        for (User user:userList) {
+            classroom.getUsers().add(user);
+        }
         classroomRepository.save(classroom);
     }
 
     @Transactional
-    public void deleteUserFromClassroom(UserActionsInClassroomDto userActionsInClassroomDto) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(userActionsInClassroomDto.getClassroomOid());
-        Optional<User> optionalUser = userRepository.findByEmail(userActionsInClassroomDto.getUserEmail());
+    public void deleteUserFromClassroom(DeleteUserInClassroomDto deleteUserInClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(deleteUserInClassroomDto.getClassroomOid());
+        Optional<User> optionalUser = userRepository.findByEmail(deleteUserInClassroomDto.getUserEmail());
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         } else if (optionalUser.isEmpty()) {

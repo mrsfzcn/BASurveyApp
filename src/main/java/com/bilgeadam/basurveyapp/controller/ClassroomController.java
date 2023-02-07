@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.UserActionsInClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
@@ -8,6 +9,7 @@ import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.ClassroomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,23 +36,23 @@ public class ClassroomController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @PutMapping("/addUserToClassroom")
-    public ResponseEntity<Boolean> addUsers(@RequestBody @Valid UserActionsInClassroomDto userActionsInClassroomDto) {
-        classroomService.addUserToClassroom(userActionsInClassroomDto);
+    public ResponseEntity<Boolean> addUsers(@RequestBody @Valid AddUsersToClassroomDto addUsersToClassroomDto) {
+        classroomService.addUserToClassroom(addUsersToClassroomDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @DeleteMapping("/deleteUserFromClassroom")
-    public ResponseEntity<Boolean> deleteUsers(@RequestBody @Valid UserActionsInClassroomDto userActionsInClassroomDto) {
-        classroomService.deleteUserFromClassroom(userActionsInClassroomDto);
+    public ResponseEntity<Boolean> deleteUsers(@RequestBody @Valid DeleteUserInClassroomDto deleteUserInClassroomDto) {
+        classroomService.deleteUserFromClassroom(deleteUserInClassroomDto);
         return ResponseEntity.ok().build();
     }
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
-    @GetMapping("/findbyid")
-    public ResponseEntity<ClassroomFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
-        return ResponseEntity.ok(classroomService.findById(findByIdRequestDto.getOid()));
+    @GetMapping("/findbyid/{oid}")
+    public ResponseEntity<ClassroomFindByIdResponseDto> findById(@RequestParam Long oid) {
+        return ResponseEntity.ok(classroomService.findById(oid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
