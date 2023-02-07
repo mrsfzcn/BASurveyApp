@@ -1,9 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.AddUserToClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.UserActionsInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.ClassroomService;
@@ -35,15 +34,15 @@ public class ClassroomController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @PutMapping("/addUserToClassroom")
-    public ResponseEntity<Boolean> addUsers(@RequestBody @Valid AddUserToClassroomDto addUserToClassroomDto) {
-        classroomService.addUserToClassroom(addUserToClassroomDto);
+    public ResponseEntity<Boolean> addUsers(@RequestBody @Valid UserActionsInClassroomDto userActionsInClassroomDto) {
+        classroomService.addUserToClassroom(userActionsInClassroomDto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @DeleteMapping("/deleteUserFromClassroom")
-    public ResponseEntity<Boolean> deleteUsers(@RequestBody @Valid AddUserToClassroomDto addUserToClassroomDto) {
-        classroomService.deleteUserFromClassroom(addUserToClassroomDto);
+    public ResponseEntity<Boolean> deleteUsers(@RequestBody @Valid UserActionsInClassroomDto userActionsInClassroomDto) {
+        classroomService.deleteUserFromClassroom(userActionsInClassroomDto);
         return ResponseEntity.ok().build();
     }
 
