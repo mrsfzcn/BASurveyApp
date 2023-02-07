@@ -1,10 +1,10 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.AddUserToClassroomDto;
+import com.bilgeadam.basurveyapp.dto.request.UserActionsInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
-import com.bilgeadam.basurveyapp.dto.request.UpdateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomUsersResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
@@ -26,6 +26,7 @@ public class ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void createClassroom(CreateClassroomDto createClassroomDto) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveByName(createClassroomDto.getName());
         if (optionalClassroom.isPresent()) {
@@ -38,10 +39,9 @@ public class ClassroomService {
     }
 
     @Transactional
-    //todo email listesi üzerinden user'a ulaşma
-    public void addUserToClassroom(AddUserToClassroomDto addUserToClassroomDto) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUserToClassroomDto.getClassroomOid());
-        Optional<User> optionalUser = userRepository.findActiveById(addUserToClassroomDto.getUserOid());
+    public void addUserToClassroom(UserActionsInClassroomDto userActionsInClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(userActionsInClassroomDto.getClassroomOid());
+        Optional<User> optionalUser = userRepository.findByEmail(userActionsInClassroomDto.getUserEmail());
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         } else if (optionalUser.isEmpty()) {
@@ -54,37 +54,59 @@ public class ClassroomService {
     }
 
     @Transactional
-    public void deleteUserFromClassroom(AddUserToClassroomDto addUserToClassroomDto) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUserToClassroomDto.getClassroomOid());
+    public void deleteUserFromClassroom(UserActionsInClassroomDto userActionsInClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(userActionsInClassroomDto.getClassroomOid());
+        Optional<User> optionalUser = userRepository.findByEmail(userActionsInClassroomDto.getUserEmail());
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
+        } else if (optionalUser.isEmpty()) {
+            throw new UserDoesNotExistsException("User is not found");
         }
         Classroom classroom = optionalClassroom.get();
-        classroom.getUsers().remove(addUserToClassroomDto.getUserOid());
+        User user = optionalUser.get();
+        classroom.getUsers().remove(user);
+        classroomRepository.save(classroom);
     }
 
-    //todo dtolara bakılacak
+    @Transactional
     public ClassroomFindByIdResponseDto findById(Long classroomId) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(classroomId);
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         }
+        Classroom classroom = optionalClassroom.get();
+        List<ClassroomUsersResponseDto> users = new ArrayList<>();
+        for (User user : classroom.getUsers()) {
+            ClassroomUsersResponseDto classroomUsersResponseDto = ClassroomUsersResponseDto.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .role(String.valueOf(user.getRole()))
+                    .build();
+            users.add(classroomUsersResponseDto);
+        }
         return ClassroomFindByIdResponseDto.builder()
-                .name(optionalClassroom.get().getName())
-                .users(optionalClassroom.get().getUsers())
+                .name(classroom.getName())
+                .users(users)
                 .build();
     }
 
+    @Transactional
     public List<AllClassroomsResponseDto> findAll() {
-        List<Classroom> findAllList = classroomRepository.findAllActive();
-        List<AllClassroomsResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(classroom -> responseDtoList.add(AllClassroomsResponseDto.builder()
-                .name(classroom.getName())
-                .users(classroom.getUsers())
-                .build()));
-        return responseDtoList;
+        Optional<List<Classroom>> optionalClassrooms = Optional.ofNullable(classroomRepository.findAllActive());
+        if (optionalClassrooms.isEmpty()) {
+            throw new ClassroomNotFoundException("Classroom is not found");
+        }
+        List<AllClassroomsResponseDto> allClassroomsResponseDtoList = new ArrayList<>();
+        for (Classroom classroom : optionalClassrooms.get()) {
+            AllClassroomsResponseDto allClassroomsResponseDto = AllClassroomsResponseDto.builder()
+                    .name(classroom.getName())
+                    .build();
+            allClassroomsResponseDtoList.add(allClassroomsResponseDto);
+        }
+        return allClassroomsResponseDtoList;
     }
 
+    @Transactional
     public Boolean delete(Long classroomId) {
         Optional<Classroom> deleteClassroom = classroomRepository.findActiveById(classroomId);
         if (deleteClassroom.isEmpty()) {
