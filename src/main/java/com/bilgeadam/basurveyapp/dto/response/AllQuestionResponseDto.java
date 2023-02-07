@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class AllQuestionResponseDto {
+    Long questionOid;
     String questionString;
     Integer order;
 }

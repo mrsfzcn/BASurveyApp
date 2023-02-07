@@ -23,25 +23,38 @@ public class EmailService {
 
 
     private static final String PASSWORD_RESET_HTML_BODY =
-        "<h1>BilgeAdam Akademi Değerlendirme Anketi</h1>" +
-        "<a href='http://localhost:80/survey/$tokenValue'>" +
-            "Buraya link değişecek!" +
-        "</a>" +
-        "<br/><br/>" +
-        "Bizi tercih ettiğiniz için teşekkür ederiz!";
+            "<h1>BilgeAdam Değerlendirme Anketi</h1>" +
+                    "<a href='http://localhost/api/v1/question/getsurveyquestions/$tokenValue'>" +
+                    "Ankete gitmek için tıklayın!" +
+                    "</a>" +
+                    "<br/><br/>" +
+                    "Bizi tercih ettiğiniz için teşekkür ederiz!";
 
 
-    public void sendSurveyMail(Map<String,String> mailTokenMap) throws MessagingException {
+//    public void sendSurveyMail(Map<String,String> mailTokenMap) throws MessagingException {
+//
+//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+//
+//        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
+//            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
+//            helper.setTo(entry.getKey());
+//            helper.setSubject(SUBJECT);
+//            helper.setFrom(FROM);
+//            javaMailSender.send(helper.getMimeMessage());
+//        }
+//    }
+
+    public void sendSurveyMail(String email, String jwtToken) throws MessagingException {
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
-            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
-            helper.setTo(entry.getKey());
-            helper.setSubject(SUBJECT);
-            helper.setFrom(FROM);
-            javaMailSender.send(helper.getMimeMessage());
-        }
+        helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", jwtToken), true);
+        helper.setTo(email);
+        helper.setSubject(SUBJECT);
+        helper.setFrom(FROM);
+
+        javaMailSender.send(helper.getMimeMessage());
     }
 }

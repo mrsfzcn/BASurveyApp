@@ -109,7 +109,7 @@ public class JwtService {
 
     public Long extractSurveyOid(String jwtToken) {
         final Claims claims = extractAllClaims(jwtToken);
-        return (Long) claims.get("surveyOid");
+        return Long.valueOf(claims.get("surveyOid").toString());
     }
 
     private Long calculateDayMiliseconds(Integer day) {

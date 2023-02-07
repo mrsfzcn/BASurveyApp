@@ -34,50 +34,60 @@ public class SurveyController {
     ResponseEntity<List<Survey>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/page")
     ResponseEntity<Page<Survey>> getSurveyPage(Pageable pageable) {
         return ResponseEntity.ok(surveyService.getSurveyPage(pageable));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/{surveyId}")
-    ResponseEntity<Survey> findById(@PathVariable("surveyId") Long surveyId){
+    ResponseEntity<Survey> findById(@PathVariable("surveyId") Long surveyId) {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping ("/update/{surveyId}")
-    ResponseEntity<Survey> update(@PathVariable("surveyId") Long surveyId, @RequestBody SurveyUpdateRequestDto dto){
+    @PutMapping("/update/{surveyId}")
+    ResponseEntity<Survey> update(@PathVariable("surveyId") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
         return ResponseEntity.ok(surveyService.update(surveyId, dto));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping ("/delete/{surveyId}")
-    ResponseEntity<Void> delete(@PathVariable("surveyId") Long surveyId){
+    @DeleteMapping("/delete/{surveyId}")
+    ResponseEntity<Void> delete(@PathVariable("surveyId") Long surveyId) {
         surveyService.delete(surveyId);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
-    ResponseEntity<Survey> responseSurveyQuestions(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto){
-        return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId,dto));
+    ResponseEntity<Survey> responseSurveyQuestions(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto) {
+        return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId, dto));
     }
-//    @PutMapping("/update-survey-response/{surveyId}")
-//    @PreAuthorize("hasRole('STUDENT')")
-//    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto){
-//        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId,dto));
-//    }
-//    @PutMapping("/{surveyId}/assign/{classroomId}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-//    ResponseEntity<Survey> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId,@PathVariable("classroomId") Long classroomId){
-//        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
-//    }
+
+    @PutMapping("/update-survey-response/{surveyId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
+        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId, dto));
+    }
+
+    @PutMapping("/assign/{surveyId}/{classroomId}/{days}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    ResponseEntity<Boolean> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId, @PathVariable("classroomId") Long classroomId, @PathVariable("days") Integer days) throws MessagingException {
+        surveyService.assignSurveyToClassroom(surveyId, classroomId, days);
+        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId, classroomId, days));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
     @GetMapping("/findSurveyByClassroomOid")
-    ResponseEntity <List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid){
+    ResponseEntity<List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
     }
 

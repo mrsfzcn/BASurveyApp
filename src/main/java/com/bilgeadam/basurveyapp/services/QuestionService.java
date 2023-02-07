@@ -1,10 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
@@ -12,6 +14,7 @@ import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +25,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTypeRepository questionTypeRepository;
     private final SurveyRepository surveyRepository;
+    private final JwtService jwtService;
 
     public void createQuestion(CreateQuestionDto createQuestionDto) {
         // TODO check if exists
@@ -73,6 +77,7 @@ public class QuestionService {
         List<AllQuestionResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(question ->
                 responseDtoList.add(AllQuestionResponseDto.builder()
+                        .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
                         .build()));
@@ -90,5 +95,23 @@ public class QuestionService {
             questionRepository.softDelete(question);
             return true;
         }
+    }
+
+    public List<AllQuestionResponseDto> findAllSurveyQuestions(String token) {
+        if (!jwtService.isSurveyEmailTokenValid(token)) {
+            throw new RuntimeException("Invalid token.");
+        }
+        Long surveyOid = jwtService.extractSurveyOid(token);
+        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        List<Question> questions = survey.getQuestions();
+        List<AllQuestionResponseDto> questionsDto = new ArrayList<>();
+        for (Question question : questions) {
+            questionsDto.add(AllQuestionResponseDto.builder()
+                    .questionOid(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .order(question.getOrder())
+                    .build());
+        }
+        return questionsDto;
     }
 }

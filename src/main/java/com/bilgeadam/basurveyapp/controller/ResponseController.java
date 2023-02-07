@@ -44,8 +44,7 @@ public class ResponseController {
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
     }
-    @PutMapping("/saveall/{token}")
-    @PreAuthorize("hasRole('STUDENT')")
+    @PutMapping("/savesurveyanswers/{token}")
     public ResponseEntity<Boolean> saveAll(@RequestParam @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));//tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
     }

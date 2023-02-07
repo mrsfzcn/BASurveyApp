@@ -54,4 +54,8 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.delete(questionId));
     }
 
+    @GetMapping("/getsurveyquestions/{token}")
+    public ResponseEntity<List<AllQuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
+        return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
+    }
 }
