@@ -90,6 +90,12 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(QUESTION_NOT_FOUND);
     }
     @ResponseBody
+    @ExceptionHandler(QuestionTypeNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionTypeNotFoundException(QuestionTypeNotFoundException exception) {
+        log.warn("Question type is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTION_TYPE_NOT_FOUND);
+    }
+    @ResponseBody
     @ExceptionHandler(AlreadyAnsweredSurveyException.class)
     public ResponseEntity<ExceptionResponse> handleAlreadyAnsweredSurveyException(AlreadyAnsweredSurveyException exception) {
         log.warn("User has already answered. {}", exception.getMessage());
