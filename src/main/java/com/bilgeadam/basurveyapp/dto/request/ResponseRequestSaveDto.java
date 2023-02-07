@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class ResponseRequestSaveDto {
 
-    String responseString;
-    Long questionOid;
+    private String responseString;
+    private Long questionOid;
 }
