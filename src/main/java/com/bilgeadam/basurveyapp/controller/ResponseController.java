@@ -18,7 +18,7 @@ public class ResponseController {
     private final ResponseService responseService;
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestDto dto) {
+    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
         responseService.createResponse(dto);
         return ResponseEntity.ok().build();
     }

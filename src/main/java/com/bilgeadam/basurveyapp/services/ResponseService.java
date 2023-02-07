@@ -15,7 +15,11 @@ import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,10 +39,23 @@ public class ResponseService {
     private final SurveyRepository surveyRepository;
 
 
-    public void createResponse(ResponseRequestDto responseRequestDto) {
-        // The same answer can be recreated over and over again. There not will be exist checking
+    public void createResponse(ResponseRequestSaveDto responseRequestDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        Long userOid = (Long) authentication.getCredentials();
+        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
         Response response = Response.builder()
                 .responseString(responseRequestDto.getResponseString())
+                .question(questionRepository
+                        .findActiveById(responseRequestDto
+                                .getQuestionOid()).orElseThrow(()->new ResourceNotFoundException("question not found")))
+                .user(userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")))
                 .build();
         responseRepository.save(response);
     }
