@@ -34,8 +34,7 @@ public class QuestionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
-        questionService.updateQuestion(updateQuestionDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")

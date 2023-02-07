@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 public class CreateQuestionDto {
     String questionString;
-    Survey surveyOid;
-    QuestionType questionTypeOid;
+    Long surveyOid;
+    Long questionTypeOid;
     Integer order;
 }

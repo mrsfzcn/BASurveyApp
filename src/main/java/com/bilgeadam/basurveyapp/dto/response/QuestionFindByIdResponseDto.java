@@ -12,6 +12,6 @@ import lombok.*;
 public class QuestionFindByIdResponseDto {
     String questionString;
     Integer order;
-    Survey surveyId;
-    QuestionType questionTypeId;
+    String surveyTitle;
+    String questionType;
 }

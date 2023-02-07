@@ -1,9 +1,6 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -95,6 +92,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleQuestionNotFoundException(QuestionNotFoundException exception) {
         log.warn("Question is not found. {}", exception.getMessage());
         return createExceptionInfoResponse(QUESTION_NOT_FOUND);
+    }
+    @ResponseBody
+    @ExceptionHandler(QuestionTypeNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionTypeNotFoundException(QuestionTypeNotFoundException exception) {
+        log.warn("QuestionType is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTION_TYPE_NOT_FOUND);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyNotFoundException(SurveyNotFoundException exception) {
+        log.warn("Survey is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(SURVEY_NOT_FOUND);
     }
 
 
