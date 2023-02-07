@@ -36,14 +36,6 @@ public class Survey extends BaseEntity {
     @Column(name = "course_topic")
     private String courseTopic;
 
-    @Column(name = "start_Date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startDate;
-
-    @Column(name = "end_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date endDate;
-
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "surveys_classrooms",
         joinColumns = @JoinColumn(name = "survey_oid"),

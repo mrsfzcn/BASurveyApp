@@ -86,14 +86,14 @@ public class JwtService {
         Email Related Token Methods!
      */
 
-    public String generateSurveyEmailToken(Long surveyOid, String userEmail, Date surveyDuration) {
+    public String generateSurveyEmailToken(Long surveyOid, String userEmail, Integer day) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("surveyOid", surveyOid);
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userEmail)
                 .setIssuedAt(new Date())
-                .setExpiration(surveyDuration)
+                .setExpiration(new Date(System.currentTimeMillis() + calculateDayMiliseconds(day)))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -110,5 +110,9 @@ public class JwtService {
     public Long extractSurveyOid(String jwtToken) {
         final Claims claims = extractAllClaims(jwtToken);
         return (Long) claims.get("surveyOid");
+    }
+
+    private Long calculateDayMiliseconds(Integer day) {
+        return day * 86_400_000L;
     }
 }

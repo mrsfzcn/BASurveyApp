@@ -54,8 +54,6 @@ public class SurveyService {
 
         Survey survey = Survey.builder()
                 .surveyTitle(dto.getSurveyTitle())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
                 .questions(dto.getQuestions())
                 .courseTopic(dto.getCourseTopic())
                 .build();
@@ -137,53 +135,52 @@ public class SurveyService {
 
         return surveyRepository.save(survey);
     }
-    public Survey updateSurveyAnswers(Long surveyId, SurveyUpdateResponseRequestDto dto) {
-
-        Survey survey = surveyRepository.findActiveById(surveyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
-        if(survey.getEndDate().before(new Date())){
-            throw new ResourceNotFoundException("Survey is Expired.");
-        }
-        if(Boolean.FALSE.equals(crossCheckSurveyQuestionsAndUpdateResponses(survey,dto.getUpdateResponseMap()))){
-            throw new QuestionsAndResponsesDoesNotMatchException("Questions does not match with responses.");
-        }
-        Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
-        Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
-        List<Response> currentUserResponses = survey.getQuestions()
-            .stream()
-            .flatMap(question -> question.getResponses().stream())
-            .filter(response -> response.getUser().getOid().equals(currentUserId))
-            .collect(Collectors.toList());
-
-        currentUserResponses
-            .parallelStream()
-            .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
-            .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
-        responseRepository.saveAll(currentUserResponses);
-        return survey;
-    }
-    public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) {
-
-        Survey survey = surveyRepository.findActiveById(surveyId)
-            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
-        if(survey.getEndDate().before(new Date())){
-            throw new ResourceNotFoundException("Survey is Expired.");
-        }
-        Classroom classroom = classroomRepository.findActiveById(classroomId)
-            .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
-
-        survey.getClassrooms().add(classroom);
-
-        /**
-         * Email service will be scheduled with accordance startDate of Survey.
-         */
-//        Map<String,String> emailTokenMap = classroom.getUsers()
+//    public Survey updateSurveyAnswers(Long surveyId, SurveyUpdateResponseRequestDto dto) {
+//        Survey survey = surveyRepository.findActiveById(surveyId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+//        if(survey.getEndDate().before(new Date())){
+//            throw new ResourceNotFoundException("Survey is Expired.");
+//        }
+//        if(Boolean.FALSE.equals(crossCheckSurveyQuestionsAndUpdateResponses(survey,dto.getUpdateResponseMap()))){
+//            throw new QuestionsAndResponsesDoesNotMatchException("Questions does not match with responses.");
+//        }
+//        Optional<Long> currentUserIdOptional= Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
+//        Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
+//        List<Response> currentUserResponses = survey.getQuestions()
+//            .stream()
+//            .flatMap(question -> question.getResponses().stream())
+//            .filter(response -> response.getUser().getOid().equals(currentUserId))
+//            .collect(Collectors.toList());
+//
+//        currentUserResponses
 //            .parallelStream()
-//            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
-//        emailService.sendSurveyMail(emailTokenMap);
-
-        return surveyRepository.save(survey);
-    }
+//            .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
+//            .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
+//        responseRepository.saveAll(currentUserResponses);
+//        return survey;
+//    }
+//    public Survey assignSurveyToClassroom(Long surveyId, Long classroomId) {
+//
+//        Survey survey = surveyRepository.findActiveById(surveyId)
+//            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+//        if(survey.getEndDate().before(new Date())){
+//            throw new ResourceNotFoundException("Survey is Expired.");
+//        }
+//        Classroom classroom = classroomRepository.findActiveById(classroomId)
+//            .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
+//
+//        survey.getClassrooms().add(classroom);
+//
+//        /**
+//         * Email service will be scheduled with accordance startDate of Survey.
+//         */
+////        Map<String,String> emailTokenMap = classroom.getUsers()
+////            .parallelStream()
+////            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
+////        emailService.sendSurveyMail(emailTokenMap);
+//
+//        return surveyRepository.save(survey);
+//    }
 
     public List<Survey> findByClassroomOid(Long classroomOid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RegisterRequestDto {
     @Size(min = 3, message = "Email must be valid.")
-    @Email(message = "Email must be valid.")
+    @Email(message = "Email must be valid.", regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     @NotBlank(message = "Email must be valid.")
     @NotNull(message = "Email must be valid.")
     private String email;

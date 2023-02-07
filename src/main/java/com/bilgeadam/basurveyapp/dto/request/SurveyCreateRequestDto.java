@@ -9,8 +9,6 @@ import java.util.List;
 @Getter
 public class SurveyCreateRequestDto {
     private String surveyTitle;
-    private Date startDate;
-    private Date endDate;
     private List<Question> questions;
     private String courseTopic;
 }

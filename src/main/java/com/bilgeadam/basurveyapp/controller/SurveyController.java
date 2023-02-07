@@ -65,16 +65,16 @@ public class SurveyController {
     ResponseEntity<Survey> responseSurveyQuestions(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto){
         return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId,dto));
     }
-    @PutMapping("/update-survey-response/{surveyId}")
-    @PreAuthorize("hasRole('STUDENT')")
-    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto){
-        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId,dto));
-    }
-    @PutMapping("/{surveyId}/assign/{classroomId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    ResponseEntity<Survey> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId,@PathVariable("classroomId") Long classroomId){
-        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
-    }
+//    @PutMapping("/update-survey-response/{surveyId}")
+//    @PreAuthorize("hasRole('STUDENT')")
+//    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto){
+//        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId,dto));
+//    }
+//    @PutMapping("/{surveyId}/assign/{classroomId}")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    ResponseEntity<Survey> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId,@PathVariable("classroomId") Long classroomId){
+//        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId,classroomId));
+//    }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
     @GetMapping("/findSurveyByClassroomOid")
     ResponseEntity <List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid){
