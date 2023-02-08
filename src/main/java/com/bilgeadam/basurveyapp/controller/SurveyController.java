@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
@@ -85,7 +86,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
     @GetMapping("/findSurveyByClassroomOid")
-    ResponseEntity<List<Survey>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
+    ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
     }
 

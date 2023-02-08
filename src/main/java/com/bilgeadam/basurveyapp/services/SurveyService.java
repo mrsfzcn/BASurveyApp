@@ -3,6 +3,9 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
@@ -28,10 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -219,7 +219,7 @@ public class SurveyService {
         return true;
     }
 
-    public List<Survey> findByClassroomOid(Long classroomOid) {
+    public List<SurveyByClassroomResponseDto> findByClassroomOid(Long classroomOid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("authentication failure.");
@@ -248,8 +248,10 @@ public class SurveyService {
                         .map(BaseEntity::getOid)
                         .toList().contains(classroomOptional.get().getOid()))
                 .toList();
-        return surveysWithTheOidsOfTheClasses;
+
+        return mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
+
 
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
 
@@ -271,4 +273,41 @@ public class SurveyService {
 
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
     }
+
+
+    // survey listesini -- survey dto list'e mapleyen method
+    public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
+        return surveys.stream()
+                .map(survey -> {
+                    SurveyByClassroomResponseDto surveyDto = new SurveyByClassroomResponseDto();
+                    surveyDto.setSurveyOid(survey.getOid());
+                    surveyDto.setSurveyTitle(survey.getSurveyTitle());
+                    surveyDto.setCourseTopic(survey.getCourseTopic());
+
+                    List<SurveyByClassroomQuestionsResponseDto> questionDtoList = survey.getQuestions().stream()
+                            .map(question -> {
+                                SurveyByClassroomQuestionsResponseDto questionDto = new SurveyByClassroomQuestionsResponseDto();
+                                questionDto.setQuestionOid(question.getOid());
+                                questionDto.setQuestionString(question.getQuestionString());
+
+                                List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList = question.getResponses().stream()
+                                        .map(answer -> {
+                                            SurveyByClassroomQuestionAnswersResponseDto responseDto = new SurveyByClassroomQuestionAnswersResponseDto();
+                                            responseDto.setResponseOid(answer.getOid());
+                                            responseDto.setResponseString(answer.getResponseString());
+                                            return responseDto;
+                                        })
+                                        .collect(Collectors.toList());
+
+                                questionDto.setResponseDtoList(responseDtoList);
+                                return questionDto;
+                            })
+                            .collect(Collectors.toList());
+
+                    surveyDto.setQuestionDtoList(questionDtoList);
+                    return surveyDto;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

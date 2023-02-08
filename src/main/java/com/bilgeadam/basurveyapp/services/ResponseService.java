@@ -134,28 +134,28 @@ public class ResponseService {
                         .build()
                 ).collect(Collectors.toList());
     }
-
-    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
-        List<Survey> surveyList = surveyService.findByClassroomOid(classroomOid);
-        if (surveyList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding survey list");
-        }
-        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
-        ).toList();
-        if (questionList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding questions");
-        }
-        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
-        if (responseList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
-        }
-
-        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
-        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
-                .responseString(r.getResponseString())
-                .userOid(r.getUser().getOid())
-                .questionOid(r.getQuestion().getOid())
-                .build()));
-        return answerResponseDtoList;
-    }
+//     Bu methodu düzelteceğim -yusuf
+//    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
+//        List<Survey> surveyList = surveyService.findByClassroomOid(classroomOid);
+//        if (surveyList.isEmpty()) {
+//            throw new ResourceNotFoundException("There's a error while finding survey list");
+//        }
+//        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
+//        ).toList();
+//        if (questionList.isEmpty()) {
+//            throw new ResourceNotFoundException("There's a error while finding questions");
+//        }
+//        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
+//        if (responseList.isEmpty()) {
+//            throw new ResourceNotFoundException("There's a error while finding response");
+//        }
+//
+//        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
+//        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
+//                .responseString(r.getResponseString())
+//                .userOid(r.getUser().getOid())
+//                .questionOid(r.getQuestion().getOid())
+//                .build()));
+//        return answerResponseDtoList;
+//    }
 }
