@@ -35,6 +35,7 @@ public enum ExceptionType {
     USER_INSUFFICIENT_ANSWER(9010,"User must answer all the questions.",BAD_REQUEST),
     QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH(9011,"Questions and responses does not matches",BAD_REQUEST),
     QUESTION_TYPE_NOT_FOUND(9012,"Question type is not Found", BAD_REQUEST),
+      SURVEY_NOT_FOUND(9013,"Survey is not found", BAD_REQUEST),
     /*
         Validation errors.
      */

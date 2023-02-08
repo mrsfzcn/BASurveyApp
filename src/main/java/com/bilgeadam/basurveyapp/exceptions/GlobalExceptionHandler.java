@@ -111,6 +111,18 @@ public class GlobalExceptionHandler {
         log.warn("User deleted or doesnt exist. {}", exception.getMessage());
         return createExceptionInfoResponse(USER_DOES_NOT_EXIST, exception);
     }
+    @ResponseBody
+    @ExceptionHandler(QuestionTypeNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionTypeNotFoundException(QuestionTypeNotFoundException exception) {
+        log.warn("QuestionType is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(QUESTION_TYPE_NOT_FOUND);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyNotFoundException(SurveyNotFoundException exception) {
+        log.warn("Survey is not found. {}", exception.getMessage());
+        return createExceptionInfoResponse(SURVEY_NOT_FOUND);
+    }
 
     @ResponseBody
     @ExceptionHandler(ClassroomNotFoundException.class)

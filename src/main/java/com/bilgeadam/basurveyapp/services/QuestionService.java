@@ -7,7 +7,10 @@ import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
@@ -26,16 +29,14 @@ public class QuestionService {
     private final SurveyRepository surveyRepository;
     private final JwtService jwtService;
 
+
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        // TODO check if exists
         Question question = Question.builder()
                 .questionString(createQuestionDto.getQuestionString())
-                .questionType(
-                        questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid())
-                                .orElseThrow(() -> new ResourceNotFoundException("Question type does not exists")))
-                .survey(
-                        surveyRepository.findActiveById(createQuestionDto.getSurveyOid())
-                                .orElseThrow(() -> new ResourceNotFoundException("Survey does not exists")))
+                .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                        () -> new QuestionTypeNotFoundException("Question type is not found")))
+                .survey(surveyRepository.findActiveById(createQuestionDto.getSurveyOid()).orElseThrow(
+                        () -> new SurveyNotFoundException("Survey is not found.")))
                 .order(createQuestionDto.getOrder())
                 .build();
         questionRepository.save(question);
@@ -44,10 +45,10 @@ public class QuestionService {
 
 
     public Boolean updateQuestion(UpdateQuestionDto updateQuestionDto) {
+
         Optional<Question> updateQuestion = questionRepository.findActiveById(updateQuestionDto.getQuestionOid());
         if (updateQuestion.isEmpty()) {
-            // TODO
-            throw new RuntimeException("Question is not found");
+            throw new QuestionNotFoundException("Question is not found to update");
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
             Question question = updateQuestion.get();
@@ -59,15 +60,18 @@ public class QuestionService {
     public QuestionFindByIdResponseDto findById(Long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findActiveById(questionId);
         if (optionalQuestion.isEmpty()) {
-            //todo exception
-            throw new RuntimeException("Question is not found");
+            throw new QuestionNotFoundException("Question is not found");
         } else {
+
             return QuestionFindByIdResponseDto.builder()
                     .questionString(optionalQuestion.get().getQuestionString())
-                    .surveyId(optionalQuestion.get().getSurvey())
-                    .questionTypeId(optionalQuestion.get().getQuestionType())
+                    .surveyTitle(surveyRepository.findActiveById(optionalQuestion.get().getSurvey().getOid()).get().getSurveyTitle()
+                            .describeConstable().orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
+                    .questionType(questionTypeRepository.findActiveById(optionalQuestion.get().getQuestionType().getOid()).get().getQuestionType()
+                            .describeConstable().orElseThrow(() -> new QuestionTypeNotFoundException("Question type not found")))
                     .order(optionalQuestion.get().getOrder())
                     .build();
+
         }
 
     }
@@ -88,8 +92,7 @@ public class QuestionService {
 
         Optional<Question> deleteQuestion = questionRepository.findActiveById(questionId);
         if (deleteQuestion.isEmpty()) {
-            // TODO exception
-            throw new RuntimeException("Question is not found");
+            throw new QuestionNotFoundException("Question not found to delete");
         } else {
             Question question = deleteQuestion.get();
             questionRepository.softDelete(question);
