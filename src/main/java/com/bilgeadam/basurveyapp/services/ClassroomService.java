@@ -1,9 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
-import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
-import com.bilgeadam.basurveyapp.dto.response.AllClassroomsResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomUsersResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class ClassroomService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void createClassroom(CreateClassroomDto createClassroomDto) {
+    public Boolean createClassroom(CreateClassroomDto createClassroomDto) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveByName(createClassroomDto.getName());
         if (optionalClassroom.isPresent()) {
             throw new ClassroomExistException("Classroom already exists");
@@ -37,11 +37,12 @@ public class ClassroomService {
                 .name(createClassroomDto.getName())
                 .build();
         classroomRepository.save(classroom);
+        return true;
     }
 
     @Transactional
-    public void addUserToClassroom(AddUsersToClassroomDto addUsersToClassroomDto) {
-        Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(addUsersToClassroomDto.getClassroomOid());
+    public Boolean addUserToClassroom(AddUsersToClassroomDto addUsersToClassroomDto) {
+        Optional<Classroom> optionalClassroom = classroomRepository.findActiveByName(addUsersToClassroomDto.getClassroomName());
         List<User> userList = userRepository.findAllByEmails(addUsersToClassroomDto.getUserEmails());
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
@@ -53,6 +54,7 @@ public class ClassroomService {
             classroom.getUsers().add(user);
         }
         classroomRepository.save(classroom);
+        return true;
     }
 
     @Transactional
@@ -93,19 +95,20 @@ public class ClassroomService {
     }
 
     @Transactional
-    public List<AllClassroomsResponseDto> findAll() {
+    public List<String> findAll() {
         Optional<List<Classroom>> optionalClassrooms = Optional.ofNullable(classroomRepository.findAllActive());
         if (optionalClassrooms.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         }
-        List<AllClassroomsResponseDto> allClassroomsResponseDtoList = new ArrayList<>();
-        for (Classroom classroom : optionalClassrooms.get()) {
-            AllClassroomsResponseDto allClassroomsResponseDto = AllClassroomsResponseDto.builder()
-                    .name(classroom.getName())
-                    .build();
-            allClassroomsResponseDtoList.add(allClassroomsResponseDto);
-        }
-        return allClassroomsResponseDtoList;
+//        List<AllClassroomsResponseDto> allClassroomsResponseDtoList = new ArrayList<>();
+//        for (Classroom classroom : optionalClassrooms.get()) {
+//            AllClassroomsResponseDto allClassroomsResponseDto = AllClassroomsResponseDto.builder()
+//                    .oid(classroom.getOid())
+//                    .name(classroom.getName())
+//                    .build();
+//            allClassroomsResponseDtoList.add(allClassroomsResponseDto);
+//        }
+        return optionalClassrooms.get().stream().map(Classroom::getName).collect(Collectors.toList());
     }
 
     @Transactional

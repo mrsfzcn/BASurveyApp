@@ -11,6 +11,7 @@ import lombok.*;
 @Setter
 @Builder
 public class AllClassroomsResponseDto {
+    Long oid;
     String name;
 
 }

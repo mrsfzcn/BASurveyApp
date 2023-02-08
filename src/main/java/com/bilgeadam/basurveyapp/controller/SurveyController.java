@@ -1,12 +1,11 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
-    ResponseEntity<List<Survey>> getSurveyList() {
+    ResponseEntity<List<SurveyResponseDto>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
     }
 
@@ -49,7 +48,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    ResponseEntity<Survey> create(@RequestBody SurveyCreateRequestDto dto) {
+    ResponseEntity<Boolean> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
 
@@ -66,11 +65,6 @@ public class SurveyController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/response/{surveyId}")
-    @PreAuthorize("hasRole('STUDENT')")
-    ResponseEntity<Survey> responseSurveyQuestions(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyResponseQuestionRequestDto dto) {
-        return ResponseEntity.ok(surveyService.responseSurveyQuestions(surveyId, dto));
-    }
 
     @PutMapping("/update-survey-response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
@@ -78,11 +72,15 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId, dto));
     }
 
-    @PutMapping("/assign/{surveyId}/{classroomId}/{days}")
+    @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    ResponseEntity<Boolean> assignSurveyToClassroom(@PathVariable("surveyId") Long surveyId, @PathVariable("classroomId") Long classroomId, @PathVariable("days") Integer days) throws MessagingException {
-        surveyService.assignSurveyToClassroom(surveyId, classroomId, days);
-        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyId, classroomId, days));
+    ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
+        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
+    }
+
+    @PostMapping("/response/{token}")
+    ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid SurveyResponseQuestionRequestDto dto, HttpServletRequest request) {
+        return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dto, request));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")

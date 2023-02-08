@@ -25,7 +25,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/list")
-    ResponseEntity<List<User>> getUserList() {
+    ResponseEntity<List<String>> getUserList() {
         return ResponseEntity.ok(userService.getUserList());
     }
 

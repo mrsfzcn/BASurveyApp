@@ -17,10 +17,10 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public List<User> getUserList() {
+    public List<String> getUserList() {
         // getCurrentUser()
         // user check
-        return userRepository.findAllActive();
+        return userRepository.findStudentEmails();
     }
 
     public Page<User> getUserPage(Pageable pageable) {

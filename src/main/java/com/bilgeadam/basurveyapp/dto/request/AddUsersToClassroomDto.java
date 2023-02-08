@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Builder
 public class AddUsersToClassroomDto {
-    private Long classroomOid;
+    private String classroomName;
     private List<String> userEmails;
 
 }

@@ -7,15 +7,15 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.exceptions.custom.*;
-import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
+import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -105,12 +105,12 @@ public class ResponseService {
     }
 
     public Boolean saveAll(String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList) {
-        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(token));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
+        User user = userRepository.findByEmail(jwtService.extractEmail(token)).orElseThrow(() -> new ResourceNotFoundException("No such user."));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
 
-        if (user.isPresent() && !responseRepository.isSurveyAnsweredByUser(user.orElseThrow(() -> new AlreadyAnsweredSurveyException("User has already answered.")).getOid())) {
+        if (!responseRepository.isSurveyAnsweredByUser(user.getOid())) {
             responseRequestSaveDtoList.forEach(response -> { //gelenleri listeye kaydetmek için for each kullanıldı.
                 responseRepository.save(Response.builder()
-                        .user(user.get()) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
+                        .user(user) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
                         .responseString(response.getResponseString())
                         .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("Question not found"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a
                         .build());

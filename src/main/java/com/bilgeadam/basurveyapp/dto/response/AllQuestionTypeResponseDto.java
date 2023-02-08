@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 public class AllQuestionTypeResponseDto {
+    Long questionTypeId;
     @NotNull
     String questionType;
 }
