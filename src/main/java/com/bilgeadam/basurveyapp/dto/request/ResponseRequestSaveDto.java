@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.Question;
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,6 +9,6 @@ import lombok.*;
 @Builder
 public class ResponseRequestSaveDto {
 
-    String responseString;
-    Long questionOid;
+    private String responseString;
+    private Long questionOid;
 }

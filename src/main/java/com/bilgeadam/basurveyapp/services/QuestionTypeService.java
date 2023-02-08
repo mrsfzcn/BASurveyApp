@@ -56,8 +56,9 @@ public class QuestionTypeService {
         List<AllQuestionTypeResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(questionType ->
                 responseDtoList.add(AllQuestionTypeResponseDto.builder()
-                .questionType(questionType.getQuestionType())
-                .build()));
+                        .questionTypeId(questionType.getOid())
+                        .questionType(questionType.getQuestionType())
+                        .build()));
         return responseDtoList;
     }
 

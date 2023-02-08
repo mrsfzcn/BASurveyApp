@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.UserCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,32 +23,32 @@ public class UserController {
         return "hello";
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/list")
-    ResponseEntity<List<User>> getUserList() {
+    ResponseEntity<List<String>> getUserList() {
         return ResponseEntity.ok(userService.getUserList());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/page")
     ResponseEntity<Page<User>> getUserPage(Pageable pageable) {
         return ResponseEntity.ok(userService.getUserPage(pageable));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/{userId}")
     ResponseEntity<User> findById(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.findByOid(userId));
     }
 
-    @PostMapping("/create")
-    ResponseEntity<User> createUser(@RequestBody UserCreateRequestDto dto) {
-        return ResponseEntity.ok(userService.createUser(dto));
-    }
-
-    @PostMapping("/update/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
+    @PutMapping("/update/{userId}")
     ResponseEntity<User> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto dto) {
         return ResponseEntity.ok(userService.updateUser(userId, dto));
     }
 
-    @PutMapping("/delete/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
+    @DeleteMapping("/delete/{userId}")
     ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {
         try {
             userService.deleteUser(userId);

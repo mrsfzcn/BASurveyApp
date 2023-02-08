@@ -3,14 +3,11 @@ package com.bilgeadam.basurveyapp.dto.request;
 import lombok.*;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 public class ResponseRequestDto {
-    private Long responseOid;
-    private String responseString;
-
-
-
+    String responseString;
+    Long responseOid;
 }

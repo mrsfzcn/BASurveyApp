@@ -1,9 +1,9 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.User;
+
 import lombok.*;
 
-import java.util.List;
+
 
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Builder
 public class AllClassroomsResponseDto {
+    Long oid;
     String name;
-    List<User> users;
+
 }

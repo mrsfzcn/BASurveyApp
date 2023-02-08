@@ -1,9 +1,10 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
+import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class ResponseController {
     private final ResponseService responseService;
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestDto dto) {
+    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
         responseService.createResponse(dto);
         return ResponseEntity.ok().build();
     }
@@ -46,9 +47,20 @@ public class ResponseController {
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
     }
-    @PutMapping("/saveall/{token}")
-    @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<Boolean> saveAll(@RequestParam @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
+    @PutMapping("/savesurveyanswers/{token}")
+    public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));//tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
+    }
+
+    @GetMapping("/findallresponsesofuserfromsurvey")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+        return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @GetMapping("/findResponseByClassroomOid")
+    public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
+        return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
     }
 }

@@ -1,7 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.entity.Survey;
 import lombok.*;
 
 @AllArgsConstructor

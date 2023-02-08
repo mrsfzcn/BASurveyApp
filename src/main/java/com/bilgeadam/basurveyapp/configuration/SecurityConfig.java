@@ -33,7 +33,6 @@ public class SecurityConfig {
     private static final String[] WHITELIST = {
             "/auth/**",
             "/test",
-            "/test/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/bus/v3/api-docs/**",
@@ -43,7 +42,9 @@ public class SecurityConfig {
             "/swagger-resources/configuration/security",
             "/webjars/**",
             "/v2/api-docs/**",
-            "/v3/api-docs/**"
+            "/v3/api-docs/**",
+            "/survey/response/**",
+            "/question/getsurveyquestions/**"
     };
 
     @Bean

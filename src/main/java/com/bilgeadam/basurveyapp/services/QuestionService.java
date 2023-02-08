@@ -1,10 +1,13 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
@@ -26,18 +29,20 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTypeRepository questionTypeRepository;
     private final SurveyRepository surveyRepository;
+    private final JwtService jwtService;
 
-    public void createQuestion(CreateQuestionDto createQuestionDto) {
-            Question question = Question.builder()
-                    .questionString(createQuestionDto.getQuestionString())
-                    .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
-                            ()-> new QuestionTypeNotFoundException("Question type is not found")))
-                    .survey(surveyRepository.findActiveById(createQuestionDto.getSurveyOid()).orElseThrow(
-                            ()-> new SurveyNotFoundException("Survey is not found.")))
-                    .order(createQuestionDto.getOrder())
-                    .build();
-            questionRepository.save(question);
 
+    public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
+        Question question = Question.builder()
+                .questionString(createQuestionDto.getQuestionString())
+                .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                        () -> new QuestionTypeNotFoundException("Question type is not found")))
+                .survey(surveyRepository.findActiveById(createQuestionDto.getSurveyOid()).orElseThrow(
+                        () -> new SurveyNotFoundException("Survey is not found.")))
+                .order(createQuestionDto.getOrder())
+                .build();
+        questionRepository.save(question);
+        return true;
     }
 
 
@@ -60,14 +65,14 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question is not found");
         } else {
 
-                return QuestionFindByIdResponseDto.builder()
-                        .questionString(optionalQuestion.get().getQuestionString())
-                        .surveyTitle(surveyRepository.findActiveById(optionalQuestion.get().getSurvey().getOid()).get().getSurveyTitle()
-                                .describeConstable().orElseThrow(()-> new SurveyNotFoundException("Survey not found")))
-                        .questionType(questionTypeRepository.findActiveById(optionalQuestion.get().getQuestionType().getOid()).get().getQuestionType()
-                                .describeConstable().orElseThrow(()-> new QuestionTypeNotFoundException("Question type not found")))
-                        .order(optionalQuestion.get().getOrder())
-                        .build();
+            return QuestionFindByIdResponseDto.builder()
+                    .questionString(optionalQuestion.get().getQuestionString())
+                    .surveyTitle(surveyRepository.findActiveById(optionalQuestion.get().getSurvey().getOid()).get().getSurveyTitle()
+                            .describeConstable().orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
+                    .questionType(questionTypeRepository.findActiveById(optionalQuestion.get().getQuestionType().getOid()).get().getQuestionType()
+                            .describeConstable().orElseThrow(() -> new QuestionTypeNotFoundException("Question type not found")))
+                    .order(optionalQuestion.get().getOrder())
+                    .build();
 
         }
 
@@ -78,9 +83,10 @@ public class QuestionService {
         List<AllQuestionResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(question ->
                 responseDtoList.add(AllQuestionResponseDto.builder()
-                .questionString(question.getQuestionString())
-                .order(question.getOrder())
-                .build()));
+                        .questionOid(question.getOid())
+                        .questionString(question.getQuestionString())
+                        .order(question.getOrder())
+                        .build()));
         return responseDtoList;
     }
 
@@ -94,5 +100,23 @@ public class QuestionService {
             questionRepository.softDelete(question);
             return true;
         }
+    }
+
+    public List<AllQuestionResponseDto> findAllSurveyQuestions(String token) {
+        if (!jwtService.isSurveyEmailTokenValid(token)) {
+            throw new RuntimeException("Invalid token.");
+        }
+        Long surveyOid = jwtService.extractSurveyOid(token);
+        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        List<Question> questions = survey.getQuestions();
+        List<AllQuestionResponseDto> questionsDto = new ArrayList<>();
+        for (Question question : questions) {
+            questionsDto.add(AllQuestionResponseDto.builder()
+                    .questionOid(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .order(question.getOrder())
+                    .build());
+        }
+        return questionsDto;
     }
 }

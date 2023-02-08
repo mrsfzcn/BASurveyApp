@@ -1,9 +1,6 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.User;
 import lombok.*;
-
-import java.util.List;
 
 
 @AllArgsConstructor
@@ -14,6 +11,5 @@ import java.util.List;
 public class CreateClassroomDto {
 
     String name;
-    List<User> users;
 
 }
