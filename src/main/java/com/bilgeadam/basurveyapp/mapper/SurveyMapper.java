@@ -14,9 +14,10 @@
 //    SurveyMapper SURVEY_MAPPER = Mappers.getMapper(SurveyMapper.class);
 //
 //
-//    @Mapping(target = "classroomResponseDtos", source = "classrooms")
-//    @Mapping(target = "questionResponseDtos", source = "questions")
-//    @Mapping(target = "userResponseDtos", source = "users")
+//    @Mapping(target = "surveyClassroomResponseDtoList", source = "classrooms")
+//    @Mapping(target = "surveyQuestionResponseDtoList", source = "questions")
+//    @Mapping(target = "surveyUserResponseDtoList", source = "users")
+//    @Mapping(target = "surveyOid", source = "oid")
 //    SurveyResponseDto toSurveyResponseDto(Survey survey);
 //    List<SurveyResponseDto> toSurveyResponseDtos(List<Survey> surveys);
 //}

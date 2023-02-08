@@ -2,6 +2,7 @@
 //
 //import com.bilgeadam.basurveyapp.entity.*;
 //import com.bilgeadam.basurveyapp.entity.enums.Role;
+//import com.bilgeadam.basurveyapp.mapper.*;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
 //import org.mockito.InjectMocks;
@@ -10,6 +11,8 @@
 //import org.springframework.test.context.junit.jupiter.SpringExtension;
 //
 //import java.util.*;
+//
+//import static org.junit.jupiter.api.Assertions.assertEquals;
 //
 //@ExtendWith(SpringExtension.class)
 //@ContextConfiguration(classes = {
@@ -84,8 +87,6 @@
 //        Survey javaSurvey = Survey.builder()
 //            .surveyTitle("Java Survey")
 //            .courseTopic("Java")
-//            .startDate(new Date())
-//            .endDate(cal.getTime())
 //            .questions(new ArrayList<Question>(Arrays.asList(question1, question2)))
 //            .classrooms(new ArrayList<Classroom>(Arrays.asList(java)))
 //            .users(new ArrayList<User>(Arrays.asList(can)))
@@ -98,6 +99,6 @@
 //        can.getSurveys().add(javaSurvey);
 //
 //        SurveyResponseDto surveyResponseDto = surveyMapperImpl.toSurveyResponseDto(javaSurvey);
-//        assertEquals(1, surveyResponseDto.getClassroomResponseDtos().size());
+//        assertEquals(1, surveyResponseDto.getSurveyClassroomResponseDtoList().size());
 //    }
 //}
