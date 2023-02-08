@@ -1,19 +1,7 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
-import com.bilgeadam.basurveyapp.mapper.ClassroomMapper;
-import com.bilgeadam.basurveyapp.mapper.ClassroomMapperImpl;
-import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
-import com.bilgeadam.basurveyapp.mapper.QuestionMapperImpl;
-import com.bilgeadam.basurveyapp.mapper.SurveyMapperImpl;
-import com.bilgeadam.basurveyapp.mapper.UserMapper;
-import com.bilgeadam.basurveyapp.mapper.UserMapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,13 +9,7 @@ import org.mockito.Spy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.* ;
+import java.util.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {

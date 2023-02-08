@@ -14,7 +14,6 @@ import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +26,7 @@ public class QuestionService {
     private final SurveyRepository surveyRepository;
     private final JwtService jwtService;
 
-    public void createQuestion(CreateQuestionDto createQuestionDto) {
+    public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
         // TODO check if exists
         Question question = Question.builder()
                 .questionString(createQuestionDto.getQuestionString())
@@ -40,6 +39,7 @@ public class QuestionService {
                 .order(createQuestionDto.getOrder())
                 .build();
         questionRepository.save(question);
+        return true;
     }
 
 

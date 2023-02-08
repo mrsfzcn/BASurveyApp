@@ -15,5 +15,6 @@ import org.springframework.stereotype.Component;
 public class ExceptionResponse {
     private int exceptionCode;
     private String customMessage;
+    private String exceptionMessage;
     private int httpStatus;
 }

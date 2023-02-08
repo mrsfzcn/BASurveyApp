@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ClassroomRepository extends BaseRepository<Classroom, Long> {
 
+    @Query("SELECT c FROM Classroom c WHERE c.name = ?1 AND c.state = 'ACTIVE' ORDER BY c.name ASC")
     Optional<Classroom> findActiveByName(String name);
 
     @Query("SELECT c.users FROM Classroom c WHERE c.oid = ?1")

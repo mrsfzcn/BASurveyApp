@@ -14,4 +14,7 @@ public interface UserRepository extends BaseRepository<User,Long> {
     Optional<User> findByEmail(String email);
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email IN ?1")
     List<User> findAllByEmails(List<String> emails);
+
+    @Query("SELECT u.email FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    List<String> findStudentEmails();
 }
