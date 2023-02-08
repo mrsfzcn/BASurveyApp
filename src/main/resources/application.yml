@@ -27,7 +27,7 @@ spring:
     properties:
       mail:
         smtp:
-          auth: trueAynen
+          auth: true
           starttls:
             required: true
             enabled: true
