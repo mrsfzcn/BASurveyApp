@@ -5,15 +5,12 @@ import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
-import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
-import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
-import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
-import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
-import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -30,13 +27,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ResponseService {
     private final ResponseRepository responseRepository;
-    private final SurveyService surveyService;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final SurveyRepository surveyRepository;
-
-
+    private final ClassroomRepository classroomRepository;
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -132,28 +127,47 @@ public class ResponseService {
                         .build()
                 ).collect(Collectors.toList());
     }
-//     Bu methodu düzelteceğim -yusuf
-//    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
-//        List<Survey> surveyList = surveyService.findByClassroomOid(classroomOid);
-//        if (surveyList.isEmpty()) {
-//            throw new ResourceNotFoundException("There's a error while finding survey list");
-//        }
-//        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
-//        ).toList();
-//        if (questionList.isEmpty()) {
-//            throw new ResourceNotFoundException("There's a error while finding questions");
-//        }
-//        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
-//        if (responseList.isEmpty()) {
-//            throw new ResourceNotFoundException("There's a error while finding response");
-//        }
-//
-//        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
-//        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
-//                .responseString(r.getResponseString())
-//                .userOid(r.getUser().getOid())
-//                .questionOid(r.getQuestion().getOid())
-//                .build()));
-//        return answerResponseDtoList;
-//    }
+
+    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        Long userOid = (Long) authentication.getCredentials();
+        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        if (user.getRole() == Role.ASSISTANT_TRAINER || user.getRole() == Role.MASTER_TRAINER) {
+            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
+            if (!classroom.getUsers().contains(user)) {
+                throw new AccessDeniedException("authentication failure.");
+            }
+        }
+        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
+        if (classroomOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Classroom is not found.");
+        }
+        List<Survey> surveyList = surveyRepository.findAllActive();
+        if (surveyList.isEmpty()) {
+            throw new ResourceNotFoundException("There's a error while finding survey list");
+        }
+        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
+        ).toList();
+        if (questionList.isEmpty()) {
+            throw new ResourceNotFoundException("There's a error while finding questions");
+        }
+        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
+        if (responseList.isEmpty()) {
+            throw new ResourceNotFoundException("There's a error while finding response");
+        }
+        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
+        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
+                .responseString(r.getResponseString())
+                .userOid(r.getUser().getOid())
+                .questionOid(r.getQuestion().getOid())
+                .build()));
+        return answerResponseDtoList;
+    }
 }
