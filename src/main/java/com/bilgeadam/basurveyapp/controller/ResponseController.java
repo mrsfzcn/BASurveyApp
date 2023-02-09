@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
     @PostMapping("/create")
     public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
         responseService.createResponse(dto);

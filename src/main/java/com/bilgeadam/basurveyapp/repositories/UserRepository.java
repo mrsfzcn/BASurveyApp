@@ -17,4 +17,19 @@ public interface UserRepository extends BaseRepository<User,Long> {
 
     @Query("SELECT u.email FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
     List<String> findStudentEmails();
+
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    List<User> findStudents();
+
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MASTER_TRAINER' ORDER BY u.email ASC")
+    List<User> findMasterTrainers();
+
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ASSISTANT_TRAINER' ORDER BY u.email ASC")
+    List<User> findAssitantTrainers();
+
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MANAGER' ORDER BY u.email ASC")
+    List<User> findManagers();
+
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ADMIN' ORDER BY u.email ASC")
+    List<User> findAdmins();
 }

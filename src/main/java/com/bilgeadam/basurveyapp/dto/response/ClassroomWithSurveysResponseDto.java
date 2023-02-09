@@ -2,6 +2,8 @@ package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 /**
  * @author Eralp Nitelik
  */
@@ -10,6 +12,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class AuthenticationResponseDto {
-    private String token;
+public class ClassroomWithSurveysResponseDto {
+    Long classroomOid;
+    String classroomName;
+    List<SurveyResponseDto> surveys;
 }

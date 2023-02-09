@@ -14,7 +14,7 @@ public class Test {
         return "BASurveyApp";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/student")
     public ResponseEntity<String> testUser() {
         return ResponseEntity.ok("Student test successful!");

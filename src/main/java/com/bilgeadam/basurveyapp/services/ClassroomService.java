@@ -3,10 +3,11 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
-import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.ClassroomUsersResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
@@ -50,7 +51,7 @@ public class ClassroomService {
             throw new UserDoesNotExistsException("User is not found");
         }
         Classroom classroom = optionalClassroom.get();
-        for (User user:userList) {
+        for (User user : userList) {
             classroom.getUsers().add(user);
         }
         classroomRepository.save(classroom);
@@ -72,43 +73,64 @@ public class ClassroomService {
         classroomRepository.save(classroom);
     }
 
-    @Transactional
-    public ClassroomFindByIdResponseDto findById(Long classroomId) {
+    public ClassroomResponseDto findById(Long classroomId) {
         Optional<Classroom> optionalClassroom = classroomRepository.findActiveById(classroomId);
         if (optionalClassroom.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         }
         Classroom classroom = optionalClassroom.get();
-        List<ClassroomUsersResponseDto> users = new ArrayList<>();
-        for (User user : classroom.getUsers()) {
-            ClassroomUsersResponseDto classroomUsersResponseDto = ClassroomUsersResponseDto.builder()
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .role(String.valueOf(user.getRole()))
-                    .build();
-            users.add(classroomUsersResponseDto);
-        }
-        return ClassroomFindByIdResponseDto.builder()
-                .name(classroom.getName())
-                .users(users)
+        List<User> users = classroom.getUsers();
+        List<Survey> surveys = classroom.getSurveys();
+        return ClassroomResponseDto.builder()
+                .classroomName(classroom.getName())
+                .classroomOid(classroom.getOid())
+                .students(users.stream()
+                        .filter(student -> student.getRole() == Role.STUDENT)
+                        .map(student -> UserSimpleResponseDto.builder()
+                                .firstName(student.getFirstName())
+                                .lastName(student.getLastName())
+                                .email(student.getEmail())
+                                .build())
+                        .collect(Collectors.toList()))
+                .masterTrainers(users.stream()
+                        .filter(mt -> mt.getRole() == Role.MASTER_TRAINER)
+                        .map(mt -> UserResponseDto.builder()
+                                .firstName(mt.getFirstName())
+                                .lastName(mt.getLastName())
+                                .email(mt.getEmail())
+                                .classrooms(mt.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .assistantTrainers(users.stream()
+                        .filter(at -> at.getRole() == Role.ASSISTANT_TRAINER)
+                        .map(at -> UserResponseDto.builder()
+                                .firstName(at.getFirstName())
+                                .lastName(at.getLastName())
+                                .email(at.getEmail())
+                                .classrooms(at.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                                .build())
+                        .collect(Collectors.toList()))
+                .surveys(surveys.stream()
+                        .map(survey -> SurveyResponseDto.builder()
+                                .surveyOid(survey.getOid())
+                                .surveyTitle(survey.getSurveyTitle())
+                                .courseTopic(survey.getCourseTopic())
+                                .build())
+                        .collect(Collectors.toList()))
                 .build();
     }
 
     @Transactional
-    public List<String> findAll() {
-        Optional<List<Classroom>> optionalClassrooms = Optional.ofNullable(classroomRepository.findAllActive());
-        if (optionalClassrooms.isEmpty()) {
+    public List<ClassroomSimpleResponseDto> findAll() {
+        List<Classroom> classrooms = classroomRepository.findAllActive();
+        if (classrooms.isEmpty()) {
             throw new ClassroomNotFoundException("Classroom is not found");
         }
-//        List<AllClassroomsResponseDto> allClassroomsResponseDtoList = new ArrayList<>();
-//        for (Classroom classroom : optionalClassrooms.get()) {
-//            AllClassroomsResponseDto allClassroomsResponseDto = AllClassroomsResponseDto.builder()
-//                    .oid(classroom.getOid())
-//                    .name(classroom.getName())
-//                    .build();
-//            allClassroomsResponseDtoList.add(allClassroomsResponseDto);
-//        }
-        return optionalClassrooms.get().stream().map(Classroom::getName).collect(Collectors.toList());
+        return classrooms.stream().map(classroom -> ClassroomSimpleResponseDto.builder()
+                .oid(classroom.getOid())
+                .name(classroom.getName())
+                .build()
+        ).collect(Collectors.toList());
     }
 
     @Transactional

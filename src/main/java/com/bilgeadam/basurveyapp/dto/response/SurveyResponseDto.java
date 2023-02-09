@@ -2,10 +2,8 @@ package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.*;
 
-import java.util.List;
-
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder

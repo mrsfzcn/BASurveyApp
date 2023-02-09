@@ -3,7 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
@@ -76,11 +76,11 @@ public class QuestionService {
 
     }
 
-    public List<AllQuestionResponseDto> findAll() {
+    public List<QuestionResponseDto> findAll() {
         List<Question> findAllList = questionRepository.findAllActive();
-        List<AllQuestionResponseDto> responseDtoList = new ArrayList<>();
+        List<QuestionResponseDto> responseDtoList = new ArrayList<>();
         findAllList.forEach(question ->
-                responseDtoList.add(AllQuestionResponseDto.builder()
+                responseDtoList.add(QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
@@ -100,16 +100,16 @@ public class QuestionService {
         }
     }
 
-    public List<AllQuestionResponseDto> findAllSurveyQuestions(String token) {
+    public List<QuestionResponseDto> findAllSurveyQuestions(String token) {
         if (!jwtService.isSurveyEmailTokenValid(token)) {
             throw new RuntimeException("Invalid token.");
         }
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
-        List<AllQuestionResponseDto> questionsDto = new ArrayList<>();
+        List<QuestionResponseDto> questionsDto = new ArrayList<>();
         for (Question question : questions) {
-            questionsDto.add(AllQuestionResponseDto.builder()
+            questionsDto.add(QuestionResponseDto.builder()
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())

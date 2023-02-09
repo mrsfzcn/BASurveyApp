@@ -6,12 +6,11 @@ import lombok.*;
 
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class AllClassroomsResponseDto {
+public class ClassroomSimpleResponseDto {
     Long oid;
     String name;
-
 }

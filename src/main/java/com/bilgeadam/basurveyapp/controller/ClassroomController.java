@@ -4,6 +4,9 @@ import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomFindByIdResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomSimpleResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
 import com.bilgeadam.basurveyapp.services.ClassroomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,14 +49,13 @@ public class ClassroomController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid/{oid}")
-    public ResponseEntity<ClassroomFindByIdResponseDto> findById(@RequestParam Long oid) {
+    public ResponseEntity<ClassroomResponseDto> findById(@PathVariable Long oid) {
         return ResponseEntity.ok(classroomService.findById(oid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
-    public ResponseEntity<List<String>> findAll() {
-//        List<AllClassroomsResponseDto> responseDtoList = classroomService.findAll();
+    public ResponseEntity<List<ClassroomSimpleResponseDto>> findAll() {
         return ResponseEntity.ok(classroomService.findAll());
     }
 
@@ -62,7 +64,6 @@ public class ClassroomController {
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long classroomId) {
         return ResponseEntity.ok(classroomService.delete(classroomId));
     }
-
 }
 
 

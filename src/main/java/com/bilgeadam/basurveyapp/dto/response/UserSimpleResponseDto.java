@@ -2,13 +2,16 @@ package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.*;
 
+/**
+ * @author Eralp Nitelik
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class ClassroomUsersResponseDto {
+public class UserSimpleResponseDto {
     private String firstName;
     private String lastName;
-    private String role;
+    private String email;
 }

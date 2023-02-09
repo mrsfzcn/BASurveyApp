@@ -3,7 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.services.QuestionService;
 import jakarta.validation.Valid;
@@ -42,8 +42,8 @@ public class QuestionController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
-    public ResponseEntity<List<AllQuestionResponseDto>> findAll() {
-        List<AllQuestionResponseDto> responseDtoList = questionService.findAll();
+    public ResponseEntity<List<QuestionResponseDto>> findAll() {
+        List<QuestionResponseDto> responseDtoList = questionService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -53,7 +53,7 @@ public class QuestionController {
     }
 
     @GetMapping("/getsurveyquestions/{token}")
-    public ResponseEntity<List<AllQuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
+    public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }
 }

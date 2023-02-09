@@ -7,9 +7,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class QuestionFindByIdResponseDto {
+public class QuestionResponseDto {
+    Long questionOid;
     String questionString;
     Integer order;
-    String surveyTitle;
-    String questionType;
 }

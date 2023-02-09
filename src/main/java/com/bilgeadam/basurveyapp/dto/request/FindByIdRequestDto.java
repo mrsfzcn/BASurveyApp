@@ -1,12 +1,16 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder
 public class FindByIdRequestDto {
+    @NotBlank
+    @NotNull
     Long oid;
 }

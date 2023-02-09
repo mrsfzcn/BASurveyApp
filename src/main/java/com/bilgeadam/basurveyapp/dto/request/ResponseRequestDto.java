@@ -1,5 +1,7 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,6 +10,10 @@ import lombok.*;
 @Setter
 @Builder
 public class ResponseRequestDto {
+    @NotBlank
+    @NotNull
     String responseString;
+    @NotBlank
+    @NotNull
     Long responseOid;
 }

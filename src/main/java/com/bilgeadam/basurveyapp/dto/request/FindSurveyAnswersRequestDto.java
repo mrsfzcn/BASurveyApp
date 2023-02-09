@@ -4,18 +4,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+/**
+ * @author Eralp Nitelik
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class DeleteUserInClassroomDto {
-    @NotBlank
+public class FindSurveyAnswersRequestDto {
     @NotNull
+    @NotBlank
+    private Long surveyOid;
+    @NotNull
+    @NotBlank
     private Long classroomOid;
-    @NotBlank
-    @NotNull
-    private String userEmail;
-
-
 }

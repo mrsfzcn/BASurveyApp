@@ -1,6 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
+import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -11,16 +13,61 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    public List<String> getUserList() {
-        // getCurrentUser()
-        // user check
-        return userRepository.findStudentEmails();
+    public List<UserResponseDto> getStudentList() {
+        List<User> students = userRepository.findStudents();
+        return students.stream().map(student -> UserResponseDto.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<UserResponseDto> getMasterTrainerList() {
+        List<User> students = userRepository.findMasterTrainers();
+        return students.stream().map(student -> UserResponseDto.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<UserResponseDto> getAssistantTrainerList() {
+        List<User> students = userRepository.findAssitantTrainers();
+        return students.stream().map(student -> UserResponseDto.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<UserResponseDto> getManagerList() {
+        List<User> students = userRepository.findManagers();
+        return students.stream().map(student -> UserResponseDto.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
+    }
+
+    public List<UserResponseDto> getAdminList() {
+        List<User> students = userRepository.findAdmins();
+        return students.stream().map(student -> UserResponseDto.builder()
+                .firstName(student.getFirstName())
+                .lastName(student.getLastName())
+                .email(student.getEmail())
+                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
     }
 
     public Page<User> getUserPage(Pageable pageable) {

@@ -3,7 +3,7 @@ package com.bilgeadam.basurveyapp.dto.response;
 import lombok.*;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Builder

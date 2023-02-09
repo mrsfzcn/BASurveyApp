@@ -2,7 +2,9 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerClassroomSurveyResponseDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
 import jakarta.mail.MessagingException;
@@ -84,11 +86,22 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dto, request));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASISTANT_TRAINER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/findSurveyByClassroomOid")
     ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
+    @GetMapping("/findSurveyAnswers")
+    ResponseEntity<SurveyOfClassroomResponseDto> findSurveyAnswers(@RequestBody FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
+        return ResponseEntity.ok(surveyService.findSurveyAnswers(findSurveyAnswersRequestDto));
+    }
+
+    @PreAuthorize("hasAnyRole('MASTER_TRAINER', 'ASSISTANT_TRAINER')")
+    @GetMapping("/trainersurveys")
+    ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
+        return ResponseEntity.ok(surveyService.findTrainerSurveys());
+    }
 }
 
