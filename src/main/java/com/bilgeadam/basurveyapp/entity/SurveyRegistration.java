@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
 @Builder
+@Entity
 @Table(name = "survey_registration")
 public class SurveyRegistration extends BaseEntity {
 

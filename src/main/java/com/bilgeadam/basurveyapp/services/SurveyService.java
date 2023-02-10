@@ -46,6 +46,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -125,9 +126,27 @@ public class SurveyService {
         if (!jwtService.isSurveyEmailTokenValid(token)) {
             throw new AccessDeniedException("Invalid token");
         }
+        Long classroomOid = 1L;
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
+
+        SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
+            .parallelStream()
+            .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
+            .filter(sR -> sR.getClassroom().getOid().equals(classroomOid))
+            .findAny()
+            .orElseThrow(() -> new ResourceNotFoundException("Survey has not assigned to the classroom."));
+
+        LocalDate now = LocalDateTime.now().toLocalDate();
+        LocalDate surveyStartDate = surveyRegistration.getStartDate().toLocalDate();
+        LocalDate surveyEndDate = surveyRegistration.getEndDate().toLocalDate();
+
+        if(now.isBefore(surveyStartDate)){
+            throw new ResourceNotFoundException("Survey has not initiated.");
+        }else if(now.isAfter(surveyEndDate)){
+            throw new ResourceNotFoundException("Survey is Expired");
+        }
 
         if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndCreateResponses(survey, dto.getCreateResponses()))) {
             throw new UserInsufficientAnswerException("User must response all the questions.");
