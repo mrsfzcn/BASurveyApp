@@ -21,8 +21,8 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
@@ -34,6 +34,7 @@ import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,6 +62,7 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final SurveyRegistrationRepository surveyRegistrationRepository;
 
     public List<SurveyResponseDto> getSurveyList() {
         List<Survey> surveys = surveyRepository.findAllActive();
@@ -179,14 +181,14 @@ public class SurveyService {
         }
 
         survey.getUsers().add(currentUser);
-
         currentUser.getSurveys().add(survey);
 
-        surveyRepository.save(survey);
+        Survey savedSurvey = surveyRepository.save(survey);
         return true;
     }
 
     public Survey updateSurveyResponses(Long surveyId, SurveyUpdateResponseRequestDto dto) {
+
         Survey survey = surveyRepository.findActiveById(surveyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
@@ -209,27 +211,35 @@ public class SurveyService {
         return survey;
     }
 
-    public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
+    public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) {
+
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
         Classroom classroom = classroomRepository.findActiveByName(dto.getClassroomName())
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
 
-        survey.getClassrooms().add(classroom);
-        classroom.getSurveys().add(survey);
+        Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
+            .parallelStream()
+            .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
+            .filter(sR -> sR.getClassroom().getOid().equals(classroom.getOid()))
+            .findAny();
+        if (surveyRegistrationOptional.isPresent()){
+            throw new EntityNotFoundException("Survey has been already assigned to Classroom.");
+        }
 
-        SurveyRegistration surveyRegistration = SurveyRegistration.builder()
-            .startDate(LocalDateTime.parse(dto.getStartDate()))
-            .endDate(LocalDateTime.parse(dto.getStartDate()).plusDays(dto.getDays()))
-            .survey(survey)
-            .classroom(classroom)
-            .build();
+        SurveyRegistration surveyRegistration = surveyRegistrationOptional.get();
+
+        surveyRegistration.setStartDate(LocalDateTime.parse(dto.getStartDate()));
+        surveyRegistration.setEndDate((LocalDateTime.parse(dto.getStartDate()).plusDays(dto.getDays())));
+        surveyRegistration.setSurvey(survey);
+        surveyRegistration.setClassroom(classroom);
 
         survey.getSurveyRegistrations().add(surveyRegistration);
         classroom.getSurveyRegistrations().add(surveyRegistration);
 
         /*
          * Email service will be scheduled with accordance startDate of Survey.
+         * startDate bugün ise classroomu mail gönder
          */
 //        Map<String,String> emailTokenMap = classroom.getUsers()
 //            .parallelStream()
@@ -241,7 +251,7 @@ public class SurveyService {
 //            emailService.sendSurveyMail(user.getEmail(), jwtToken);
 //        }
 
-        surveyRepository.save(survey);
+        Survey savedSurvey = surveyRepository.save(survey);
 
         return true;
     }
@@ -270,9 +280,9 @@ public class SurveyService {
         List<Survey> surveyList = surveyRepository.findAllActive();
         List<Survey> surveysWithTheOidsOfTheClasses = surveyList
                 .stream()
-                .filter(survey -> survey.getClassrooms()
+                .filter(survey -> survey.getSurveyRegistrations()
                         .stream()
-                        .map(BaseEntity::getOid)
+                        .map(sR -> sR.getClassroom().getOid())
                         .toList().contains(classroomOptional.get().getOid()))
                 .toList();
 
@@ -303,6 +313,9 @@ public class SurveyService {
 
 
     // survey listesini -- survey dto list'e mapleyen method
+    /*
+    Mapper methodları service de yazılmaz!!!
+     */
     public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
         return surveys.stream()
                 .map(survey -> {
@@ -389,11 +402,11 @@ public class SurveyService {
                         ClassroomWithSurveysResponseDto.builder()
                                 .classroomOid(classroom.getOid())
                                 .classroomName(classroom.getName())
-                                .surveys(classroom.getSurveys().stream().map(survey ->
+                                .surveys(classroom.getSurveyRegistrations().stream().map(sR ->
                                                 SurveyResponseDto.builder()
-                                                        .surveyOid(survey.getOid())
-                                                        .surveyTitle(survey.getSurveyTitle())
-                                                        .courseTopic(survey.getCourseTopic())
+                                                        .surveyOid(sR.getSurvey().getOid())
+                                                        .surveyTitle(sR.getSurvey().getSurveyTitle())
+                                                        .courseTopic(sR.getSurvey().getCourseTopic())
                                                         .build())
                                         .collect(Collectors.toList()))
                                 .build()).collect(Collectors.toList())

@@ -63,7 +63,6 @@ class SurveyServiceTest {
     void responseSurveyQuestions_ShouldSaveResponses_WhenAllQuestionsAreAnsweredAndSurveyIsAnswerOnlyOnce() {
         //given
         String token = "";
-        HttpServletRequest request = null;
 
         User can = User.builder()
             .firstName("Can")
@@ -127,6 +126,7 @@ class SurveyServiceTest {
         question2.setSurvey(javaSurvey);
 
         //when
+        HttpServletRequest request = mock(HttpServletRequest.class);
         Authentication authentication = mock(Authentication.class);
         SecurityContext securityContext = mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -147,7 +147,7 @@ class SurveyServiceTest {
 
         Boolean isSurveySaved = surveyService.responseSurveyQuestions(token, dto, request);
 
-        assertEquals("Survey Saved", true,isSurveySaved);
+        assertEquals("Survey Saved", true, isSurveySaved);
 
 //        assertEquals("Questions", 2, survey.getQuestions().size());
 //        assertEquals("Questions", 2L, survey.getQuestions().stream().count());

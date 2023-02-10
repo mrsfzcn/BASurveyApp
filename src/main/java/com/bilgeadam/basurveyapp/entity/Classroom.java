@@ -31,8 +31,6 @@ public class Classroom extends BaseEntity {
 
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<User> users;
-    @ManyToMany(mappedBy = "classrooms", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Survey> surveys;
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<SurveyRegistration> surveyRegistrations;
 }
