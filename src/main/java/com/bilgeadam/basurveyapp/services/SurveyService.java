@@ -2,9 +2,26 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.*;
-import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomWithSurveysResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionWithAnswersResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerClassroomSurveyResponseDto;
+import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Response;
+import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
@@ -28,6 +45,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -101,12 +119,11 @@ public class SurveyService {
     }
 
     public Boolean responseSurveyQuestions(String token, SurveyResponseQuestionRequestDto dto, HttpServletRequest request) {
+
         if (!jwtService.isSurveyEmailTokenValid(token)) {
             throw new AccessDeniedException("Invalid token");
         }
-
         Long surveyOid = jwtService.extractSurveyOid(token);
-
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
 
@@ -115,7 +132,6 @@ public class SurveyService {
         }
 
         String userEmail = jwtService.extractEmail(token);
-
         User currentUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
@@ -170,7 +186,7 @@ public class SurveyService {
         return true;
     }
 
-    public Survey updateSurveyAnswers(Long surveyId, SurveyUpdateResponseRequestDto dto) {
+    public Survey updateSurveyResponses(Long surveyId, SurveyUpdateResponseRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(surveyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
@@ -200,6 +216,17 @@ public class SurveyService {
                 .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
 
         survey.getClassrooms().add(classroom);
+        classroom.getSurveys().add(survey);
+
+        SurveyRegistration surveyRegistration = SurveyRegistration.builder()
+            .startDate(LocalDateTime.parse(dto.getStartDate()))
+            .endDate(LocalDateTime.parse(dto.getStartDate()).plusDays(dto.getDays()))
+            .survey(survey)
+            .classroom(classroom)
+            .build();
+
+        survey.getSurveyRegistrations().add(surveyRegistration);
+        classroom.getSurveyRegistrations().add(surveyRegistration);
 
         /*
          * Email service will be scheduled with accordance startDate of Survey.
@@ -209,10 +236,10 @@ public class SurveyService {
 //            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
 //        emailService.sendSurveyMail(emailTokenMap);
 
-        for (User user : classroom.getUsers()) {
-            String jwtToken = jwtService.generateSurveyEmailToken(dto.getSurveyId(), user.getEmail(), dto.getDays());
-            emailService.sendSurveyMail(user.getEmail(), jwtToken);
-        }
+//        for (User user : classroom.getUsers()) {
+//            String jwtToken = jwtService.generateSurveyEmailToken(dto.getSurveyId(), user.getEmail(), dto.getDays());
+//            emailService.sendSurveyMail(user.getEmail(), jwtToken);
+//        }
 
         surveyRepository.save(survey);
 
@@ -252,7 +279,6 @@ public class SurveyService {
         return mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
 
-
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
 
         Set<Long> surveyQuestionIdSet = survey.getQuestions()
@@ -265,6 +291,7 @@ public class SurveyService {
     }
 
     private Boolean crossCheckSurveyQuestionsAndUpdateResponses(Survey survey, Map<Long, String> updateResponseMap) {
+
         Set<Long> surveyQuestionIdSet = survey.getQuestions()
                 .parallelStream()
                 .map(Question::getOid)
