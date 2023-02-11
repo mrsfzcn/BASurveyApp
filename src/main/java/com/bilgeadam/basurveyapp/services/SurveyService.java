@@ -287,20 +287,6 @@ public class SurveyService {
         survey.getSurveyRegistrations().add(surveyRegistration);
         classroom.getSurveyRegistrations().add(surveyRegistration);
 
-        /*
-         * Email service will be scheduled with accordance startDate of Survey.
-         * startDate bugün ise classroomu mail gönder
-         */
-//        Map<String,String> emailTokenMap = classroom.getUsers()
-//            .parallelStream()
-//            .collect(Collectors.toMap(User::getEmail, user -> jwtService.generateMailToken(user.getEmail(),survey.getOid())));
-//        emailService.sendSurveyMail(emailTokenMap);
-
-//        for (User user : classroom.getUsers()) {
-//            String jwtToken = jwtService.generateSurveyEmailToken(dto.getSurveyId(), user.getEmail(), dto.getDays());
-//            emailService.sendSurveyMail(user.getEmail(), jwtToken);
-//        }
-
         Survey savedSurvey = surveyRepository.save(survey);
 
         return true;
