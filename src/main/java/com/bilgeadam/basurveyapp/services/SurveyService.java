@@ -41,6 +41,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,9 +71,11 @@ public class SurveyService {
     private final JwtService jwtService;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
 
+    private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
 
     @Async
-    @Scheduled(cron = "30 9 * * MON-FRI")
+    @Scheduled(cron = "0 30 9 * * MON-FRI")
     public void initiateSurveys() throws MessagingException {
 
         List<SurveyRegistration> surveyRegistrations = surveyRegistrationRepository.findAllByEndDateAfter(LocalDateTime.now());
