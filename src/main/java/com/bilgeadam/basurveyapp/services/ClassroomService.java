@@ -83,7 +83,7 @@ public class ClassroomService {
         }
         Classroom classroom = optionalClassroom.get();
         List<User> users = classroom.getUsers();
-        List<Survey> surveys = classroom.getSurveys();
+        List<Survey> surveys = classroom.getSurveyRegistrations().stream().map(sR -> sR.getSurvey()).toList();
         return ClassroomResponseDto.builder()
                 .classroomName(classroom.getName())
                 .classroomOid(classroom.getOid())
