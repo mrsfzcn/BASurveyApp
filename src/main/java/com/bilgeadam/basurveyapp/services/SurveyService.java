@@ -39,6 +39,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,6 +50,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,6 +68,33 @@ public class SurveyService {
     private final EmailService emailService;
     private final JwtService jwtService;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
+
+
+    @Async
+    @Scheduled(cron = "30 9 * * MON-FRI")
+    public void initiateSurveys() throws MessagingException {
+
+        List<SurveyRegistration> surveyRegistrations = surveyRegistrationRepository.findAllByEndDateAfter(LocalDateTime.now());
+        if(!(surveyRegistrations.size() == 0)) {
+
+            Map<String,String> emailTokenMap = new HashMap<>();
+
+            surveyRegistrations
+                .parallelStream()
+                .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
+                .forEach(sR -> sR.getClassroom().getUsers()
+                    .stream()
+                    .forEach(user -> emailTokenMap.put(
+                        user.getEmail(),
+                        jwtService.generateSurveyEmailToken(
+                            sR.getSurvey().getOid(),
+                            sR.getClassroom().getOid(),
+                            user.getEmail(),
+                            (int) ChronoUnit.DAYS.between(sR.getEndDate(), sR.getStartDate())))));
+
+            emailService.sendSurveyMail(emailTokenMap);
+        }
+    }
 
     public List<SurveyResponseDto> getSurveyList() {
         List<Survey> surveys = surveyRepository.findAllActive();
@@ -126,7 +157,7 @@ public class SurveyService {
         if (!jwtService.isSurveyEmailTokenValid(token)) {
             throw new AccessDeniedException("Invalid token");
         }
-        Long classroomOid = 1L;
+        Long classroomOid = jwtService.extractClassroomOid(token);
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
