@@ -74,11 +74,19 @@ public class SurveyService {
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 
+    /**
+     * cron = "0 30 9 * * MON-FRI"
+     * cron = "*1 * * * * *" -> everySecond
+     * cron = "0 *1 * * * *" -> everyMinute
+     *
+     * @throws MessagingException
+     */
     @Async
     @Scheduled(cron = "0 30 9 * * MON-FRI")
     public void initiateSurveys() throws MessagingException {
 
         List<SurveyRegistration> surveyRegistrations = surveyRegistrationRepository.findAllByEndDateAfter(LocalDateTime.now());
+
         if(!(surveyRegistrations.size() == 0)) {
 
             Map<String,String> emailTokenMap = new HashMap<>();
@@ -98,6 +106,7 @@ public class SurveyService {
 
             emailService.sendSurveyMail(emailTokenMap);
         }
+//        logger.info("Scheduled - " + Thread.currentThread().getId() + " - " + LocalDateTime.now());
     }
 
     public List<SurveyResponseDto> getSurveyList() {
