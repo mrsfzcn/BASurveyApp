@@ -2,20 +2,8 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.ClassroomWithSurveysResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionWithAnswersResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerClassroomSurveyResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
@@ -424,7 +412,7 @@ public class SurveyService {
             .collect(Collectors.toList());
     }
 
-    public SurveyOfClassroomResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) {
+    public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) {
         User user = userRepository.findActiveById((Long)
             SecurityContextHolder
                 .getContext()
@@ -440,12 +428,12 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
-        return SurveyOfClassroomResponseDto.builder()
+        return SurveyOfClassroomMaskedResponseDto.builder()
             .surveyOid(survey.getOid())
             .surveyTitle(survey.getSurveyTitle())
             .courseTopic(survey.getCourseTopic())
             .surveyAnswers(questions.parallelStream().map(question ->
-                QuestionWithAnswersResponseDto.builder()
+                QuestionWithAnswersMaskedResponseDto.builder()
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .questionTypeOid(question.getQuestionType().getOid())
@@ -486,5 +474,40 @@ public class SurveyService {
                     .build()).collect(Collectors.toList())
             )
             .build();
+    }
+
+
+    public SurveyOfClassroomResponseDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
+        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        List<Question> questions = survey.getQuestions();
+        List<User> userList = classroom.getUsers();
+        List<Long> userOidList= userList.stream().map(User::getOid).toList();
+        return SurveyOfClassroomResponseDto.builder()
+                .surveyOid(survey.getOid())
+                .surveyTitle(survey.getSurveyTitle())
+                .courseTopic(survey.getCourseTopic())
+                .surveyAnswers(questions.parallelStream().map(question ->
+                        QuestionWithAnswersResponseDto.builder()
+                                .questionOid(question.getOid())
+                                .questionString(question.getQuestionString())
+                                .questionTypeOid(question.getQuestionType().getOid())
+                                .order(question.getOrder())
+                                .responses(
+                                        question.getResponses()
+                                        .stream()
+                                        .filter(response -> userOidList.contains(response.getUser().getOid()))
+                                        .map(response -> ResponseUnmaskedDto.builder()
+                                                .userOid(response.getUser().getOid())
+                                                .firstName(response.getUser().getFirstName())
+                                                .lastName(response.getUser().getLastName())
+                                                .email(response.getUser().getEmail())
+                                                .responseOid(response.getOid())
+                                                .response(response.getResponseString())
+                                                .build())
+                                        .collect(Collectors.toList()))
+                                .build()).collect(Collectors.toList())
+                ).build();
+
     }
 }

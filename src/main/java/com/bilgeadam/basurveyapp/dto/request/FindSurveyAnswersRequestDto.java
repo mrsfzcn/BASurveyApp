@@ -18,9 +18,7 @@ import lombok.Setter;
 @Builder
 public class FindSurveyAnswersRequestDto {
     @NotNull
-    @NotBlank
     private Long surveyOid;
     @NotNull
-    @NotBlank
     private Long classroomOid;
 }
