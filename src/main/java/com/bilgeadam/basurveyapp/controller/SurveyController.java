@@ -1,6 +1,11 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
@@ -15,7 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -71,8 +84,8 @@ public class SurveyController {
 
     @PutMapping("/update-survey-response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
-    ResponseEntity<Survey> updateSurveyAnswers(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
-        return ResponseEntity.ok(surveyService.updateSurveyAnswers(surveyId, dto));
+    ResponseEntity<Survey> updateSurveyResponses(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
+        return ResponseEntity.ok(surveyService.updateSurveyResponses(surveyId, dto));
     }
 
     @PutMapping("/assign")

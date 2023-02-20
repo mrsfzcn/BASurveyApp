@@ -1,6 +1,16 @@
 package com.bilgeadam.basurveyapp.exceptions;
 
-import com.bilgeadam.basurveyapp.exceptions.custom.*;
+import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientAnswerException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -11,7 +21,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.*;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.ACCESS_DENIED;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.CLASSROOM_ALREADY_EXISTS;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.CLASSROOM_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.DATA_NOT_VALID;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.LOGIN_ERROR_USERNAME_DOES_NOT_EXIST;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.LOGIN_ERROR_WRONG_PASSWORD;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.QUESTION_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.QUESTION_TYPE_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.REGISTER_ERROR_DATA_EXISTS;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.RESOURCE_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.SURVEY_ALREADY_ANSWERED;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.SURVEY_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.UNEXPECTED_ERROR;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.USER_DOES_NOT_EXIST;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.USER_INSUFFICIENT_ANSWER;
 
 /**
  * @author Eralp Nitelik

@@ -3,7 +3,11 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.AddUsersToClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateClassroomDto;
 import com.bilgeadam.basurveyapp.dto.request.DeleteUserInClassroomDto;
-import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ClassroomSimpleResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
@@ -79,7 +83,7 @@ public class ClassroomService {
         }
         Classroom classroom = optionalClassroom.get();
         List<User> users = classroom.getUsers();
-        List<Survey> surveys = classroom.getSurveys();
+        List<Survey> surveys = classroom.getSurveyRegistrations().stream().map(sR -> sR.getSurvey()).toList();
         return ClassroomResponseDto.builder()
                 .classroomName(classroom.getName())
                 .classroomOid(classroom.getOid())

@@ -8,6 +8,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class EmailService {
 
@@ -29,19 +31,19 @@ public class EmailService {
                     "Bizi tercih ettiğiniz için teşekkür ederiz!";
 
 
-//    public void sendSurveyMail(Map<String,String> mailTokenMap) throws MessagingException {
-//
-//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-//
-//        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
-//            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
-//            helper.setTo(entry.getKey());
-//            helper.setSubject(SUBJECT);
-//            helper.setFrom(FROM);
-//            javaMailSender.send(helper.getMimeMessage());
-//        }
-//    }
+    public void sendSurveyMail(Map<String,String> mailTokenMap) throws MessagingException {
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
+            helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
+            helper.setTo(entry.getKey());
+            helper.setSubject(SUBJECT);
+            helper.setFrom(FROM);
+            javaMailSender.send(helper.getMimeMessage());
+        }
+    }
 
     public void sendSurveyMail(String email, String jwtToken) throws MessagingException {
 
