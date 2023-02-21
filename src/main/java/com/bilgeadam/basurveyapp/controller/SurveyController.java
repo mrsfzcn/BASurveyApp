@@ -104,7 +104,15 @@ public class SurveyController {
     ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
+    @GetMapping("/findSurveyByStudentOid")
+    ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByStudentOid() {
+        return ResponseEntity.ok(surveyService.findStudentSurveys());
+    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
+//    ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByStudentOid() {
+//        return ResponseEntity.ok(surveyService.findStudentSurveys());
+//    }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/findSurveyAnswers")
     ResponseEntity<SurveyOfClassroomResponseDto> findSurveyAnswers(@RequestBody FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {

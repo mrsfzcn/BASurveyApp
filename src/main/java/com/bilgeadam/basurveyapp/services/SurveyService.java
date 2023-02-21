@@ -2,16 +2,9 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.ClassroomWithSurveysResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionWithAnswersResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
@@ -21,6 +14,8 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
@@ -68,6 +63,7 @@ public class SurveyService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -360,7 +356,7 @@ public class SurveyService {
                 .toList().contains(classroomOptional.get().getOid()))
             .toList();
 
-        return mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
+        return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
 
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
@@ -383,45 +379,6 @@ public class SurveyService {
         Set<Long> updateResponseQuestionIdSet = updateResponseMap.keySet();
 
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
-    }
-
-
-    // survey listesini -- survey dto list'e mapleyen method
-    /*
-    Mapper methodları service de yazılmaz!!!
-     */
-    public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
-        return surveys.stream()
-            .map(survey -> {
-                SurveyByClassroomResponseDto surveyDto = new SurveyByClassroomResponseDto();
-                surveyDto.setSurveyOid(survey.getOid());
-                surveyDto.setSurveyTitle(survey.getSurveyTitle());
-                surveyDto.setCourseTopic(survey.getCourseTopic());
-
-                List<SurveyByClassroomQuestionsResponseDto> questionDtoList = survey.getQuestions().stream()
-                    .map(question -> {
-                        SurveyByClassroomQuestionsResponseDto questionDto = new SurveyByClassroomQuestionsResponseDto();
-                        questionDto.setQuestionOid(question.getOid());
-                        questionDto.setQuestionString(question.getQuestionString());
-
-                        List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList = question.getResponses().stream()
-                            .map(answer -> {
-                                SurveyByClassroomQuestionAnswersResponseDto responseDto = new SurveyByClassroomQuestionAnswersResponseDto();
-                                responseDto.setResponseOid(answer.getOid());
-                                responseDto.setResponseString(answer.getResponseString());
-                                return responseDto;
-                            })
-                            .collect(Collectors.toList());
-
-                        questionDto.setResponseDtoList(responseDtoList);
-                        return questionDto;
-                    })
-                    .collect(Collectors.toList());
-
-                surveyDto.setQuestionDtoList(questionDtoList);
-                return surveyDto;
-            })
-            .collect(Collectors.toList());
     }
 
     public SurveyOfClassroomResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) {
@@ -486,5 +443,25 @@ public class SurveyService {
                     .build()).collect(Collectors.toList())
             )
             .build();
+    }
+
+    public List<SurveyByClassroomResponseDto> findStudentSurveys() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        Long userOid = (Long) authentication.getCredentials();
+        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        List<Survey> surveyList = surveyRepository.findAllActive();
+
+        return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveyList
+             .stream()
+             .filter(survey -> survey.getUsers()
+                     .stream()
+                     .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
     }
 }

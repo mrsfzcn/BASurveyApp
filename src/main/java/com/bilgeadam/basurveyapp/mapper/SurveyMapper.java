@@ -1,23 +1,49 @@
-//package com.bilgeadam.basurveyapp.mapper;
-//
-//import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
-//import com.bilgeadam.basurveyapp.entity.Survey;
-//import org.mapstruct.InjectionStrategy;
-//import org.mapstruct.Mapper;
-//import org.mapstruct.Mapping;
-//import org.mapstruct.factory.Mappers;
-//
-//import java.util.List;
-//
-//@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
-//public interface SurveyMapper {
-//
-//    SurveyMapper SURVEY_MAPPER = Mappers.getMapper(SurveyMapper.class);
-//
-//    @Mapping(target = "surveyClassroomResponseDtoList", source = "classrooms")
-//    @Mapping(target = "surveyQuestionResponseDtoList", source = "questions")
-//    @Mapping(target = "surveyUserResponseDtoList", source = "users")
-//    @Mapping(target = "surveyOid", source = "oid")
-//    SurveyResponseDto toSurveyResponseDto(Survey survey);
-//    List<SurveyResponseDto> toSurveyResponseDtos(List<Survey> surveys);
-//}
+package com.bilgeadam.basurveyapp.mapper;
+
+
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
+import com.bilgeadam.basurveyapp.entity.Survey;
+import org.springframework.stereotype.Component;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
+@Component
+public class SurveyMapper {
+
+  public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
+        return surveys.stream()
+                .map(survey -> {
+                    SurveyByClassroomResponseDto surveyDto = new SurveyByClassroomResponseDto();
+                    surveyDto.setSurveyOid(survey.getOid());
+                    surveyDto.setSurveyTitle(survey.getSurveyTitle());
+                    surveyDto.setCourseTopic(survey.getCourseTopic());
+
+                    List<SurveyByClassroomQuestionsResponseDto> questionDtoList = survey.getQuestions().stream()
+                            .map(question -> {
+                                SurveyByClassroomQuestionsResponseDto questionDto = new SurveyByClassroomQuestionsResponseDto();
+                                questionDto.setQuestionOid(question.getOid());
+                                questionDto.setQuestionString(question.getQuestionString());
+
+                                List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList = question.getResponses().stream()
+                                        .map(answer -> {
+                                            SurveyByClassroomQuestionAnswersResponseDto responseDto = new SurveyByClassroomQuestionAnswersResponseDto();
+                                            responseDto.setResponseOid(answer.getOid());
+                                            responseDto.setResponseString(answer.getResponseString());
+                                            return responseDto;
+                                        })
+                                        .collect(Collectors.toList());
+
+                                questionDto.setResponseDtoList(responseDtoList);
+                                return questionDto;
+                            })
+                            .collect(Collectors.toList());
+
+                    surveyDto.setQuestionDtoList(questionDtoList);
+                    return surveyDto;
+                })
+                .collect(Collectors.toList());
+    }
+}
