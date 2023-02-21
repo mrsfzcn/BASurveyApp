@@ -11,4 +11,6 @@ import java.util.List;
 public interface SurveyRegistrationRepository extends BaseRepository<SurveyRegistration, Long> {
 
     List<SurveyRegistration> findAllByEndDateAfter(LocalDateTime localDateTime);
+
+    SurveyRegistration findByClassroomOidAndSurveyOid(Long classroomOid, Long surveyOid);
 }

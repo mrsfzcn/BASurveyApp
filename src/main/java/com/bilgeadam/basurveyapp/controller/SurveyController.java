@@ -6,16 +6,14 @@ import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyOfClassroomResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerClassroomSurveyResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -107,7 +105,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/findSurveyAnswers")
-    ResponseEntity<SurveyOfClassroomResponseDto> findSurveyAnswers(@RequestBody FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
+    ResponseEntity<SurveyOfClassroomMaskedResponseDto> findSurveyAnswers(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findSurveyAnswers(findSurveyAnswersRequestDto));
     }
 
@@ -116,5 +114,11 @@ public class SurveyController {
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findsurveyanswersunmasked")
+    ResponseEntity<SurveyOfClassroomResponseDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto){
+        return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
+    }
+
 }
 
