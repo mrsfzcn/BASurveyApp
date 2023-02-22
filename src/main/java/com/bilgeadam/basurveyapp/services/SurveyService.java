@@ -9,6 +9,9 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.repositories.*;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
@@ -53,9 +56,11 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
+    private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
+    private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
@@ -348,7 +353,7 @@ public class SurveyService {
                 .toList().contains(classroomOptional.get().getOid()))
             .toList();
 
-        return mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
+        return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
 
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
@@ -373,51 +378,12 @@ public class SurveyService {
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
     }
 
-
-    // survey listesini -- survey dto list'e mapleyen method
-    /*
-    Mapper methodları service de yazılmaz!!!
-     */
-    public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
-        return surveys.stream()
-            .map(survey -> {
-                SurveyByClassroomResponseDto surveyDto = new SurveyByClassroomResponseDto();
-                surveyDto.setSurveyOid(survey.getOid());
-                surveyDto.setSurveyTitle(survey.getSurveyTitle());
-                surveyDto.setCourseTopic(survey.getCourseTopic());
-
-                List<SurveyByClassroomQuestionsResponseDto> questionDtoList = survey.getQuestions().stream()
-                    .map(question -> {
-                        SurveyByClassroomQuestionsResponseDto questionDto = new SurveyByClassroomQuestionsResponseDto();
-                        questionDto.setQuestionOid(question.getOid());
-                        questionDto.setQuestionString(question.getQuestionString());
-
-                        List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList = question.getResponses().stream()
-                            .map(answer -> {
-                                SurveyByClassroomQuestionAnswersResponseDto responseDto = new SurveyByClassroomQuestionAnswersResponseDto();
-                                responseDto.setResponseOid(answer.getOid());
-                                responseDto.setResponseString(answer.getResponseString());
-                                return responseDto;
-                            })
-                            .collect(Collectors.toList());
-
-                        questionDto.setResponseDtoList(responseDtoList);
-                        return questionDto;
-                    })
-                    .collect(Collectors.toList());
-
-                surveyDto.setQuestionDtoList(questionDtoList);
-                return surveyDto;
-            })
-            .collect(Collectors.toList());
-    }
-
     public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) {
         User user = userRepository.findActiveById((Long)
-            SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getCredentials()
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (user.getRole() == Role.MASTER_TRAINER || user.getRole() == Role.ASSISTANT_TRAINER) {
             if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
@@ -429,22 +395,22 @@ public class SurveyService {
         List<Question> questions = survey.getQuestions();
         List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
         return SurveyOfClassroomMaskedResponseDto.builder()
-            .surveyOid(survey.getOid())
-            .surveyTitle(survey.getSurveyTitle())
-            .courseTopic(survey.getCourseTopic())
-            .surveyAnswers(questions.parallelStream().map(question ->
-                QuestionWithAnswersMaskedResponseDto.builder()
-                    .questionOid(question.getOid())
-                    .questionString(question.getQuestionString())
-                    .questionTypeOid(question.getQuestionType().getOid())
-                    .order(question.getOrder())
-                    .responses(question.getResponses()
-                        .stream()
-                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
-                        .map(Response::getResponseString)
-                        .collect(Collectors.toList()))
-                    .build()).collect(Collectors.toList())
-            ).build();
+                .surveyOid(survey.getOid())
+                .surveyTitle(survey.getSurveyTitle())
+                .courseTopic(survey.getCourseTopic())
+                .surveyAnswers(questions.parallelStream().map(question ->
+                        QuestionWithAnswersMaskedResponseDto.builder()
+                                .questionOid(question.getOid())
+                                .questionString(question.getQuestionString())
+                                .questionTypeOid(question.getQuestionType().getOid())
+                                .order(question.getOrder())
+                                .responses(question.getResponses()
+                                        .stream()
+                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
+                                        .map(Response::getResponseString)
+                                        .collect(Collectors.toList()))
+                                .build()).collect(Collectors.toList())
+                ).build();
     }
 
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
@@ -509,5 +475,33 @@ public class SurveyService {
                                 .build()).collect(Collectors.toList())
                 ).build();
 
+    }
+
+    public List<SurveyByClassroomResponseDto> findStudentSurveys() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        Long userOid = (Long) authentication.getCredentials();
+        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+
+        List<Survey> surveyList = surveyRepository.findAllActive();
+
+        return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveyList
+             .stream()
+             .filter(survey -> survey.getUsers()
+                     .stream()
+                     .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
+    }
+
+    public Boolean addQuestionToSurvey(Long surveyId, SurveyAddQuestionRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(surveyId).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        survey.getQuestions().add(question);
+        surveyRepository.save(survey);
+        return true;
     }
 }

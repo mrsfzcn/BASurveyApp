@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.dto.request.FilterSurveyQuestionsRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveySimpleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
@@ -38,9 +39,9 @@ public class QuestionService {
                 .questionString(createQuestionDto.getQuestionString())
                 .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                         () -> new QuestionTypeNotFoundException("Question type is not found")))
-                .survey(surveyRepository.findActiveById(createQuestionDto.getSurveyOid()).orElseThrow(
-                        () -> new SurveyNotFoundException("Survey is not found.")))
                 .order(createQuestionDto.getOrder())
+                .tag(createQuestionDto.getTag())
+                .subTags(createQuestionDto.getSubTags())
                 .build();
         questionRepository.save(question);
         return true;
@@ -68,8 +69,11 @@ public class QuestionService {
 
             return QuestionFindByIdResponseDto.builder()
                     .questionString(optionalQuestion.get().getQuestionString())
-                    .surveyTitle(surveyRepository.findActiveById(optionalQuestion.get().getSurvey().getOid()).get().getSurveyTitle()
-                            .describeConstable().orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
+                    .surveys(optionalQuestion.get().getSurveys().stream().map(survey -> SurveySimpleResponseDto.builder()
+                            .surveyOid(survey.getOid())
+                            .surveyTitle(survey.getSurveyTitle())
+                            .courseTopic(survey.getCourseTopic())
+                            .build()).toList())
                     .questionType(questionTypeRepository.findActiveById(optionalQuestion.get().getQuestionType().getOid()).get().getQuestionType()
                             .describeConstable().orElseThrow(() -> new QuestionTypeNotFoundException("Question type not found")))
                     .order(optionalQuestion.get().getOrder())
@@ -87,6 +91,8 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
+                        .tag(question.getTag())
+                        .subTags(question.getSubTags())
                         .build()));
         return responseDtoList;
     }
@@ -116,6 +122,8 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
+                    .tag(question.getTag())
+                    .subTags(question.getSubTags())
                     .build());
         }
         return questionsDto;

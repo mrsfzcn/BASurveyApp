@@ -17,7 +17,7 @@ public class ResponseRequestSaveDto {
     @NotBlank
     @NotNull
     private String responseString;
-    @NotBlank
+
     @NotNull
     private Long questionOid;
 }

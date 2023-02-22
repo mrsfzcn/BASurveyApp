@@ -1,9 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.Question;
@@ -124,9 +122,9 @@ public class ResponseService {
 
     public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
-        surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
         return responseRepository
-                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(dto.getSurveyOid()))
+                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(survey))
                 .stream()
                 .map(response -> AnswerResponseDto.builder()
                         .responseString(response.getResponseString())
@@ -177,5 +175,28 @@ public class ResponseService {
                 .questionOid(r.getQuestion().getOid())
                 .build()));
         return answerResponseDtoList;
+    }
+
+    public Boolean updateStudentAnswers(Long surveyOid, SurveyUpdateResponseRequestDto dto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        if ("anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("authentication failure.");
+        }
+        Long userOid = (Long) authentication.getCredentials();
+        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(()->new ResourceNotFoundException("There's a error while finding survey"));
+        List<Response>responseList=survey.getQuestions().stream().flatMap(q->q.getResponses().stream()).toList();
+        if (responseList.isEmpty()) {
+            throw new ResourceNotFoundException("There's a error while finding response");
+        }
+        responseList
+                .stream()
+                .filter(r->r.getUser().getOid().equals(userOid))
+                .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
+        responseRepository.saveAll(responseList);
+        return true;
     }
 }

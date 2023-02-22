@@ -1,9 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import jakarta.validation.Valid;
@@ -70,5 +67,10 @@ public class ResponseController {
     @GetMapping("/findResponseByClassroomOid")
     public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
         return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
+    @GetMapping("updateStudentResponses")
+    ResponseEntity<Boolean> updateStudentResponses (@RequestParam Long surveyOid,@RequestBody SurveyUpdateResponseRequestDto dto){
+        return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid,dto));
     }
 }
