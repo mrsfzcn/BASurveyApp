@@ -1,14 +1,18 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -56,6 +60,24 @@ public class AuthService {
                         request.getPassword()
                 )
         );
+        return AuthenticationResponseDto.builder()
+                .token(jwtService.generateToken(user.get()))
+                .build();
+    }
+
+    public AuthenticationResponseDto changeAuthenticate(ChangeLoginRequestDto request) {
+        Optional<User> authorizedUser = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
+        if(authorizedUser.isEmpty()) throw new ResourceNotFoundException("User is not found");
+        if(!authorizedUser.get().getRole().equals(Role.MANAGER)) throw new AccessDeniedException("Unauthorized account");
+        Optional<User> user = userRepository.findByEmail(request.getUserEmail());
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("Username does not exist.");
+        }
+
+        if(user.get().getRole().equals(Role.MANAGER) || user.get().getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Unauthorized account");
+        }
+
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
