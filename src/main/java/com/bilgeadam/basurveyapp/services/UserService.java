@@ -1,14 +1,18 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     public List<UserResponseDto> getStudentList() {
         List<User> students = userRepository.findStudents();
@@ -106,5 +111,20 @@ public class UserService {
             throw new ResourceNotFoundException("User is not found");
         }
         return userById.get();
+    }
+
+    public Optional<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
+        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
+        if(user.isEmpty()) throw new ResourceNotFoundException("User is not found");
+        if(!user.get().getRole().equals(Role.MANAGER)) throw new AccessDeniedException("Unauthorized account");
+        List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList = userRepository.findTrainersAndStudents()
+                .stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
+                        .firstName(u.getFirstName())
+                        .lastName(u.getLastName())
+                        .email(u.getEmail())
+                        .role(u.getRole())
+                        .build()).collect(Collectors.toList());
+
+        return Optional.ofNullable(trainersAndStudentsList);
     }
 }

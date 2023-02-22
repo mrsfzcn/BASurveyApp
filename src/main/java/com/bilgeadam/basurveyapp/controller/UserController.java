@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -87,5 +88,11 @@ public class UserController {
         } catch (Exception ex) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
+    @GetMapping("/trainersandstudents")
+    ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
+        return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken).get());
     }
 }
