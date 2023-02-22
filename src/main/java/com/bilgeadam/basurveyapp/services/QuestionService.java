@@ -38,6 +38,8 @@ public class QuestionService {
                 .survey(surveyRepository.findActiveById(createQuestionDto.getSurveyOid()).orElseThrow(
                         () -> new SurveyNotFoundException("Survey is not found.")))
                 .order(createQuestionDto.getOrder())
+                .tag(createQuestionDto.getTag())
+                .subTags(createQuestionDto.getSubTags())
                 .build();
         questionRepository.save(question);
         return true;
@@ -84,6 +86,8 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
+                        .tag(question.getTag())
+                        .subTags(question.getSubTags())
                         .build()));
         return responseDtoList;
     }
@@ -113,6 +117,8 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
+                    .tag(question.getTag())
+                    .subTags(question.getSubTags())
                     .build());
         }
         return questionsDto;

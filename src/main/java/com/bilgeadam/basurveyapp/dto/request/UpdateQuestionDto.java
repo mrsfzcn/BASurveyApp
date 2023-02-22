@@ -20,4 +20,5 @@ public class UpdateQuestionDto {
     @NotBlank
     @NotNull
     String questionString;
+
 }
