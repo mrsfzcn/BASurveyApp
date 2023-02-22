@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.repositories.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
@@ -55,6 +56,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
+    private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -493,5 +495,13 @@ public class SurveyService {
              .filter(survey -> survey.getUsers()
                      .stream()
                      .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
+    }
+
+    public Boolean addQuestionToSurvey(Long surveyId, SurveyAddQuestionRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(surveyId).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        survey.getQuestions().add(question);
+        surveyRepository.save(survey);
+        return true;
     }
 }

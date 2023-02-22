@@ -27,12 +27,12 @@ public class Question extends BaseEntity {
     private QuestionType questionType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Response> responses;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "oid", name = "survey")
-    private Survey survey;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //@JoinColumn(referencedColumnName = "oid", name = "survey")
+    private List<Survey> surveys;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Tag tag;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<SubTag> subTags;
 
 }

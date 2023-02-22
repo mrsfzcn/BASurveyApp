@@ -122,9 +122,9 @@ public class ResponseService {
 
     public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
-        surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
         return responseRepository
-                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(dto.getSurveyOid()))
+                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(survey))
                 .stream()
                 .map(response -> AnswerResponseDto.builder()
                         .responseString(response.getResponseString())
