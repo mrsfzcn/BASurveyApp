@@ -2,6 +2,8 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
+import com.bilgeadam.basurveyapp.dto.request.FilterSurveyQuestionsByKeywordRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.FilterSurveyQuestionsRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,4 +120,26 @@ public class QuestionService {
         }
         return questionsDto;
     }
+
+    public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
+                                        .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(dto.getSurveyOid());
+        List<QuestionResponseDto> filteredList = allQuestions.stream()
+                .filter(filtered-> filtered.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
+                .map(question-> QuestionResponseDto.builder()
+                        .questionOid(question.getOid())
+                        .questionString(question.getQuestionString())
+                        .order(question.getOrder())
+                        .build())
+                .collect(Collectors.toList());
+
+        if(filteredList.size()!=0){
+            return filteredList;
+        }else{
+            throw new ResourceNotFoundException("There is no any result to be shown");
+        }
+
+    }
+
 }

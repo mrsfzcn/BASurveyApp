@@ -1,8 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.services.QuestionService;
@@ -62,5 +60,12 @@ public class QuestionController {
     @GetMapping("/getsurveyquestions/{token}")
     public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/filterbykeyword")
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto){
+        return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(dto));
     }
 }
