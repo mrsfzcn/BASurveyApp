@@ -32,6 +32,7 @@ public class Question extends BaseEntity {
     private Survey survey;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Tag tag;
-
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SubTag> subTags;
 
 }
