@@ -9,17 +9,13 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
-import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
+import com.bilgeadam.basurveyapp.repositories.*;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientAnswerException;
-import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
-import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
-import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
-import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -53,6 +49,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
+    private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -509,5 +506,13 @@ public class SurveyService {
                                 .build()).collect(Collectors.toList())
                 ).build();
 
+    }
+
+    public Boolean addQuestionToSurvey(Long surveyId, SurveyAddQuestionRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(surveyId).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        survey.getQuestions().add(question);
+        surveyRepository.save(survey);
+        return true;
     }
 }

@@ -1,11 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
@@ -64,6 +59,12 @@ public class SurveyController {
     @PostMapping("/create")
     ResponseEntity<Boolean> create(@RequestBody SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/add-question-to-survey/{surveyId}")
+    ResponseEntity<Boolean> addQuestionToSurvey(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
+        return ResponseEntity.ok(surveyService.addQuestionToSurvey(surveyId, dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
