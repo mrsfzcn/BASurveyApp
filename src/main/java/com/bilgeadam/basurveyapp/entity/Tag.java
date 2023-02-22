@@ -15,6 +15,5 @@ import java.util.List;
 public class Tag extends BaseEntity {
     @Column(name = "tag_string")
     private String tagString;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SubTag> subTags;
+
 }
