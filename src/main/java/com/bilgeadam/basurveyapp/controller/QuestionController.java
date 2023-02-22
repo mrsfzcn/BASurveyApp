@@ -41,17 +41,20 @@ public class QuestionController {
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
         return ResponseEntity.ok(questionService.findById(findByIdRequestDto.getOid()));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId) {
@@ -59,14 +62,13 @@ public class QuestionController {
     }
 
     @GetMapping("/getsurveyquestions/{token}")
-    public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
+    public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token) {
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/filterbykeyword")
-    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto){
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto) {
         return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(dto));
     }
 }

@@ -131,20 +131,20 @@ public class QuestionService {
 
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
-                                        .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(dto.getSurveyOid());
         List<QuestionResponseDto> filteredList = allQuestions.stream()
-                .filter(filtered-> filtered.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
-                .map(question-> QuestionResponseDto.builder()
+                .filter(filtered -> filtered.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
+                .map(question -> QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
                         .build())
                 .collect(Collectors.toList());
 
-        if(filteredList.size()!=0){
+        if (filteredList.size() != 0) {
             return filteredList;
-        }else{
+        } else {
             throw new ResourceNotFoundException("There is no any result to be shown");
         }
 
