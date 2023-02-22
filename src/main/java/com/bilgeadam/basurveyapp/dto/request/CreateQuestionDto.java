@@ -24,10 +24,7 @@ public class CreateQuestionDto {
     @NotBlank
     @NotNull
     String questionString;
-    @NotBlank
-    @NotNull
-    Long surveyOid;
-    @NotBlank
+
     @NotNull
     Long questionTypeOid;
     Integer order;
