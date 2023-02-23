@@ -14,9 +14,9 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
     @Query("SELECT q.oid FROM Question q WHERE q.surveys IN ?1")
     List<Long> findSurveyQuestionOidList(Survey survey);
 
-    @Query("SELECT q FROM Question q WHERE q.survey.oid = ?1")
-    List<Question> findSurveyQuestionList(Long surveyOid);
+    @Query("SELECT q FROM Question q WHERE q.surveys IN ?1")
+    List<Question> findSurveyQuestionList(Survey survey);
 
-    @Query("SELECT q FROM Question q WHERE q.state = 'ACTIVE' AND q.survey.oid = ?1")
-    List<Question> findSurveyActiveQuestionList(Long surveyOid);
+    @Query("SELECT q FROM Question q WHERE q.state = 'ACTIVE' AND q.surveys IN ?1")
+    List<Question> findSurveyActiveQuestionList(Survey survey);
 }

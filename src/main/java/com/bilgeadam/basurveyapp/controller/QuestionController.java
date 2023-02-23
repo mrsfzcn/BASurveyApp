@@ -71,4 +71,9 @@ public class QuestionController {
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto) {
         return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(dto));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/filtersurveyquestions")
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestBody @Valid FilterSurveyQuestionsRequestDto dto) {
+        return ResponseEntity.ok(questionService.filterSurveyQuestions(dto));
+    }
 }
