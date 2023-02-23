@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
+import com.bilgeadam.basurveyapp.dto.request.CreateQuestionUserRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
@@ -14,6 +15,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
+import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTypeRepository questionTypeRepository;
     private final SurveyRepository surveyRepository;
+
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
 
@@ -116,5 +120,20 @@ public class QuestionService {
                     .build());
         }
         return questionsDto;
+    }
+
+    public Boolean save(CreateQuestionUserRoleRequestDto dto) {
+
+        Question question = Question.builder()
+                .questionString(dto.getQuestionString())
+                .questionType(questionTypeRepository.findActiveById(dto.getQuestionTypeOid()).orElseThrow(
+                        () -> new QuestionTypeNotFoundException("Question type is not found")))
+                .survey(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(
+                        () -> new SurveyNotFoundException("Survey is not found.")))
+                .order(dto.getOrder())
+                .role(dto.getRole())
+                .build();
+        questionRepository.save(question);
+        return true;
     }
 }

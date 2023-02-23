@@ -1,11 +1,13 @@
 package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends BaseRepository<Question, Long> {
@@ -14,4 +16,10 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q WHERE q.survey.oid = ?1")
     List<Question> findSurveyQuestionList(Long surveyOid);
+
+    Optional<List<Question>> findByRole(String role);
 }
+
+
+
+

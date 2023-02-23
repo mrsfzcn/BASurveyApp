@@ -1,10 +1,12 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
+import com.bilgeadam.basurveyapp.dto.request.CreateQuestionUserRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.services.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -63,4 +65,17 @@ public class QuestionController {
     public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token){
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }
+
+
+    @PostMapping("/createUserRole")
+    public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid CreateQuestionUserRoleRequestDto dto) {
+        return ResponseEntity.ok(questionService.save(dto));
+    }
+
+
+
+
+
+
+
 }
