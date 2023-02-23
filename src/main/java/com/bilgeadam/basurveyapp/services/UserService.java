@@ -3,8 +3,11 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
+import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
+    private final QuestionTypeRepository questionTypeRepository;
 
     public List<UserResponseDto> getStudentList() {
         List<User> students = userRepository.findStudents();
@@ -106,5 +111,14 @@ public class UserService {
             throw new ResourceNotFoundException("User is not found");
         }
         return userById.get();
+    }
+
+    public List<Question> getQuestionByRole(String role) {
+    Optional<List<Question>> questions = questionRepository.findByRole(role);
+    if(questions.isEmpty()){
+        throw  new ResourceNotFoundException("Questions are not found");
+    }
+       return questions.get();
+
     }
 }
