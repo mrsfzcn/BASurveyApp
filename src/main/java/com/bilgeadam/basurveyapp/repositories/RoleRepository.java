@@ -13,6 +13,6 @@ import java.util.List;
  */
 @Repository
 public interface RoleRepository extends BaseRepository<Role, Long> {
-    @Query("SELECT r.users FROM Role r WHERE r.state = 'ACTIVE' AND r.role = ?1")
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = ?1)) ORDER BY email", nativeQuery = true)
     List<User> findUsersWithRole(String role);
 }
