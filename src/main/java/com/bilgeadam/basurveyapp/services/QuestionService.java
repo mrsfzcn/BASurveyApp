@@ -149,7 +149,6 @@ public class QuestionService {
                         //.subTagOids(question.getSubTags().stream().map(x-> x.getOid()).collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
-
         if (filteredList.size() != 0) {
             return filteredList;
         } else {

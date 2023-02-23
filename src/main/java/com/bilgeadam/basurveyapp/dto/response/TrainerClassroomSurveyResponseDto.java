@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Eralp Nitelik
@@ -20,6 +21,6 @@ public class TrainerClassroomSurveyResponseDto {
     String firstName;
     String lastName;
     String email;
-    String role;
+    Set<String> roles;
     List<ClassroomWithSurveysResponseDto> classroomSurveys;
 }

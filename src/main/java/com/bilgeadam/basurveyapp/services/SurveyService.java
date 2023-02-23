@@ -4,17 +4,11 @@ import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.repositories.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
-import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
@@ -62,6 +56,7 @@ public class SurveyService {
     private final JwtService jwtService;
     private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
+    private final RoleService roleService;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -334,7 +329,7 @@ public class SurveyService {
         Long userOid = (Long) authentication.getCredentials();
         User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-        if (user.getRole() == Role.ASSISTANT_TRAINER || user.getRole() == Role.MASTER_TRAINER) {
+        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
             Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
             if (!classroom.getUsers().contains(user)) {
                 throw new AccessDeniedException("authentication failure.");
@@ -385,7 +380,7 @@ public class SurveyService {
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
-        if (user.getRole() == Role.MASTER_TRAINER || user.getRole() == Role.ASSISTANT_TRAINER) {
+        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
             if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
@@ -425,7 +420,7 @@ public class SurveyService {
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
             .email(user.getEmail())
-            .role(user.getRole().toString())
+            .roles(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
             .classroomSurveys(classrooms.stream().map(classroom ->
                 ClassroomWithSurveysResponseDto.builder()
                     .classroomOid(classroom.getOid())
@@ -449,6 +444,7 @@ public class SurveyService {
         List<Question> questions = survey.getQuestions();
         List<User> userList = classroom.getUsers();
         List<Long> userOidList= userList.stream().map(User::getOid).toList();
+
         return SurveyOfClassroomResponseDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())

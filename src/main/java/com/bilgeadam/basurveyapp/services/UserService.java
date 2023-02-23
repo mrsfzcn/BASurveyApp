@@ -5,9 +5,10 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.repositories.RoleRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final RoleService roleService;
 
     public List<UserResponseDto> getStudentList() {
         List<User> students = userRepository.findStudents();
@@ -46,7 +48,7 @@ public class UserService {
     }
 
     public List<UserResponseDto> getAssistantTrainerList() {
-        List<User> students = userRepository.findAssitantTrainers();
+        List<User> students = userRepository.findAssistantTrainers();
         return students.stream().map(student -> UserResponseDto.builder()
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
@@ -116,15 +118,14 @@ public class UserService {
     public Optional<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
         if(user.isEmpty()) throw new ResourceNotFoundException("User is not found");
-        if(!user.get().getRole().equals(Role.MANAGER)) throw new AccessDeniedException("Unauthorized account");
+        if(!roleService.userHasRole(user.get(), "MANAGER")) throw new AccessDeniedException("Unauthorized account");
         List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList = userRepository.findTrainersAndStudents()
                 .stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
                         .firstName(u.getFirstName())
                         .lastName(u.getLastName())
                         .email(u.getEmail())
-                        .role(u.getRole())
+                        .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
                         .build()).collect(Collectors.toList());
-
-        return Optional.ofNullable(trainersAndStudentsList);
+        return Optional.of(trainersAndStudentsList);
     }
 }

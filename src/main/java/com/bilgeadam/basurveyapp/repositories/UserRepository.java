@@ -15,24 +15,24 @@ public interface UserRepository extends BaseRepository<User,Long> {
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email IN ?1")
     List<User> findAllByEmails(List<String> emails);
 
-    @Query("SELECT u.email FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    @Query("SELECT u.email FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'STUDENT') ORDER BY u.email ASC")
     List<String> findStudentEmails();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'STUDENT') ORDER BY u.email ASC")
     List<User> findStudents();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MASTER_TRAINER' ORDER BY u.email ASC")
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'MASTER_TRAINER') ORDER BY u.email ASC")
     List<User> findMasterTrainers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ASSISTANT_TRAINER' ORDER BY u.email ASC")
-    List<User> findAssitantTrainers();
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'ASSISTANT_TRAINER') ORDER BY u.email ASC")
+    List<User> findAssistantTrainers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MANAGER' ORDER BY u.email ASC")
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'MANAGER') ORDER BY u.email ASC")
     List<User> findManagers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ADMIN' ORDER BY u.email ASC")
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'ADMIN') ORDER BY u.email ASC")
     List<User> findAdmins();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND (u.role = 'STUDENT' OR u.role = 'ASSISTANT_TRAINER' OR u.role = 'MASTER_TRAINER') ORDER BY u.email ASC")
+    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.roles IN (SELECT r FROM Role r WHERE r.role = 'STUDENT' OR r.role = 'ASSISTANT_TRAINER' OR r.role = 'MASTER_TRAINER') ORDER BY u.email ASC")
     List<User> findTrainersAndStudents();
 }

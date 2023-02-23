@@ -1,9 +1,8 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Eralp Nitelik
@@ -17,5 +16,5 @@ public class UserTrainersAndStudentsResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private Role role;
+    private Set<String> roles;
 }
