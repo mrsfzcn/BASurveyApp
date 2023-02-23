@@ -51,6 +51,9 @@ public class User extends BaseEntity implements UserDetails {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.toString()));
     }
 
+    @ManyToMany(mappedBy = "users")
+    private List<Question> questions;
+
     @Override
     public String getUsername() {
         return this.email;

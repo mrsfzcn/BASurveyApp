@@ -20,6 +20,7 @@ import java.util.List;
 public class Question extends BaseEntity {
     @Column(name = "question_string")
     private String questionString;
+    private String role;
     @Column(name = "question_order")
     private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -33,5 +34,9 @@ public class Question extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Tag tag;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable( name = "users_role", joinColumns =
+    @JoinColumn(name = "questions_oid", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "users_oid", referencedColumnName = "oid"))
+    private List<User> users;
 
 }
