@@ -28,7 +28,7 @@ public class CreateQuestionDto {
     @NotNull
     Long questionTypeOid;
     Integer order;
-    Tag tag;
-    List<SubTag> subTags;
+    Long tagOid;
+    List<Long> subTagOids;
 
 }
