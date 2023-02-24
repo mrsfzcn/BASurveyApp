@@ -1,10 +1,10 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,8 +12,10 @@ import lombok.*;
 @Setter
 @Entity
 @Builder
-@Table(name = "subtags")
+@Table(name = "subtag")
 public class SubTag extends BaseEntity {
     @Column(name = "sub_tag_string")
     private String subTagString;
+    @ManyToMany(mappedBy = "subtag", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Question> questions;
 }

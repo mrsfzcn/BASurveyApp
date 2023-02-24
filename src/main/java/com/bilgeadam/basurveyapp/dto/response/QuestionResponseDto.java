@@ -19,7 +19,7 @@ public class QuestionResponseDto {
     Long questionOid;
     String questionString;
     Integer order;
-    Long tagOid;
+    List<Long> tagOids;
     List<Long> subTagOids;
 
 }
