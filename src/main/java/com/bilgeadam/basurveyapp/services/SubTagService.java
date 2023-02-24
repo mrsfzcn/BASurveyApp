@@ -1,12 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateSubtagDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SubtagResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.SubTag;
-import com.bilgeadam.basurveyapp.entity.Tag;
 import com.bilgeadam.basurveyapp.repositories.SubTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -2,8 +2,8 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import lombok.RequiredArgsConstructor;

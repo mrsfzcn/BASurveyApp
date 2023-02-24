@@ -1,14 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
-import com.bilgeadam.basurveyapp.dto.response.SubtagResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.SubTag;
 import com.bilgeadam.basurveyapp.entity.Tag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
