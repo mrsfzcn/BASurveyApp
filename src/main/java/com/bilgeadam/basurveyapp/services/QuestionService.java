@@ -40,8 +40,8 @@ public class QuestionService {
                 .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                         () -> new QuestionTypeNotFoundException("Question type is not found")))
                 .order(createQuestionDto.getOrder())
-                .tag(tagRepository.findById(createQuestionDto.getTagOid()).get())
-                .subTags(createQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()))
+                .tag(createQuestionDto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()))
+                .subtag(createQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()))
                 .build();
         questionRepository.save(question);
         return true;
@@ -88,8 +88,8 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-                       // .tagOid(question.getTag().getOid())
-                       // .subTagOids(question.getSubTags().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                        .tagOids(question.getTag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                        .subTagOids(question.getSubtag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
                         .build()));
         return responseDtoList;
     }
@@ -119,8 +119,8 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    //.tagOid(question.getTag().getOid())
-                    //.subTagOids(question.getSubTags().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                    .tagOids(question.getTag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                    .subTagOids(question.getSubtag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
                     .build());
         }
         return questionsDto;
@@ -139,8 +139,8 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-                        //.tagOid(question.getTag().getOid())
-                        //.subTagOids(question.getSubTags().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                        .tagOids(question.getTag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                        .subTagOids(question.getSubtag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
         if (filteredList.size() != 0) {
@@ -156,7 +156,7 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         //List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey);
         List<Question> allQuestions = questionRepository.findAllActive();
-        List<Question> tempQuestions = filterByTag(allQuestions, dto.getTagOid());;
+        List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());;
 
         if(dto.getSubTagOids().size()!=0){
             tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
@@ -167,8 +167,8 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    //.tagOid(question.getTag().getOid())
-                    //.subTagOids(question.getSubTags().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                    .tagOids(question.getTag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
+                    .subTagOids(question.getSubtag().stream().map(x-> x.getOid()).collect(Collectors.toList()))
                     .build())
                     .collect(Collectors.toList());
         } else {
@@ -176,19 +176,19 @@ public class QuestionService {
         }
     }
 
+
     /**
-     * This method provides filtered questions list according to 'Tag'
+     * This method provides filtered questions list according to 'Tags'
      * @param questions
-     * @param tagOid
+     * @param tagOids
      * @return
      */
-    public List<Question> filterByTag(List<Question> questions, Long tagOid){
-            Tag tag = tagRepository.findById(tagOid).orElseThrow(() -> new ResourceNotFoundException("Tag not found."));
-            return questions.stream()
-                    .filter(filtered -> filtered.getTag().getOid().equals(tagOid))
-                    .collect(Collectors.toList());
+    public List<Question> filterByTags(List<Question> questions,List<Long>  tagOids){
+        List<Tag> tags = findAllTags(tagOids);
+        return questions.stream()
+                .filter(filtered -> filtered.getTag().containsAll(tags))
+                .collect(Collectors.toList());
     }
-
     /**
      * This method provides filtered questions list according to 'SubTags'
      * @param questions
@@ -198,7 +198,18 @@ public class QuestionService {
     public List<Question> filterBySubTag(List<Question> questions,List<Long>  subTagOids){
         List<SubTag> subTags = findAllSubTags(subTagOids);
         return questions.stream()
-                .filter(filtered -> filtered.getSubTags().containsAll(subTags))
+                .filter(filtered -> filtered.getSubtag().containsAll(subTags))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * it helps to bring all subtag list according to tag oids
+     * @param tagOids
+     * @return
+     */
+    public List<Tag> findAllTags(List<Long> tagOids){
+        return tagOids.stream()
+                .map(x-> tagRepository.findById(x).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
                 .collect(Collectors.toList());
     }
 

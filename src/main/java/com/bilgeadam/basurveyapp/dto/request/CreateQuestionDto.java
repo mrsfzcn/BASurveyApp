@@ -19,7 +19,7 @@ public class CreateQuestionDto {
     @NotNull
     Long questionTypeOid;
     Integer order;
-    Long tagOid;
+    List<Long> tagOids;
     List<Long> subTagOids;
 
 }

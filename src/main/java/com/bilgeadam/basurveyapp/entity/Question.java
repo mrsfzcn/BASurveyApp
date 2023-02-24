@@ -28,13 +28,14 @@ public class Question extends BaseEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     //@JoinColumn(referencedColumnName = "oid", name = "survey")
     private List<Survey> surveys;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Tag tag;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Tag> tag;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SubTag> subtag;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable( name = "users_role", joinColumns =
     @JoinColumn(name = "questions_oid", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "users_oid", referencedColumnName = "oid"))
     private List<User> users;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<SubTag> subTags;
+
 
 }
