@@ -20,6 +20,7 @@ import java.util.List;
 public class Question extends BaseEntity {
     @Column(name = "question_string")
     private String questionString;
+    // TODO better solution
     private String role;
     @Column(name = "question_order")
     private Integer order;
@@ -28,15 +29,16 @@ public class Question extends BaseEntity {
     private QuestionType questionType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Response> responses;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "oid", name = "survey")
-    private Survey survey;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    //@JoinColumn(referencedColumnName = "oid", name = "survey")
+    private List<Survey> surveys;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Tag tag;
-
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable( name = "users_role", joinColumns =
     @JoinColumn(name = "questions_oid", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "users_oid", referencedColumnName = "oid"))
     private List<User> users;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<SubTag> subTags;
 
 }

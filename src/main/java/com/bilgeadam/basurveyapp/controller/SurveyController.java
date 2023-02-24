@@ -1,11 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.FindSurveyAnswersRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
@@ -67,6 +62,12 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/add-question-to-survey/{surveyId}")
+    ResponseEntity<Boolean> addQuestionToSurvey(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
+        return ResponseEntity.ok(surveyService.addQuestionToSurvey(surveyId, dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update/{surveyId}")
     ResponseEntity<Survey> update(@PathVariable("surveyId") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
         return ResponseEntity.ok(surveyService.update(surveyId, dto));
@@ -101,6 +102,11 @@ public class SurveyController {
     @GetMapping("/findSurveyByClassroomOid")
     ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByClassroomOid(classroomOid));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
+    @GetMapping("/findSurveyByStudentOid")
+    ResponseEntity<List<SurveyByClassroomResponseDto>> findSurveyByStudentOid() {
+        return ResponseEntity.ok(surveyService.findStudentSurveys());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")

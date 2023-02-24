@@ -15,30 +15,24 @@ public interface UserRepository extends BaseRepository<User,Long> {
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email IN ?1")
     List<User> findAllByEmails(List<String> emails);
 
-    @Query("SELECT u.email FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    @Query(value = "SELECT email FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT ur.users_oid FROM users_roles ur WHERE ur.roles_oid = (SELECT r.oid FROM roles r WHERE r.role = 'STUDENT')) ORDER BY email", nativeQuery = true)
     List<String> findStudentEmails();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'STUDENT' ORDER BY u.email ASC")
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = 'STUDENT')) ORDER BY email", nativeQuery = true)
     List<User> findStudents();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MASTER_TRAINER' ORDER BY u.email ASC")
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = 'MASTER_TRAINER')) ORDER BY email", nativeQuery = true)
     List<User> findMasterTrainers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ASSISTANT_TRAINER' ORDER BY u.email ASC")
-    List<User> findAssitantTrainers();
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = 'ASSISTANT_TRAINER')) ORDER BY email", nativeQuery = true)
+    List<User> findAssistantTrainers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'MANAGER' ORDER BY u.email ASC")
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = 'MANAGER')) ORDER BY email", nativeQuery = true)
     List<User> findManagers();
 
-    @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.role = 'ADMIN' ORDER BY u.email ASC")
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid = (SELECT oid FROM roles WHERE role = 'ADMIN')) ORDER BY email", nativeQuery = true)
     List<User> findAdmins();
 
-
-
-
-
-
-
-
-
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid IN (SELECT oid FROM roles WHERE role = 'STUDENT' OR role = 'ASSISTANT_TRAINER' OR role = 'MASTER_TRAINER')) ORDER BY email", nativeQuery = true)
+    List<User> findTrainersAndStudents();
 }

@@ -1,16 +1,8 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.entity.enums.State;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,8 +33,8 @@ public class User extends BaseEntity implements UserDetails {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Role> roles;
     @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Classroom> classrooms;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -48,7 +42,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.toString()));
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
     }
 
     @ManyToMany(mappedBy = "users")

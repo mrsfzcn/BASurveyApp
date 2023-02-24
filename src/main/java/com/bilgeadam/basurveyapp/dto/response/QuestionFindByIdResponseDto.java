@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,6 +16,6 @@ import lombok.Setter;
 public class QuestionFindByIdResponseDto {
     String questionString;
     Integer order;
-    String surveyTitle;
+    List<SurveySimpleResponseDto> surveys;
     String questionType;
 }

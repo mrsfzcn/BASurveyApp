@@ -10,8 +10,8 @@ import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
 import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ClassroomNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 public class ClassroomService {
     private final ClassroomRepository classroomRepository;
     private final UserRepository userRepository;
+    private final RoleService roleService;
 
     @Transactional
     public Boolean createClassroom(CreateClassroomDto createClassroomDto) {
@@ -83,12 +84,12 @@ public class ClassroomService {
         }
         Classroom classroom = optionalClassroom.get();
         List<User> users = classroom.getUsers();
-        List<Survey> surveys = classroom.getSurveyRegistrations().stream().map(sR -> sR.getSurvey()).toList();
+        List<Survey> surveys = classroom.getSurveyRegistrations().stream().map(SurveyRegistration::getSurvey).toList();
         return ClassroomResponseDto.builder()
                 .classroomName(classroom.getName())
                 .classroomOid(classroom.getOid())
                 .students(users.stream()
-                        .filter(student -> student.getRole() == Role.STUDENT)
+                        .filter(student -> roleService.userHasRole(student, "STUDENT"))
                         .map(student -> UserSimpleResponseDto.builder()
                                 .firstName(student.getFirstName())
                                 .lastName(student.getLastName())
@@ -96,7 +97,7 @@ public class ClassroomService {
                                 .build())
                         .collect(Collectors.toList()))
                 .masterTrainers(users.stream()
-                        .filter(mt -> mt.getRole() == Role.MASTER_TRAINER)
+                        .filter(mt -> roleService.userHasRole(mt, "MASTER_TRAINER"))
                         .map(mt -> UserResponseDto.builder()
                                 .firstName(mt.getFirstName())
                                 .lastName(mt.getLastName())
@@ -105,7 +106,7 @@ public class ClassroomService {
                                 .build())
                         .collect(Collectors.toList()))
                 .assistantTrainers(users.stream()
-                        .filter(at -> at.getRole() == Role.ASSISTANT_TRAINER)
+                        .filter(at -> roleService.userHasRole(at, "ASSISTANT_TRAINER"))
                         .map(at -> UserResponseDto.builder()
                                 .firstName(at.getFirstName())
                                 .lastName(at.getLastName())

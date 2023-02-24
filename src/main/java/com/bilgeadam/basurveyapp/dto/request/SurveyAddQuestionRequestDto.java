@@ -2,22 +2,19 @@ package com.bilgeadam.basurveyapp.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class ResponseRequestDto {
+public class SurveyAddQuestionRequestDto {
+    @NotNull
     @NotBlank
+    private Long questionId;
     @NotNull
-    String responseString;
+    @NotBlank
+    private Long surveyId;
 
-    @NotNull
-    Long responseOid;
 }

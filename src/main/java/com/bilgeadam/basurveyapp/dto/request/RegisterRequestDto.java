@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  * @author Eralp Nitelik
@@ -41,5 +42,5 @@ public class RegisterRequestDto {
     @Size(min = 2, max = 128)
     private String lastName;
     @NotNull
-    private Role role;
+    private Set<String> roles;
 }
