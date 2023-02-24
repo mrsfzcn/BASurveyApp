@@ -9,13 +9,18 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class DeleteUserInClassroomDto {
+public class CreateQuestionUserRoleRequestDto {
+
     @NotBlank
     @NotNull
-    private Long classroomOid;
+    String questionString;
     @NotBlank
     @NotNull
-    private String userEmail;
+    Long questionTypeOid;
+    Integer order;
+    @NotBlank
+    @NotNull
+    String role;
 
 
 }

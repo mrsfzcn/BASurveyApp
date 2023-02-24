@@ -1,12 +1,7 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.SubTag;
-import com.bilgeadam.basurveyapp.entity.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import java.util.List;
 

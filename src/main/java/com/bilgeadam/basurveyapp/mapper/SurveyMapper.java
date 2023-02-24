@@ -7,7 +7,6 @@ import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import org.springframework.stereotype.Component;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 @Component

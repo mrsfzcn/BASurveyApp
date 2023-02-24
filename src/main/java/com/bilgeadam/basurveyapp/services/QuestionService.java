@@ -1,13 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.request.FilterSurveyQuestionsByKeywordRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.FilterSurveyQuestionsRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveySimpleResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.SubTag;
 import com.bilgeadam.basurveyapp.entity.Survey;
@@ -19,7 +14,6 @@ import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +26,8 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTypeRepository questionTypeRepository;
     private final SurveyRepository surveyRepository;
+
+    private final UserRepository userRepository;
     private final JwtService jwtService;
 
     private final TagRepository tagRepository;
@@ -70,7 +66,6 @@ public class QuestionService {
         if (optionalQuestion.isEmpty()) {
             throw new QuestionNotFoundException("Question is not found");
         } else {
-
             return QuestionFindByIdResponseDto.builder()
                     .questionString(optionalQuestion.get().getQuestionString())
                     .surveys(optionalQuestion.get().getSurveys().stream().map(survey -> SurveySimpleResponseDto.builder()
@@ -82,9 +77,7 @@ public class QuestionService {
                             .describeConstable().orElseThrow(() -> new QuestionTypeNotFoundException("Question type not found")))
                     .order(optionalQuestion.get().getOrder())
                     .build();
-
         }
-
     }
 
     public List<QuestionResponseDto> findAll() {
@@ -132,6 +125,7 @@ public class QuestionService {
         }
         return questionsDto;
     }
+
     //TODO tag ler eklendiğinde test edilecektir.
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
@@ -155,6 +149,7 @@ public class QuestionService {
             throw new ResourceNotFoundException("There is no any result to be shown");
         }
     }
+
     //TODO tag ler eklendiğinde test edilecektir.
     public List<QuestionResponseDto> filterSurveyQuestions(FilterSurveyQuestionsRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
@@ -218,4 +213,16 @@ public class QuestionService {
                .collect(Collectors.toList());
     }
 
+
+    public Boolean save(CreateQuestionUserRoleRequestDto dto) {
+        Question question = Question.builder()
+                .questionString(dto.getQuestionString())
+                .questionType(questionTypeRepository.findActiveById(dto.getQuestionTypeOid()).orElseThrow(
+                        () -> new QuestionTypeNotFoundException("Question type is not found")))
+                .order(dto.getOrder())
+                .role(dto.getRole())
+                .build();
+        questionRepository.save(question);
+        return true;
+    }
 }

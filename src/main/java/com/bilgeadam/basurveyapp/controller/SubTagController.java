@@ -1,12 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateSubtagDto;
-import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SubtagResponseDto;
-import com.bilgeadam.basurveyapp.entity.SubTag;
-import com.bilgeadam.basurveyapp.entity.Tag;
 import com.bilgeadam.basurveyapp.services.SubTagService;
-import com.bilgeadam.basurveyapp.services.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

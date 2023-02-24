@@ -3,12 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.SurveyResponseQuestionRequestDto;
-import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.repositories.ClassroomRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
@@ -25,17 +20,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,7 +1,6 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateRoleDto;
-import com.bilgeadam.basurveyapp.dto.response.ClassroomResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.CreateRoleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;

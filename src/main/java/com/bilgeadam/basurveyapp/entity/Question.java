@@ -2,11 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -20,6 +16,8 @@ import java.util.List;
 public class Question extends BaseEntity {
     @Column(name = "question_string")
     private String questionString;
+    // TODO better solution
+    private String role;
     @Column(name = "question_order")
     private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -32,6 +30,10 @@ public class Question extends BaseEntity {
     private List<Survey> surveys;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Tag tag;
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable( name = "users_role", joinColumns =
+    @JoinColumn(name = "questions_oid", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "users_oid", referencedColumnName = "oid"))
+    private List<User> users;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<SubTag> subTags;
 

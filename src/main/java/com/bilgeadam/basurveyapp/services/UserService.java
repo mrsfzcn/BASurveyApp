@@ -5,10 +5,12 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Classroom;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.repositories.RoleRepository;
+import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
+import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
+    private final QuestionTypeRepository questionTypeRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
 
@@ -127,5 +131,14 @@ public class UserService {
                         .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
                         .build()).collect(Collectors.toList());
         return Optional.of(trainersAndStudentsList);
+    }
+
+    public List<Question> getQuestionByRole(String role) {
+    Optional<List<Question>> questions = questionRepository.findByRole(role);
+    if(questions.isEmpty()){
+        throw  new ResourceNotFoundException("Questions are not found");
+    }
+       return questions.get();
+
     }
 }

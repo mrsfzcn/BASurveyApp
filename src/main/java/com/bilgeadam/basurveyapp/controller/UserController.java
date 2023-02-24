@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,13 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -94,5 +89,12 @@ public class UserController {
     @GetMapping("/trainersandstudents")
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken).get());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @PostMapping("/getquestionbyrole")
+    ResponseEntity<List<Question>> getQuestionByRole(String role) {
+
+        return ResponseEntity.ok(userService.getQuestionByRole(role));
     }
 }
