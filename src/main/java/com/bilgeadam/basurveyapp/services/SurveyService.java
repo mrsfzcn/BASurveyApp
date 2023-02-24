@@ -444,7 +444,21 @@ public class SurveyService {
         List<Question> questions = survey.getQuestions();
         List<User> userList = classroom.getUsers();
         List<Long> userOidList= userList.stream().map(User::getOid).toList();
+        boolean isManagerAndTrainer=false;
 
+        User user = userRepository.findActiveById((Long)
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getCredentials()
+        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
+        if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
+            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
+                throw new AccessDeniedException("You dont have access to target class data.");
+            }
+            isManagerAndTrainer=true;
+        }
+        boolean finalIsManagerAndTrainer = isManagerAndTrainer;
         return SurveyOfClassroomResponseDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())
@@ -459,18 +473,27 @@ public class SurveyService {
                                         question.getResponses()
                                         .stream()
                                         .filter(response -> userOidList.contains(response.getUser().getOid()))
-                                        .map(response -> ResponseUnmaskedDto.builder()
-                                                .userOid(response.getUser().getOid())
-                                                .firstName(response.getUser().getFirstName())
-                                                .lastName(response.getUser().getLastName())
-                                                .email(response.getUser().getEmail())
-                                                .responseOid(response.getOid())
-                                                .response(response.getResponseString())
-                                                .build())
+                                        .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
                                         .collect(Collectors.toList()))
                                 .build()).collect(Collectors.toList())
                 ).build();
+    }
 
+    private ResponseUnmaskedDto getUnmaskedDto(User user,String responseString, Boolean  isManagerAndTrainer ) {
+        ResponseUnmaskedDto responseUnmaskedDto = ResponseUnmaskedDto.builder()
+                .userOid(user.getOid())
+                .responseOid(user.getOid())
+                .response(responseString)
+                .firstName("****")
+                .lastName("****")
+                .email("****")
+                .build();
+        if(!isManagerAndTrainer){
+            responseUnmaskedDto .setFirstName(user.getFirstName());
+            responseUnmaskedDto .setLastName(user.getLastName());
+            responseUnmaskedDto .setEmail(user.getEmail());
+        }
+        return responseUnmaskedDto;
     }
 
     public List<SurveyByClassroomResponseDto> findStudentSurveys() {
