@@ -36,11 +36,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -152,7 +148,7 @@ public class SurveyService {
         return surveyById.get();
     }
 
-    public Boolean responseSurveyQuestions(String token, SurveyResponseQuestionRequestDto dto, HttpServletRequest request) {
+    public Boolean responseSurveyQuestions(String token, List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
 
         if (!jwtService.isSurveyEmailTokenValid(token)) {
             throw new AccessDeniedException("Invalid token");
@@ -179,7 +175,7 @@ public class SurveyService {
             throw new ResourceNotFoundException("Survey is Expired");
         }
 
-        if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndCreateResponses(survey, dto.getCreateResponses()))) {
+        if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndCreateResponses(survey, dtoList))) {
             throw new UserInsufficientAnswerException("User must response all the questions.");
         }
 
@@ -209,10 +205,11 @@ public class SurveyService {
 
         List<Question> surveyQuestions = survey.getQuestions();
 
-        List<Response> responses = dto.getCreateResponses().keySet()
+        List<Response> responses = dtoList
             .parallelStream()
+                .map(SurveyResponseQuestionRequestDto::getQuestionOid)
             .map((id -> Response.builder()
-                .responseString(dto.getCreateResponses().get(id).trim())
+                .responseString(dtoList.stream().filter(dto -> Objects.equals(dto.getQuestionOid(), id)).toList().get(0).getResponseString())
                 .question(surveyQuestions
                     .stream()
                     .filter(question -> question.getOid().equals(id))
@@ -351,13 +348,13 @@ public class SurveyService {
         return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
 
-    private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, Map<Long, String> getCreateResponses) {
+    private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, List<SurveyResponseQuestionRequestDto> getCreateResponses) {
 
         Set<Long> surveyQuestionIdSet = survey.getQuestions()
             .parallelStream()
             .map(Question::getOid)
             .collect(Collectors.toSet());
-        Set<Long> createResponseQuestionIdSet = getCreateResponses.keySet();
+        Set<Long> createResponseQuestionIdSet = getCreateResponses.stream().map(SurveyResponseQuestionRequestDto::getQuestionOid).collect(Collectors.toSet());
 
         return surveyQuestionIdSet.equals(createResponseQuestionIdSet);
     }

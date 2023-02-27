@@ -94,8 +94,8 @@ public class SurveyController {
     }
 
     @PostMapping("/response/{token}")
-    ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid SurveyResponseQuestionRequestDto dto, HttpServletRequest request) {
-        return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dto, request));
+    ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
+        return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dtoList, request));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
