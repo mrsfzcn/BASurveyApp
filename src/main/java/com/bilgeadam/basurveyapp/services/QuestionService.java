@@ -130,9 +130,7 @@ public class QuestionService {
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-        //List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey);
-        List<Question> allQuestions = questionRepository.findAllActive();
-        System.out.println(allQuestions);
+        List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<QuestionResponseDto> filteredList = allQuestions.stream()
                 .filter(filtered -> filtered.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
                 .map(question -> QuestionResponseDto.builder()
@@ -154,10 +152,8 @@ public class QuestionService {
     public List<QuestionResponseDto> filterSurveyQuestions(FilterSurveyQuestionsRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-        //List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey);
-        List<Question> allQuestions = questionRepository.findAllActive();
-        List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());;
-
+        List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
+        List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());
         if(dto.getSubTagOids().size()!=0){
             tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
         }
