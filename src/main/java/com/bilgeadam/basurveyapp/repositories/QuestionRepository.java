@@ -11,17 +11,14 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends BaseRepository<Question, Long> {
-    @Query("SELECT q.oid FROM Question q WHERE q.surveys IN ?1")
-    List<Long> findSurveyQuestionOidList(Survey survey);
+    @Query(value = "SELECT questions_oid FROM questions_surveys WHERE surveys_oid = ?1", nativeQuery = true)
+    List<Long> findSurveyQuestionOidList(Long surveyOid);
 
-    @Query("SELECT q FROM Question q WHERE q.surveys IN ?1")
-    List<Question> findSurveyQuestionList(Survey survey);
-
-    @Query("SELECT q FROM Question q WHERE q.state = 'ACTIVE' AND q.surveys IN ?1")
-    List<Question> findSurveyActiveQuestionList(Survey survey);
-
-    @Query(value = "SELECT * FROM questions q WHERE oid IN (SELECT questions_oid FROM questions_surveys WHERE surveys_oid IN ?1)", nativeQuery = true)
+    @Query(value = "SELECT * FROM questions WHERE oid IN (SELECT questions_oid FROM questions_surveys WHERE surveys_oid = ?1)", nativeQuery = true)
     List<Question> findSurveyQuestionList(Long surveyOid);
+
+    @Query(value = "SELECT * FROM questions WHERE state = 'ACTIVE' AND oid IN (SELECT questions_oid FROM questions_surveys WHERE surveys_oid = ?1)", nativeQuery = true)
+    List<Question> findSurveyActiveQuestionList(Long surveyOid);
 
     //TODO better solution
     Optional<List<Question>> findByRole(String role);
