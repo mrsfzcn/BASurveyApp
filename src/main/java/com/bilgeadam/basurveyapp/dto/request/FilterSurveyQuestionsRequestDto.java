@@ -13,11 +13,10 @@ import java.util.List;
 @Builder
 public class FilterSurveyQuestionsRequestDto {
 
-    @NotBlank
     @NotNull
     Long surveyOid;
     @NotNull
-    Long tagOid;
+    List<Long> tagOids;
     List<Long> subTagOids;
 
 
