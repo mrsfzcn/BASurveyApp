@@ -28,8 +28,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Logger;
@@ -67,20 +71,20 @@ public class SurveyService {
 
         if (surveyRegistrations.size() != 0) {
 
-            Map<String,String> emailTokenMap = new HashMap<>();
+            Map<String, String> emailTokenMap = new HashMap<>();
 
             surveyRegistrations
-                .parallelStream()
-                .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
-                .forEach(sR -> sR.getClassroom().getUsers()
-                    .stream()
-                    .forEach(user -> emailTokenMap.put(
-                        user.getEmail(),
-                        jwtService.generateSurveyEmailToken(
-                            sR.getSurvey().getOid(),
-                            sR.getClassroom().getOid(),
-                            user.getEmail(),
-                            (int) ChronoUnit.DAYS.between(sR.getEndDate(), sR.getStartDate())))));
+                    .parallelStream()
+                    .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
+                    .forEach(sR -> sR.getClassroom().getUsers()
+                            .stream()
+                            .forEach(user -> emailTokenMap.put(
+                                    user.getEmail(),
+                                    jwtService.generateSurveyEmailToken(
+                                            sR.getSurvey().getOid(),
+                                            sR.getClassroom().getOid(),
+                                            user.getEmail(),
+                                            (int) ChronoUnit.DAYS.between(sR.getEndDate(), sR.getStartDate())))));
 
             emailService.sendSurveyMail(emailTokenMap);
         }
@@ -90,11 +94,11 @@ public class SurveyService {
     public List<SurveyResponseDto> getSurveyList() {
         List<Survey> surveys = surveyRepository.findAllActive();
         return surveys.stream().map(survey ->
-            SurveyResponseDto.builder()
-                .surveyOid(survey.getOid())
-                .surveyTitle(survey.getSurveyTitle())
-                .courseTopic(survey.getCourseTopic())
-                .build()
+                SurveyResponseDto.builder()
+                        .surveyOid(survey.getOid())
+                        .surveyTitle(survey.getSurveyTitle())
+                        .courseTopic(survey.getCourseTopic())
+                        .build()
         ).collect(Collectors.toList());
     }
 
@@ -105,9 +109,9 @@ public class SurveyService {
     public Boolean create(SurveyCreateRequestDto dto) {
         try {
             Survey survey = Survey.builder()
-                .surveyTitle(dto.getSurveyTitle())
-                .courseTopic(dto.getCourseTopic())
-                .build();
+                    .surveyTitle(dto.getSurveyTitle())
+                    .courseTopic(dto.getCourseTopic())
+                    .build();
             surveyRepository.save(survey);
         } catch (Exception e) {
             throw new EntityExistsException("This survey title already in use.");
@@ -151,14 +155,14 @@ public class SurveyService {
         Long classroomOid = jwtService.extractClassroomOid(token);
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
-            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
 
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
-            .parallelStream()
-            .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
-            .filter(sR -> sR.getClassroom().getOid().equals(classroomOid))
-            .findAny()
-            .orElseThrow(() -> new ResourceNotFoundException("Survey has not assigned to the classroom."));
+                .parallelStream()
+                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
+                .filter(sR -> sR.getClassroom().getOid().equals(classroomOid))
+                .findAny()
+                .orElseThrow(() -> new ResourceNotFoundException("Survey has not assigned to the classroom."));
 
         LocalDate now = LocalDateTime.now().toLocalDate();
         LocalDate surveyStartDate = surveyRegistration.getStartDate().toLocalDate();
@@ -176,24 +180,24 @@ public class SurveyService {
 
         String userEmail = jwtService.extractEmail(token);
         User currentUser = userRepository.findByEmail(userEmail)
-            .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
         // authentication ******
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-            currentUser,
-            currentUser.getOid(),
-            currentUser.getAuthorities()
+                currentUser,
+                currentUser.getOid(),
+                currentUser.getAuthorities()
         );
         authenticationToken.setDetails(
-            new WebAuthenticationDetailsSource().buildDetails(request)
+                new WebAuthenticationDetailsSource().buildDetails(request)
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
 
         List<Long> participantIdList = survey.getUsers()
-            .parallelStream()
-            .map(User::getOid)
-            .toList();
+                .parallelStream()
+                .map(User::getOid)
+                .toList();
         if (participantIdList.contains(currentUser.getOid())) {
             throw new AlreadyAnsweredSurveyException("User cannot answer a survey more than once.");
         }
@@ -201,24 +205,24 @@ public class SurveyService {
         List<Question> surveyQuestions = survey.getQuestions();
 
         List<Response> responses = dtoList
-            .parallelStream()
+                .parallelStream()
                 .map(SurveyResponseQuestionRequestDto::getQuestionOid)
-            .map((id -> Response.builder()
-                .responseString(dtoList.stream().filter(dto -> Objects.equals(dto.getQuestionOid(), id)).toList().get(0).getResponseString())
-                .question(surveyQuestions
-                    .stream()
-                    .filter(question -> question.getOid().equals(id))
-                    .findAny()
-                    .orElse(null))
-                .user(currentUser)
-                .build()))
-            .toList();
+                .map((id -> Response.builder()
+                        .responseString(dtoList.stream().filter(dto -> Objects.equals(dto.getQuestionOid(), id)).toList().get(0).getResponseString())
+                        .question(surveyQuestions
+                                .stream()
+                                .filter(question -> question.getOid().equals(id))
+                                .findAny()
+                                .orElse(null))
+                        .user(currentUser)
+                        .build()))
+                .toList();
 
         for (Response response : responses) {
             Optional<Question> questionOptional = surveyQuestions
-                .parallelStream()
-                .filter(question -> question.getOid().equals(response.getQuestion().getOid()))
-                .findAny();
+                    .parallelStream()
+                    .filter(question -> question.getOid().equals(response.getQuestion().getOid()))
+                    .findAny();
             questionOptional.ifPresent(question -> question.getResponses().add(response));
         }
 
@@ -232,7 +236,7 @@ public class SurveyService {
     public Survey updateSurveyResponses(Long surveyId, SurveyUpdateResponseRequestDto dto) {
 
         Survey survey = surveyRepository.findActiveById(surveyId)
-            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
         if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndUpdateResponses(survey, dto.getUpdateResponseMap()))) {
             throw new QuestionsAndResponsesDoesNotMatchException("Questions does not match with responses.");
@@ -240,15 +244,15 @@ public class SurveyService {
         Optional<Long> currentUserIdOptional = Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
         Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
         List<Response> currentUserResponses = survey.getQuestions()
-            .stream()
-            .flatMap(question -> question.getResponses().stream())
-            .filter(response -> response.getUser().getOid().equals(currentUserId))
-            .collect(Collectors.toList());
+                .stream()
+                .flatMap(question -> question.getResponses().stream())
+                .filter(response -> response.getUser().getOid().equals(currentUserId))
+                .collect(Collectors.toList());
 
         currentUserResponses
-            .parallelStream()
-            .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
-            .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
+                .parallelStream()
+                .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
+                .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
         responseRepository.saveAll(currentUserResponses);
         return survey;
     }
@@ -256,55 +260,63 @@ public class SurveyService {
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
 
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
-            .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
         Classroom classroom = classroomRepository.findActiveByName(dto.getClassroomName())
-            .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
-            .parallelStream()
-            .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
-            .filter(sR -> sR.getClassroom().getOid().equals(classroom.getOid()))
-            .findAny();
+                .parallelStream()
+                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getClassroom().getOid().equals(classroom.getOid()))
+                .findAny();
+
         if (surveyRegistrationOptional.isPresent()) {
             throw new EntityNotFoundException("Survey has been already assigned to Classroom.");
         }
 
-        SurveyRegistration surveyRegistration = surveyRegistrationOptional.get();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        LocalDateTime startDate;
+        try {
+            startDate = dateFormat.parse(dto.getStartDate()).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } catch (Exception e) {
+            startDate = LocalDateTime.now();
+        }
 
-        surveyRegistration.setStartDate(LocalDateTime.parse(dto.getStartDate()));
-        surveyRegistration.setEndDate((LocalDateTime.parse(dto.getStartDate()).plusDays(dto.getDays())));
-        surveyRegistration.setSurvey(survey);
-        surveyRegistration.setClassroom(classroom);
+        SurveyRegistration surveyRegistration = SurveyRegistration.builder()
+                .startDate(startDate)
+                .endDate(startDate.plusDays(dto.getDays()))
+                .survey(survey)
+                .classroom(classroom)
+                .build();
 
         survey.getSurveyRegistrations().add(surveyRegistration);
         classroom.getSurveyRegistrations().add(surveyRegistration);
 
-        Survey savedSurvey = surveyRepository.save(survey);
+        surveyRepository.save(survey);
 
-        if (surveyRegistration.getStartDate().toLocalDate().equals(LocalDate.now())) {
-            sendEmail(surveyRegistration);
+        if (surveyRegistration.getStartDate().isBefore(LocalDateTime.now())) {
+            sendEmail(surveyRegistration, dto.getDays());
         }
         return true;
     }
 
-    private void sendEmail(SurveyRegistration surveyRegistration) throws MessagingException {
-        emailService.sendSurveyMail(generateMailTokenMap(surveyRegistration));
+    private void sendEmail(SurveyRegistration surveyRegistration, int days) throws MessagingException {
+        emailService.sendSurveyMail(generateMailTokenMap(surveyRegistration, days));
     }
 
-    private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration) {
+    private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
 
         Map<String, String> emailTokenMap = new HashMap<>();
         List<User> users = surveyRegistration.getClassroom().getUsers();
 
         users
-            .parallelStream()
-            .forEach(user -> emailTokenMap.put(
-                user.getEmail(),
-                jwtService.generateSurveyEmailToken(
-                    surveyRegistration.getSurvey().getOid(),
-                    surveyRegistration.getClassroom().getOid(),
-                    user.getEmail(),
-                    (int) ChronoUnit.DAYS.between(surveyRegistration.getEndDate(), surveyRegistration.getStartDate()))));
+                .parallelStream()
+                .forEach(user -> emailTokenMap.put(
+                        user.getEmail(),
+                        jwtService.generateSurveyEmailToken(
+                                surveyRegistration.getSurvey().getOid(),
+                                surveyRegistration.getClassroom().getOid(),
+                                user.getEmail(),
+                                days)));
 
         return emailTokenMap;
     }
@@ -333,12 +345,12 @@ public class SurveyService {
         }
         List<Survey> surveyList = surveyRepository.findAllActive();
         List<Survey> surveysWithTheOidsOfTheClasses = surveyList
-            .stream()
-            .filter(survey -> survey.getSurveyRegistrations()
                 .stream()
-                .map(sR -> sR.getClassroom().getOid())
-                .toList().contains(classroomOptional.get().getOid()))
-            .toList();
+                .filter(survey -> survey.getSurveyRegistrations()
+                        .stream()
+                        .map(sR -> sR.getClassroom().getOid())
+                        .toList().contains(classroomOptional.get().getOid()))
+                .toList();
 
         return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
     }
@@ -346,9 +358,9 @@ public class SurveyService {
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, List<SurveyResponseQuestionRequestDto> getCreateResponses) {
 
         Set<Long> surveyQuestionIdSet = survey.getQuestions()
-            .parallelStream()
-            .map(Question::getOid)
-            .collect(Collectors.toSet());
+                .parallelStream()
+                .map(Question::getOid)
+                .collect(Collectors.toSet());
         Set<Long> createResponseQuestionIdSet = getCreateResponses.stream().map(SurveyResponseQuestionRequestDto::getQuestionOid).collect(Collectors.toSet());
 
         return surveyQuestionIdSet.equals(createResponseQuestionIdSet);
@@ -357,9 +369,9 @@ public class SurveyService {
     private Boolean crossCheckSurveyQuestionsAndUpdateResponses(Survey survey, Map<Long, String> updateResponseMap) {
 
         Set<Long> surveyQuestionIdSet = survey.getQuestions()
-            .parallelStream()
-            .map(Question::getOid)
-            .collect(Collectors.toSet());
+                .parallelStream()
+                .map(Question::getOid)
+                .collect(Collectors.toSet());
         Set<Long> updateResponseQuestionIdSet = updateResponseMap.keySet();
 
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
@@ -402,31 +414,31 @@ public class SurveyService {
 
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
         User user = userRepository.findActiveById((Long)
-            SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getCredentials()
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         List<Classroom> classrooms = user.getClassrooms();
         return TrainerClassroomSurveyResponseDto.builder()
-            .firstName(user.getFirstName())
-            .lastName(user.getLastName())
-            .email(user.getEmail())
-            .roles(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
-            .classroomSurveys(classrooms.stream().map(classroom ->
-                ClassroomWithSurveysResponseDto.builder()
-                    .classroomOid(classroom.getOid())
-                    .classroomName(classroom.getName())
-                    .surveys(classroom.getSurveyRegistrations().stream().map(sR ->
-                            SurveyResponseDto.builder()
-                                .surveyOid(sR.getSurvey().getOid())
-                                .surveyTitle(sR.getSurvey().getSurveyTitle())
-                                .courseTopic(sR.getSurvey().getCourseTopic())
-                                .build())
-                        .collect(Collectors.toList()))
-                    .build()).collect(Collectors.toList())
-            )
-            .build();
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .roles(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
+                .classroomSurveys(classrooms.stream().map(classroom ->
+                        ClassroomWithSurveysResponseDto.builder()
+                                .classroomOid(classroom.getOid())
+                                .classroomName(classroom.getName())
+                                .surveys(classroom.getSurveyRegistrations().stream().map(sR ->
+                                                SurveyResponseDto.builder()
+                                                        .surveyOid(sR.getSurvey().getOid())
+                                                        .surveyTitle(sR.getSurvey().getSurveyTitle())
+                                                        .courseTopic(sR.getSurvey().getCourseTopic())
+                                                        .build())
+                                        .collect(Collectors.toList()))
+                                .build()).collect(Collectors.toList())
+                )
+                .build();
     }
 
 
@@ -435,8 +447,8 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         List<User> userList = classroom.getUsers();
-        List<Long> userOidList= userList.stream().map(User::getOid).toList();
-        boolean isManagerAndTrainer=false;
+        List<Long> userOidList = userList.stream().map(User::getOid).toList();
+        boolean isManagerAndTrainer = false;
 
         User user = userRepository.findActiveById((Long)
                 SecurityContextHolder
@@ -448,7 +460,7 @@ public class SurveyService {
             if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
-            isManagerAndTrainer=true;
+            isManagerAndTrainer = true;
         }
         boolean finalIsManagerAndTrainer = isManagerAndTrainer;
         return SurveyOfClassroomResponseDto.builder()
@@ -463,15 +475,15 @@ public class SurveyService {
                                 .order(question.getOrder())
                                 .responses(
                                         question.getResponses()
-                                        .stream()
-                                        .filter(response -> userOidList.contains(response.getUser().getOid()))
-                                        .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
-                                        .collect(Collectors.toList()))
+                                                .stream()
+                                                .filter(response -> userOidList.contains(response.getUser().getOid()))
+                                                .map(response -> getUnmaskedDto(response.getUser(), response.getResponseString(), finalIsManagerAndTrainer))
+                                                .collect(Collectors.toList()))
                                 .build()).collect(Collectors.toList())
                 ).build();
     }
 
-    private ResponseUnmaskedDto getUnmaskedDto(User user,String responseString, Boolean  isManagerAndTrainer ) {
+    private ResponseUnmaskedDto getUnmaskedDto(User user, String responseString, Boolean isManagerAndTrainer) {
         ResponseUnmaskedDto responseUnmaskedDto = ResponseUnmaskedDto.builder()
                 .userOid(user.getOid())
                 .responseOid(user.getOid())
@@ -480,10 +492,10 @@ public class SurveyService {
                 .lastName("****")
                 .email("****")
                 .build();
-        if(!isManagerAndTrainer){
-            responseUnmaskedDto .setFirstName(user.getFirstName());
-            responseUnmaskedDto .setLastName(user.getLastName());
-            responseUnmaskedDto .setEmail(user.getEmail());
+        if (!isManagerAndTrainer) {
+            responseUnmaskedDto.setFirstName(user.getFirstName());
+            responseUnmaskedDto.setLastName(user.getLastName());
+            responseUnmaskedDto.setEmail(user.getEmail());
         }
         return responseUnmaskedDto;
     }
@@ -502,10 +514,10 @@ public class SurveyService {
         List<Survey> surveyList = surveyRepository.findAllActive();
 
         return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveyList
-             .stream()
-             .filter(survey -> survey.getUsers()
-                     .stream()
-                     .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
+                .stream()
+                .filter(survey -> survey.getUsers()
+                        .stream()
+                        .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
     }
 
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {

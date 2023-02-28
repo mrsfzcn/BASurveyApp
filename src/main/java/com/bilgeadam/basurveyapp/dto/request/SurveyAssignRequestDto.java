@@ -22,7 +22,5 @@ public class SurveyAssignRequestDto {
     @NotBlank
     @NotNull
     Integer days;
-    @NotBlank
-    @NotNull
     private String startDate;
 }
