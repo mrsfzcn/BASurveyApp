@@ -7,10 +7,7 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.SubTag;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Tag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,15 +32,26 @@ public class QuestionService {
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        Question question = Question.builder()
-                .questionString(createQuestionDto.getQuestionString())
-                .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
-                        () -> new QuestionTypeNotFoundException("Question type is not found")))
-                .order(createQuestionDto.getOrder())
-                .tag(createQuestionDto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()))
-                .subtag(createQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()))
-                .build();
-        questionRepository.save(question);
+        List<Tag> tagList = new ArrayList<>();
+        List<SubTag> subTagList = new ArrayList<>();
+        for (int i = 0; i < createQuestionDto.getTagOids().size(); i++) {
+            Optional<Tag> tagTemp = tagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
+            tagTemp.ifPresent(tagList::add);
+        }
+        for (int i = 0; i < createQuestionDto.getSubTagOids().size(); i++) {
+            Optional<SubTag> subTagTemp = subTagRepository.findActiveById(createQuestionDto.getSubTagOids().get(i));
+            subTagTemp.ifPresent(subTagList::add);
+        }
+            Question question = Question.builder()
+                    .questionString(createQuestionDto.getQuestionString())
+                    .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                            () -> new QuestionTypeNotFoundException("Question type is not found")))
+                    .order(createQuestionDto.getOrder())
+                    .tag(tagList)
+                    .subtag(subTagList)
+                    .build();
+            questionRepository.save(question);
+
         return true;
     }
 
