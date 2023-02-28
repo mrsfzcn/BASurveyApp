@@ -54,9 +54,9 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/add-question-to-survey/{surveyId}")
-    ResponseEntity<Boolean> addQuestionToSurvey(@PathVariable("surveyId") Long surveyId, @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
-        return ResponseEntity.ok(surveyService.addQuestionToSurvey(surveyId, dto));
+    @PostMapping("/add-question-to-survey")
+    ResponseEntity<Boolean> addQuestionToSurvey( @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
+        return ResponseEntity.ok(surveyService.addQuestionToSurvey( dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

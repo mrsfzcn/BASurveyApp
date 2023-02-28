@@ -508,8 +508,8 @@ public class SurveyService {
                      .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
     }
 
-    public Boolean addQuestionToSurvey(Long surveyId, SurveyAddQuestionRequestDto dto) {
-        Survey survey = surveyRepository.findActiveById(surveyId).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+    public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
         survey.getQuestions().add(question);
         surveyRepository.save(survey);

@@ -11,10 +11,8 @@ import lombok.*;
 @Builder
 public class SurveyAddQuestionRequestDto {
     @NotNull
-    @NotBlank
     private Long questionId;
     @NotNull
-    @NotBlank
     private Long surveyId;
 
 }
