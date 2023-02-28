@@ -1,6 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.GetQuestionByRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
@@ -91,10 +93,4 @@ public class UserController {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken).get());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
-    @PostMapping("/getquestionbyrole")
-    ResponseEntity<List<Question>> getQuestionByRole(String role) {
-
-        return ResponseEntity.ok(userService.getQuestionByRole(role));
-    }
 }

@@ -60,6 +60,7 @@ public class QuestionController {
     }
 
     // TODO Better solution
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/createQuestionWithRole")
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid CreateQuestionUserRoleRequestDto dto) {
         return ResponseEntity.ok(questionService.save(dto));
@@ -74,5 +75,12 @@ public class QuestionController {
     @PostMapping("/filtersurveyquestions")
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestBody @Valid FilterSurveyQuestionsRequestDto dto) {
         return ResponseEntity.ok(questionService.filterSurveyQuestions(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @PostMapping("/getquestionbyrole")
+    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody  GetQuestionByRoleRequestDto dto) {
+
+        return ResponseEntity.ok(questionService.getQuestionByRole(dto));
     }
 }

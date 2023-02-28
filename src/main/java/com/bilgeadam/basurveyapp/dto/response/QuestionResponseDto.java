@@ -13,6 +13,7 @@ import java.util.List;
 public class QuestionResponseDto {
     Long questionOid;
     String questionString;
+    Long questionTypeOid;
     Integer order;
     List<Long> tagOids;
     List<Long> subTagOids;
