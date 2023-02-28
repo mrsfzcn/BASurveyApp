@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -41,12 +42,16 @@ public class AuthService {
             throw new UserAlreadyExistsException("Email already registered.");
         }
         List<Role> roles = roleService.findRoles();
+        Set<Role> userRoles = roles.stream().filter(role -> request.getRoles().contains(role.getRole())).collect(Collectors.toSet());
+        if (userRoles.isEmpty()) {
+            throw new ResourceNotFoundException("Given roles not found.");
+        }
         User auth = userRepository.save(User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .roles(roles.stream().filter(role -> request.getRoles().contains(role.getRole())).collect(Collectors.toSet()))
+                .roles(userRoles)
                 .build());
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(auth))
