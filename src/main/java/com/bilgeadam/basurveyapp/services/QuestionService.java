@@ -230,9 +230,30 @@ public class QuestionService {
                 .questionType(questionTypeRepository.findActiveById(dto.getQuestionTypeOid()).orElseThrow(
                         () -> new QuestionTypeNotFoundException("Question type is not found")))
                 .order(dto.getOrder())
+                .tag(dto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()))
+                .subtag(dto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()))
                 .role(dto.getRole())
                 .build();
         questionRepository.save(question);
         return true;
+    }
+
+
+    public List<QuestionResponseDto> getQuestionByRole(GetQuestionByRoleRequestDto dto) {
+        Optional<List<Question>> questions = questionRepository.findQuestionsByUserRole(dto.getRole());
+        if (questions.isEmpty()) {
+            throw new ResourceNotFoundException("Questions are not found");
+        }
+
+
+        return questions.get().stream().map(question -> QuestionResponseDto.builder()
+                .questionOid(question.getOid())
+                .questionString(question.getQuestionString())
+                .questionTypeOid(question.getQuestionType().getOid())
+                .order(question.getOrder())
+                .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+                .build()).collect(Collectors.toList());
+
     }
 }

@@ -21,5 +21,8 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
     List<Question> findSurveyActiveQuestionList(Long surveyOid);
 
     //TODO better solution
-    Optional<List<Question>> findByRole(String role);
+    Optional<List<Question>> findAllByRole(String role);
+
+    @Query(value = "SELECT * FROM questions WHERE role = ?1", nativeQuery = true)
+    Optional<List<Question>> findQuestionsByUserRole(String role);
 }

@@ -1,13 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.dto.request.GetQuestionByRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
-import com.bilgeadam.basurveyapp.entity.Classroom;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.Role;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
@@ -121,8 +120,8 @@ public class UserService {
 
     public Optional<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
-        if(user.isEmpty()) throw new ResourceNotFoundException("User is not found");
-        if(!roleService.userHasRole(user.get(), "MANAGER")) throw new AccessDeniedException("Unauthorized account");
+        if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
+        if (!roleService.userHasRole(user.get(), "MANAGER")) throw new AccessDeniedException("Unauthorized account");
         List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList = userRepository.findTrainersAndStudents()
                 .stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
                         .firstName(u.getFirstName())
@@ -133,12 +132,5 @@ public class UserService {
         return Optional.of(trainersAndStudentsList);
     }
 
-    public List<Question> getQuestionByRole(String role) {
-    Optional<List<Question>> questions = questionRepository.findByRole(role);
-    if(questions.isEmpty()){
-        throw  new ResourceNotFoundException("Questions are not found");
-    }
-       return questions.get();
 
-    }
 }
