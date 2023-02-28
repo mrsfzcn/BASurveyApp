@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,5 +18,7 @@ public class UpdateQuestionDto {
     @NotBlank
     @NotNull
     String questionString;
+    List<Long> tagOids;
+    List<Long> subTagOids;
 
 }
