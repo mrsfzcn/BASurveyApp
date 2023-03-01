@@ -59,13 +59,6 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }
 
-    // TODO Better solution
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/createQuestionWithRole")
-    public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid CreateQuestionUserRoleRequestDto dto) {
-        return ResponseEntity.ok(questionService.save(dto));
-    }
-
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/filterbykeyword")
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto) {
@@ -79,8 +72,9 @@ public class QuestionController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
     @PostMapping("/getquestionbyrole")
-    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody  GetQuestionByRoleRequestDto dto) {
+    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody GetQuestionByRoleRequestDto dto) {
 
         return ResponseEntity.ok(questionService.getQuestionByRole(dto));
     }
+
 }

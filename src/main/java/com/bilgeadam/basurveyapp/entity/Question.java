@@ -16,8 +16,6 @@ import java.util.List;
 public class Question extends BaseEntity {
     @Column(name = "question_string")
     private String questionString;
-    // TODO better solution
-    private String role;
     @Column(name = "question_order")
     private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

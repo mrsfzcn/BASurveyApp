@@ -3,10 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.SubTag;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.Tag;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -231,27 +229,28 @@ public class QuestionService {
     }
 
 
-    public Boolean save(CreateQuestionUserRoleRequestDto dto) {
-        Question question = Question.builder()
-                .questionString(dto.getQuestionString())
-                .questionType(questionTypeRepository.findActiveById(dto.getQuestionTypeOid()).orElseThrow(
-                        () -> new QuestionTypeNotFoundException("Question type is not found")))
-                .order(dto.getOrder())
-                .tag(dto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()))
-                .subtag(dto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()))
-                .role(dto.getRole())
-                .build();
-        questionRepository.save(question);
-        return true;
-    }
-
 
     public List<QuestionResponseDto> getQuestionByRole(GetQuestionByRoleRequestDto dto) {
-        Optional<List<Question>> questions = questionRepository.findQuestionsByUserRole(dto.getRole());
+
+        Set<Role> roles = userRepository.findActiveById(dto.getTrainerId()).get().getRoles();
+
+        List<String> userRoles =  roles.stream().map(role -> role.getRole()).collect(Collectors.toList());
+
+        List<Long> tagIds = null;
+        for (String role :userRoles) {
+
+            if(role.equals("MASTER_TRAINER") || role.equals("ASISTAN_TRAINER")){
+                tagIds = tagRepository.findAllByTagString(role);
+            }else {
+                throw new ResourceNotFoundException("Role is not type of trainer");
+            }
+        }
+
+        Optional<List<Question>> questions = questionRepository.findQuestionsByTagIds(tagIds);
+
         if (questions.isEmpty()) {
             throw new ResourceNotFoundException("Questions are not found");
         }
-
 
         return questions.get().stream().map(question -> QuestionResponseDto.builder()
                 .questionOid(question.getOid())
@@ -263,4 +262,5 @@ public class QuestionService {
                 .build()).collect(Collectors.toList());
 
     }
+
 }
