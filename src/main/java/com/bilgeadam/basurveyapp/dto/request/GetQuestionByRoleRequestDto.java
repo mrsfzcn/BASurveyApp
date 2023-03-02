@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class GetQuestionByRoleRequestDto {
 
     @NotNull
-    String role;
+    Long trainerId;
 
 }
