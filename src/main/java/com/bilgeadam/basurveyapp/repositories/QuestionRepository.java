@@ -20,7 +20,10 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
     @Query(value = "SELECT * FROM questions WHERE state = 'ACTIVE' AND oid IN (SELECT questions_oid FROM questions_surveys WHERE surveys_oid = ?1)", nativeQuery = true)
     List<Question> findSurveyActiveQuestionList(Long surveyOid);
 
-    @Query(value = "SELECT * FROM questions WHERE tag_oid IN ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM questions WHERE oid IN (SELECT questions_oid FROM questions_tag WHERE tag_oid IN ?1)", nativeQuery = true)
     Optional<List<Question>> findQuestionsByTagIds(List<Long> tagIds);
+
+
+
 
 }
