@@ -2,19 +2,16 @@ package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
-/**
- * @author Eralp Nitelik
- */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class UserTrainersAndStudentsResponseDto {
+public class StudentResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private Set<UserTrainersAndStudentsRolesResponseDto> roles;
+    private List<StudentClassroomResponseDto> classrooms;
 }

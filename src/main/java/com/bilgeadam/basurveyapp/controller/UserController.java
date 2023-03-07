@@ -1,11 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.GetQuestionByRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -30,31 +26,32 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/students")
-    ResponseEntity<List<UserResponseDto>> getStudentList() {
+    ResponseEntity<List<StudentResponseDto>> getStudentList() {
         return ResponseEntity.ok(userService.getStudentList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/mastertrainers")
-    ResponseEntity<List<UserResponseDto>> getMasterTrainersList() {
+    ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainersList() {
         return ResponseEntity.ok(userService.getMasterTrainerList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/assistanttrainers")
-    ResponseEntity<List<UserResponseDto>> getAssistantTrainersList() {
+    ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainersList() {
         return ResponseEntity.ok(userService.getAssistantTrainerList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/managers")
-    ResponseEntity<List<UserResponseDto>> getManagersList() {
+    ResponseEntity<List<ManagerResponseDto>> getManagersList() {
         return ResponseEntity.ok(userService.getManagerList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/admins")
-    ResponseEntity<List<UserResponseDto>> getAdminsList() {
+    ResponseEntity<List<AdminResponseDto>> getAdminsList() {
+
         return ResponseEntity.ok(userService.getAdminList());
     }
 
@@ -90,7 +87,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
     @GetMapping("/trainersandstudents")
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
-        return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken).get());
+        return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken));
     }
 
 }

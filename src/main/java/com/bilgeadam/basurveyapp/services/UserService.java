@@ -3,11 +3,10 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.GetQuestionByRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -30,54 +29,73 @@ public class UserService {
     private final JwtService jwtService;
     private final RoleService roleService;
 
-    public List<UserResponseDto> getStudentList() {
+    public List<StudentResponseDto> getStudentList() {
         List<User> students = userRepository.findStudents();
-        return students.stream().map(student -> UserResponseDto.builder()
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+
+        List<StudentResponseDto> dto = UserMapper.INSTANCE.toStudentResponseDto(students);
+        return dto;
+
+//        return students.stream().map(student -> UserResponseDto.builder()
+//                .firstName(student.getFirstName())
+//                .lastName(student.getLastName())
+//                .email(student.getEmail())
+//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+//                .build()).collect(Collectors.toList());
     }
 
-    public List<UserResponseDto> getMasterTrainerList() {
-        List<User> students = userRepository.findMasterTrainers();
-        return students.stream().map(student -> UserResponseDto.builder()
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+    public List<MasterTrainerResponseDto> getMasterTrainerList() {
+        List<User> masterTrainers = userRepository.findMasterTrainers();
+
+        List<MasterTrainerResponseDto> dto = UserMapper.INSTANCE.toMasterTrainerResponseDto(masterTrainers);
+        return dto;
+
+//        return students.stream().map(student -> UserResponseDto.builder()
+//                .firstName(student.getFirstName())
+//                .lastName(student.getLastName())
+//                .email(student.getEmail())
+//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+//                .build()).collect(Collectors.toList());
     }
 
-    public List<UserResponseDto> getAssistantTrainerList() {
-        List<User> students = userRepository.findAssistantTrainers();
-        return students.stream().map(student -> UserResponseDto.builder()
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+    public List<AssistantTrainerResponseDto> getAssistantTrainerList() {
+        List<User> assistanTrainers = userRepository.findAssistantTrainers();
+
+        List<AssistantTrainerResponseDto> dto = UserMapper.INSTANCE.toAssistantTrainerResponseDto(assistanTrainers);
+        return dto;
+//        return students.stream().map(student -> UserResponseDto.builder()
+//                .firstName(student.getFirstName())
+//                .lastName(student.getLastName())
+//                .email(student.getEmail())
+//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+//                .build()).collect(Collectors.toList());
     }
 
-    public List<UserResponseDto> getManagerList() {
-        List<User> students = userRepository.findManagers();
-        return students.stream().map(student -> UserResponseDto.builder()
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+    public List<ManagerResponseDto> getManagerList() {
+        List<User> managers = userRepository.findManagers();
+
+        List<ManagerResponseDto> dto = UserMapper.INSTANCE.toManagerResponseDto(managers);
+        return dto;
+
+//        return students.stream().map(student -> UserResponseDto.builder()
+//                .firstName(student.getFirstName())
+//                .lastName(student.getLastName())
+//                .email(student.getEmail())
+//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+//                .build()).collect(Collectors.toList());
     }
 
-    public List<UserResponseDto> getAdminList() {
-        List<User> students = userRepository.findAdmins();
-        return students.stream().map(student -> UserResponseDto.builder()
-                .firstName(student.getFirstName())
-                .lastName(student.getLastName())
-                .email(student.getEmail())
-                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-                .build()).collect(Collectors.toList());
+    public List<AdminResponseDto> getAdminList() {
+        List<User> admins = userRepository.findAdmins();
+
+        List<AdminResponseDto> dto = UserMapper.INSTANCE.toAdminResponseDto(admins);
+        return dto;
+
+//        return students.stream().map(student -> UserResponseDto.builder()
+//                .firstName(student.getFirstName())
+//                .lastName(student.getLastName())
+//                .email(student.getEmail())
+//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
+//                .build()).collect(Collectors.toList());
     }
 
     public Page<User> getUserPage(Pageable pageable) {
@@ -118,18 +136,25 @@ public class UserService {
         return userById.get();
     }
 
-    public Optional<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
+    public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
         if (!roleService.userHasRole(user.get(), "MANAGER")) throw new AccessDeniedException("Unauthorized account");
-        List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList = userRepository.findTrainersAndStudents()
-                .stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
-                        .firstName(u.getFirstName())
-                        .lastName(u.getLastName())
-                        .email(u.getEmail())
-                        .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
-                        .build()).collect(Collectors.toList());
-        return Optional.of(trainersAndStudentsList);
+
+        List<User> trainersWithStudent = userRepository.findTrainersAndStudents();
+
+        List<UserTrainersAndStudentsResponseDto> dto = UserMapper.INSTANCE.toUserTrainersAndStudentsResponseDto(trainersWithStudent);
+        return dto;
+
+//        return
+//        List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList =
+//                users.stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
+//                        .firstName(u.getFirstName())
+//                        .lastName(u.getLastName())
+//                        .email(u.getEmail())
+//                        .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
+//                        .build()).collect(Collectors.toList());
+//        return Optional.of(trainersAndStudentsList);
     }
 
 
