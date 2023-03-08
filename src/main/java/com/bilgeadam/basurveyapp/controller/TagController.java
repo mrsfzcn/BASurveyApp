@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
+import com.bilgeadam.basurveyapp.entity.QuestionTag;
 import com.bilgeadam.basurveyapp.services.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ public class TagController {
 
     private final TagService tagService;
 
+    //TODO: Bunu dto ile yapmamız lazım.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createTag(@RequestBody @Valid CreateTagDto dto) {
+    public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         tagService.createTag(dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(dto.getTagString());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")

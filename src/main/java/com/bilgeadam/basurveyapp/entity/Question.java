@@ -26,8 +26,8 @@ public class Question extends BaseEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     //@JoinColumn(referencedColumnName = "oid", name = "survey")
     private List<Survey> surveys;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Tag> tag;
+    @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<QuestionTag> questionTag;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SubTag> subtag;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

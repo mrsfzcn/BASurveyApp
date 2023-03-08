@@ -30,11 +30,11 @@ public class QuestionService {
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        List<Tag> tagList = new ArrayList<>();
+        List<QuestionTag> questionTagList = new ArrayList<>();
         List<SubTag> subTagList = new ArrayList<>();
         for (int i = 0; i < createQuestionDto.getTagOids().size(); i++) {
-            Optional<Tag> tagTemp = tagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
-            tagTemp.ifPresent(tagList::add);
+            Optional<QuestionTag> tagTemp = tagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
+            tagTemp.ifPresent(questionTagList::add);
         }
         for (int i = 0; i < createQuestionDto.getSubTagOids().size(); i++) {
             Optional<SubTag> subTagTemp = subTagRepository.findActiveById(createQuestionDto.getSubTagOids().get(i));
@@ -45,7 +45,7 @@ public class QuestionService {
                     .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                             () -> new QuestionTypeNotFoundException("Question type is not found")))
                     .order(createQuestionDto.getOrder())
-                    .tag(tagList)
+                    .questionTag(questionTagList)
                     .subtag(subTagList)
                     .build();
             questionRepository.save(question);
@@ -61,7 +61,7 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question is not found to update");
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
-            updateQuestion.get().setTag(updateQuestionDto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()));
+            updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()));
             updateQuestion.get().setSubtag(updateQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()));
             Question question = updateQuestion.get();
             questionRepository.save(question);
@@ -96,7 +96,7 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-                        .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                        .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
                         .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                         .build()));
         return responseDtoList;
@@ -127,7 +127,7 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                    .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
                     .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                     .build());
         }
@@ -145,7 +145,7 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-                        .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                        .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
                         .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
@@ -171,7 +171,7 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                    .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
                     .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                     .build())
                     .collect(Collectors.toList());
@@ -188,9 +188,9 @@ public class QuestionService {
      * @return
      */
     public List<Question> filterByTags(List<Question> questions,List<Long>  tagOids){
-        List<Tag> tags = findAllTags(tagOids);
+        List<QuestionTag> questionTags = findAllTags(tagOids);
         return questions.stream()
-                .filter(question -> question.getTag().containsAll(tags))
+                .filter(question -> question.getQuestionTag().containsAll(questionTags))
                 .collect(Collectors.toList());
     }
     /**
@@ -211,7 +211,7 @@ public class QuestionService {
      * @param tagOids
      * @return
      */
-    public List<Tag> findAllTags(List<Long> tagOids){
+    public List<QuestionTag> findAllTags(List<Long> tagOids){
         return tagOids.stream()
                 .map(tag-> tagRepository.findById(tag).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
                 .collect(Collectors.toList());
@@ -257,7 +257,7 @@ public class QuestionService {
                 .questionString(question.getQuestionString())
                 .questionTypeOid(question.getQuestionType().getOid())
                 .order(question.getOrder())
-                .tagOids(question.getTag().stream().map(Tag::getOid).collect(Collectors.toList()))
+                .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
                 .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                 .build()).collect(Collectors.toList());
 

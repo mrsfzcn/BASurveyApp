@@ -2,7 +2,8 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.entity.Tag;
+import com.bilgeadam.basurveyapp.entity.QuestionTag;
+import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
 import com.bilgeadam.basurveyapp.repositories.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,29 +18,30 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
+    //TODO: Bunu dto ile yapmamız lazım.
     public void createTag(CreateTagDto dto) {
-        Tag tag = Tag.builder()
+        QuestionTag questionTag = QuestionTag.builder()
                 .tagString(dto.getTagString())
                 .build();
-        tagRepository.save(tag);
+        tagRepository.save(questionTag);
     }
     public List<TagResponseDto> findAll() {
-        List<Tag> findAllList = tagRepository.findAllActive();
+        List<QuestionTag> findAllList = tagRepository.findAllActive();
         List<TagResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(tag ->
+        findAllList.forEach(questionTag ->
                 responseDtoList.add(TagResponseDto.builder()
-                        .tagStringId(tag.getOid())
-                        .tagString(tag.getTagString())
+                        .tagStringId(questionTag.getOid())
+                        .tagString(questionTag.getTagString())
                         .build()));
         return responseDtoList;
     }
     public Boolean delete(Long tagStringId) {
-        Optional<Tag> deleteTag = tagRepository.findActiveById(tagStringId);
+        Optional<QuestionTag> deleteTag = tagRepository.findActiveById(tagStringId);
         if (deleteTag.isEmpty()) {
             throw new RuntimeException("Tag is not found");
         } else {
-            Tag tag = deleteTag.get();
-            tagRepository.softDelete(tag);
+            QuestionTag questionTag = deleteTag.get();
+            tagRepository.softDelete(questionTag);
             return true;
         }
 
