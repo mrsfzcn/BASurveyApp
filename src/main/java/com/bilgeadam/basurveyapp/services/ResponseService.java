@@ -31,7 +31,7 @@ public class ResponseService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final SurveyRepository surveyRepository;
-    private final ClassroomRepository classroomRepository;
+//    private final ClassroomRepository classroomRepository;
     private final RoleService roleService;
 
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
@@ -141,16 +141,16 @@ public class ResponseService {
         Long userOid = (Long) authentication.getCredentials();
         User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
-            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
-            if (!classroom.getUsers().contains(user)) {
-                throw new AccessDeniedException("authentication failure.");
-            }
-        }
-        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
-        if (classroomOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Classroom is not found.");
-        }
+//        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
+//            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
+//            if (!classroom.getUsers().contains(user)) {
+//                throw new AccessDeniedException("authentication failure.");
+//            }
+//        }
+//        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
+//        if (classroomOptional.isEmpty()) {
+//            throw new ResourceNotFoundException("Classroom is not found.");
+//        }
         List<Survey> surveyList = surveyRepository.findAllActive();
         if (surveyList.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding survey list");

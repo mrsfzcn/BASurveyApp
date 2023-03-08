@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -25,28 +26,28 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
 
-    private final TagRepository tagRepository;
-    private final SubTagRepository subTagRepository;
+    private final QuestionTagRepository questionTagRepository;
+//    private final SubTagRepository subTagRepository;
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
         List<QuestionTag> questionTagList = new ArrayList<>();
-        List<SubTag> subTagList = new ArrayList<>();
+//        List<SubTag> subTagList = new ArrayList<>();
         for (int i = 0; i < createQuestionDto.getTagOids().size(); i++) {
-            Optional<QuestionTag> tagTemp = tagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
+            Optional<QuestionTag> tagTemp = questionTagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
             tagTemp.ifPresent(questionTagList::add);
         }
-        for (int i = 0; i < createQuestionDto.getSubTagOids().size(); i++) {
-            Optional<SubTag> subTagTemp = subTagRepository.findActiveById(createQuestionDto.getSubTagOids().get(i));
-            subTagTemp.ifPresent(subTagList::add);
-        }
+//        for (int i = 0; i < createQuestionDto.getSubTagOids().size(); i++) {
+//            Optional<SubTag> subTagTemp = subTagRepository.findActiveById(createQuestionDto.getSubTagOids().get(i));
+//            subTagTemp.ifPresent(subTagList::add);
+//        }
             Question question = Question.builder()
                     .questionString(createQuestionDto.getQuestionString())
                     .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                             () -> new QuestionTypeNotFoundException("Question type is not found")))
                     .order(createQuestionDto.getOrder())
                     .questionTag(questionTagList)
-                    .subtag(subTagList)
+//                    .subtag(subTagList)
                     .build();
             questionRepository.save(question);
 
@@ -61,8 +62,8 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question is not found to update");
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
-            updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(x-> tagRepository.findById(x).get()).collect(Collectors.toList()));
-            updateQuestion.get().setSubtag(updateQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()));
+            updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(x-> questionTagRepository.findById(x).get()).collect(Collectors.toList()));
+//            updateQuestion.get().setSubtag(updateQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()));
             Question question = updateQuestion.get();
             questionRepository.save(question);
             return true;
@@ -97,7 +98,7 @@ public class QuestionService {
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
                         .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
-                        .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+//                        .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                         .build()));
         return responseDtoList;
     }
@@ -128,7 +129,7 @@ public class QuestionService {
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
                     .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
-                    .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+//                    .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                     .build());
         }
         return questionsDto;
@@ -146,7 +147,7 @@ public class QuestionService {
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
                         .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
-                        .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+//                        .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
         if (filteredList.size() != 0) {
@@ -156,23 +157,22 @@ public class QuestionService {
         }
     }
 
-    //TODO tag ler eklendiğinde test edilecektir.
+    //TODO birden fazla tag olduğunda nasıl çözülecek
     public List<QuestionResponseDto> filterSurveyQuestions(FilterSurveyQuestionsRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());
-        if(dto.getSubTagOids().size()!=0){
-            tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
-        }
-
+//        if(dto.getSubTagOids().size()!=0){
+//            tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
+//        }
         if (tempQuestions.size() != 0) {
             return tempQuestions.stream().map(question -> QuestionResponseDto.builder()
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
                     .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
-                    .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+//                    .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                     .build())
                     .collect(Collectors.toList());
         } else {
@@ -199,12 +199,12 @@ public class QuestionService {
      * @param subTagOids
      * @return
      */
-    public List<Question> filterBySubTag(List<Question> questions,List<Long>  subTagOids){
-        List<SubTag> subTags = findAllSubTags(subTagOids);
-        return questions.stream()
-                .filter(question -> question.getSubtag().containsAll(subTags))
-                .collect(Collectors.toList());
-    }
+//    public List<Question> filterBySubTag(List<Question> questions,List<Long>  subTagOids){
+//        List<SubTag> subTags = findAllSubTags(subTagOids);
+//        return questions.stream()
+//                .filter(question -> question.getSubtag().containsAll(subTags))
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * it helps to bring all subtag list according to tag oids
@@ -213,20 +213,20 @@ public class QuestionService {
      */
     public List<QuestionTag> findAllTags(List<Long> tagOids){
         return tagOids.stream()
-                .map(tag-> tagRepository.findById(tag).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
+                .map(tag-> questionTagRepository.findById(tag).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
                 .collect(Collectors.toList());
     }
 
-    /**
-     * it helps to bring all subtag list according to subtag oids
-     * @param subTagOids
-     * @return
-     */
-    public List<SubTag> findAllSubTags(List<Long> subTagOids){
-       return subTagOids.stream()
-               .map(subtag-> subTagRepository.findById(subtag).orElseThrow(() -> new ResourceNotFoundException("SubTag not found.")))
-               .collect(Collectors.toList());
-    }
+//    /**
+//     * it helps to bring all subtag list according to subtag oids
+//     * @param subTagOids
+//     * @return
+//     */
+//    public List<SubTag> findAllSubTags(List<Long> subTagOids){
+//       return subTagOids.stream()
+//               .map(subtag-> subTagRepository.findById(subtag).orElseThrow(() -> new ResourceNotFoundException("SubTag not found.")))
+//               .collect(Collectors.toList());
+//    }
 
 
 
@@ -240,7 +240,7 @@ public class QuestionService {
         for (String role :userRoles) {
 
             if(role.equals("MASTER_TRAINER") || role.equals("ASISTAN_TRAINER")){
-                tagIds = tagRepository.findAllByTagString(role);
+                tagIds = questionTagRepository.findAllByTagString(role);
             }else {
                 throw new ResourceNotFoundException("Role is not type of trainer");
             }
@@ -258,7 +258,7 @@ public class QuestionService {
                 .questionTypeOid(question.getQuestionType().getOid())
                 .order(question.getOrder())
                 .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
-                .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
+//                .subTagOids(question.getSubtag().stream().map(SubTag::getOid).collect(Collectors.toList()))
                 .build()).collect(Collectors.toList());
 
     }

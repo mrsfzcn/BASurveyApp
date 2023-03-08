@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SurveyService {
     private final SurveyRepository surveyRepository;
-    private final ClassroomRepository classroomRepository;
+//    private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -72,7 +72,7 @@ public class SurveyService {
         if (surveyRegistrations.size() != 0) {
 
             Map<String, String> emailTokenMap = new HashMap<>();
-
+//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
             surveyRegistrations
                     .parallelStream()
                     .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
@@ -156,7 +156,7 @@ public class SurveyService {
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
-
+//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
@@ -258,15 +258,15 @@ public class SurveyService {
     }
 
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
-
+//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
-        Classroom classroom = classroomRepository.findActiveByName(dto.getClassroomName())
-                .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
+//        Classroom classroom = classroomRepository.findActiveByName(dto.getClassroomName())
+//                .orElseThrow(() -> new ResourceNotFoundException("Classroom is not Found"));
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
                 .parallelStream()
-                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getClassroom().getOid().equals(classroom.getOid()))
+//                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getClassroom().getOid().equals(classroom.getOid()))
                 .findAny();
 
         if (surveyRegistrationOptional.isPresent()) {
@@ -285,11 +285,11 @@ public class SurveyService {
                 .startDate(startDate)
                 .endDate(startDate.plusDays(dto.getDays()))
                 .survey(survey)
-                .classroom(classroom)
+//                .classroom(classroom)
                 .build();
 
         survey.getSurveyRegistrations().add(surveyRegistration);
-        classroom.getSurveyRegistrations().add(surveyRegistration);
+//        classroom.getSurveyRegistrations().add(surveyRegistration);
 
         surveyRepository.save(survey);
 
@@ -304,19 +304,19 @@ public class SurveyService {
     }
 
     private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
-
+//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Map<String, String> emailTokenMap = new HashMap<>();
-        List<User> users = surveyRegistration.getClassroom().getUsers();
-
-        users
-                .parallelStream()
-                .forEach(user -> emailTokenMap.put(
-                        user.getEmail(),
-                        jwtService.generateSurveyEmailToken(
-                                surveyRegistration.getSurvey().getOid(),
-                                surveyRegistration.getClassroom().getOid(),
-                                user.getEmail(),
-                                days)));
+//        List<User> users = surveyRegistration.getClassroom().getUsers();
+//
+//        users
+//                .parallelStream()
+//                .forEach(user -> emailTokenMap.put(
+//                        user.getEmail(),
+//                        jwtService.generateSurveyEmailToken(
+//                                surveyRegistration.getSurvey().getOid(),
+//                                surveyRegistration.getClassroom().getOid(),
+//                                user.getEmail(),
+//                                days)));
 
         return emailTokenMap;
     }
@@ -333,23 +333,24 @@ public class SurveyService {
         Long userOid = (Long) authentication.getCredentials();
         User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
-            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
-            if (!classroom.getUsers().contains(user)) {
-                throw new AccessDeniedException("authentication failure.");
-            }
-        }
-        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
-        if (classroomOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Classroom is not found.");
-        }
+//        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
+//            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
+//            if (!classroom.getUsers().contains(user)) {
+//                throw new AccessDeniedException("authentication failure.");
+//            }
+//        }
+//        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
+//        if (classroomOptional.isEmpty()) {
+//            throw new ResourceNotFoundException("Classroom is not found.");
+//        }
         List<Survey> surveyList = surveyRepository.findAllActive();
         List<Survey> surveysWithTheOidsOfTheClasses = surveyList
                 .stream()
-                .filter(survey -> survey.getSurveyRegistrations()
-                        .stream()
-                        .map(sR -> sR.getClassroom().getOid())
-                        .toList().contains(classroomOptional.get().getOid()))
+                //TODO filtereleme fonksiyonu düzeltilecek
+//                .filter(survey -> survey.getSurveyRegistrations()
+//                        .stream()
+////                        .map(sR -> sR.getClassroom().getOid())
+////                        .toList().contains(classroomOptional.get().getOid()))
                 .toList();
 
         return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveysWithTheOidsOfTheClasses);
@@ -385,14 +386,14 @@ public class SurveyService {
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
-            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
-                throw new AccessDeniedException("You dont have access to target class data.");
-            }
+//            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
+//                throw new AccessDeniedException("You dont have access to target class data.");
+//            }
         }
-        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
+//        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
-        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
+//        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
         return SurveyOfClassroomMaskedResponseDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())
@@ -403,15 +404,18 @@ public class SurveyService {
                                 .questionString(question.getQuestionString())
                                 .questionTypeOid(question.getQuestionType().getOid())
                                 .order(question.getOrder())
-                                .responses(question.getResponses()
-                                        .stream()
-                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
-                                        .map(Response::getResponseString)
-                                        .collect(Collectors.toList()))
-                                .build()).collect(Collectors.toList())
-                ).build();
+//                                .responses(
+//                                        question.getResponses()
+//                                        .stream()
+//                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
+//                                        .map(Response::getResponseString)
+//                                        .collect(Collectors.toList()))
+//                               .build()).collect(Collectors.toList())
+//                )
+                        .build();
     }
 
+    //TODO method tag yapısına göre refactor edilecek
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
         User user = userRepository.findActiveById((Long)
                 SecurityContextHolder
@@ -441,7 +445,7 @@ public class SurveyService {
                 .build();
     }
 
-
+    //TODO method tag yapısına göre refactor edilecek
     public SurveyOfClassroomResponseDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
         Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));

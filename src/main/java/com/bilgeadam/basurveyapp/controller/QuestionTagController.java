@@ -2,8 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.entity.QuestionTag;
-import com.bilgeadam.basurveyapp.services.TagService;
+import com.bilgeadam.basurveyapp.services.QuestionTagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,28 +12,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/questiontag")
 @RequiredArgsConstructor
-public class TagController {
+public class QuestionTagController {
 
-    private final TagService tagService;
+    private final QuestionTagService questionTagService;
 
     //TODO: Bunu dto ile yapmamız lazım.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
-        tagService.createTag(dto);
+        questionTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
     public ResponseEntity<List<TagResponseDto>> findAllTag() {
-        List<TagResponseDto> responseDtoList = tagService.findAll();
+        List<TagResponseDto> responseDtoList = questionTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long tagStringId) {
-        return ResponseEntity.ok(tagService.delete(tagStringId));
+        return ResponseEntity.ok(questionTagService.delete(tagStringId));
     }
 }
