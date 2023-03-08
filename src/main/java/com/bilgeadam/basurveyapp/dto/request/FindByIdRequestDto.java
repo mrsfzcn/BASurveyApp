@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @Builder
 public class FindByIdRequestDto {
-    @NotBlank
+
     @NotNull
     Long oid;
 }

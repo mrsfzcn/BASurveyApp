@@ -36,7 +36,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findbyid")
+    @PostMapping("/findbyid")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
         return ResponseEntity.ok(questionService.findById(findByIdRequestDto.getOid()));
     }
