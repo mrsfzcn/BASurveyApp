@@ -1,11 +1,9 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionTag;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
