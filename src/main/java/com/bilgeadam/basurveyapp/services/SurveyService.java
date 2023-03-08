@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
@@ -38,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import com.bilgeadam.basurveyapp.entity.tags.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,7 @@ public class SurveyService {
     private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
     private final RoleService roleService;
+    private final StudentTagService studentTagService;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -63,6 +66,11 @@ public class SurveyService {
      *
      * @throws MessagingException
      */
+    private List<Student> getStudentsByStudentTag(StudentTag studentTag) {
+
+        return studentTagService.getStudentsByStudentTag(studentTag);
+    }
+
     @Async
     @Scheduled(cron = "0 30 9 * * MON-FRI")
     public void initiateSurveys() throws MessagingException {
@@ -72,6 +80,7 @@ public class SurveyService {
         if (surveyRegistrations.size() != 0) {
 
             Map<String, String> emailTokenMap = new HashMap<>();
+
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
             surveyRegistrations
                     .parallelStream()

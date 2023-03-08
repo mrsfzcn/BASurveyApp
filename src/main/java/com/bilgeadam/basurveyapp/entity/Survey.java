@@ -28,6 +28,4 @@ public class Survey extends BaseEntity {
     @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questions;
 
-    @ManyToMany(mappedBy = "surveys", fetch = FetchType.LAZY)
-    private List<User> users;
 }
