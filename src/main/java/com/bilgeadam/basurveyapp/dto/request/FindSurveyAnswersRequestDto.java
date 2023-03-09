@@ -15,5 +15,5 @@ public class FindSurveyAnswersRequestDto {
     @NotNull
     private Long surveyOid;
     @NotNull
-    private Long classroomOid;
+    private Long trainerTagOid;
 }

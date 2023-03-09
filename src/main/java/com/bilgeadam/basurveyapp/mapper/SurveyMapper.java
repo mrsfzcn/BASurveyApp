@@ -3,7 +3,7 @@ package com.bilgeadam.basurveyapp.mapper;
 
 import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.SurveyByStudentTagResponseDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 @Component
 public class SurveyMapper {
 
-  public List<SurveyByClassroomResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
+  public List<SurveyByStudentTagResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
         return surveys.stream()
                 .map(survey -> {
-                    SurveyByClassroomResponseDto surveyDto = new SurveyByClassroomResponseDto();
+                    SurveyByStudentTagResponseDto surveyDto = new SurveyByStudentTagResponseDto();
                     surveyDto.setSurveyOid(survey.getOid());
                     surveyDto.setSurveyTitle(survey.getSurveyTitle());
                     surveyDto.setCourseTopic(survey.getCourseTopic());
