@@ -22,4 +22,8 @@ public class TrainerService {
     public Optional<Trainer> findTrainerByUserOid(Long oid) {
         return trainerRepository.findTrainerByUserOid(oid);
     }
+
+    public Optional<Trainer> findActiveById(Long trainerOid) {
+        return trainerRepository.findActiveById(trainerOid);
+    }
 }

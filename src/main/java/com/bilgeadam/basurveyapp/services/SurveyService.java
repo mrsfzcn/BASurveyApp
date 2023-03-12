@@ -385,7 +385,9 @@ public class SurveyService {
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
     }
 
-    public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) {
+    // Warning : studentTag ve trainerTag aynı sınıf için aynı olmalı!
+
+    public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) { // 1 survey id ve 1 trainertag id
         User user = userRepository.findActiveById((Long)
                 SecurityContextHolder
                         .getContext()
@@ -394,18 +396,22 @@ public class SurveyService {
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
             Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
-            if(trainerTagService.getTrainerTagsOids(trainer).contains(dto.getTrainerTagOid())){
+            if(trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())){
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
 //            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
 //                throw new AccessDeniedException("You dont have access to target class data.");
 //            }
         }
-//        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
-        TrainerTag trainerTag = trainerTagService.findActiveById(dto.getTrainerTagOid()).orElseThrow(() -> new ResourceNotFoundException("TrainerTag not found."));
+//        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(()
+//        -> new ResourceNotFoundException("Classroom not found."));
+        StudentTag studentTag = studentTagService.findActiveById(dto.getStudentTagOid()).orElseThrow(()
+                -> new ResourceNotFoundException("TrainerTag not found."));
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
 //        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
+        List<Long> usersInClassroom = studentService.findByStudentTagOid(studentTag.getOid()).stream().map(Student::getUser).map(User::getOid).toList();
+
         return SurveyOfClassroomMaskedResponseDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())
@@ -416,53 +422,47 @@ public class SurveyService {
                                 .questionString(question.getQuestionString())
                                 .questionTypeOid(question.getQuestionType().getOid())
                                 .order(question.getOrder())
-//                                .responses(
-//                                        question.getResponses()
-//                                        .stream()
-//                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
-//                                        .map(Response::getResponseString)
-//                                        .collect(Collectors.toList()))
-//                               .build()).collect(Collectors.toList())
-//                )
+                                .responses(
+                                        question.getResponses()
+                                        .stream()
+                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
+                                        .map(Response::getResponseString)
+                                        .collect(Collectors.toList()))
+                               .build()).collect(Collectors.toList())
+                )
                         .build();
     }
 
     //TODO method tag yapısına göre refactor edilecek
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
-        User user = userRepository.findActiveById((Long)
+        Trainer trainer = trainerService.findActiveById((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
-        List<Classroom> classrooms = user.getClassrooms();
+        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
+
+
+
+//        List<Set<Student>> classrooms = trainer.getSurveysCreatedByTrainer; // set<student> = survey.getStudentsWhoAnswered()
+//        // classroom = List<Set<Student>> = List<Survey.getStudentsWhoAnswered()>
+        User user = trainer.getUser();
         return TrainerClassroomSurveyResponseDto.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .roles(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
-                .classroomSurveys(classrooms.stream().map(classroom ->
-                        ClassroomWithSurveysResponseDto.builder()
-                                .classroomOid(classroom.getOid())
-                                .classroomName(classroom.getName())
-                                .surveys(classroom.getSurveyRegistrations().stream().map(sR ->
-                                                SurveyResponseDto.builder()
-                                                        .surveyOid(sR.getSurvey().getOid())
-                                                        .surveyTitle(sR.getSurvey().getSurveyTitle())
-                                                        .courseTopic(sR.getSurvey().getCourseTopic())
-                                                        .build())
-                                        .collect(Collectors.toList()))
-                                .build()).collect(Collectors.toList())
-                )
+                .surveysByThisTrainer(trainer.getSurveysCreatedByTrainer())
                 .build();
     }
 
     //TODO method tag yapısına göre refactor edilecek
     public SurveyOfClassroomResponseDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
-        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(() -> new ResourceNotFoundException("Classroom not found."));
+        List<Student> students = studentService.findByStudentTagOid(dto.getStudentTagOid());
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
-        List<User> userList = classroom.getUsers();
+        List<User> userList = students.stream().map(Student::getUser).toList();
         List<Long> userOidList = userList.stream().map(User::getOid).toList();
         boolean isManagerAndTrainer = false;
 
@@ -473,7 +473,8 @@ public class SurveyService {
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
-            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
+            if(trainerTagService.getTrainerTagsOids(trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
+                    new ResourceNotFoundException("No such trainer."))).contains(dto.getStudentTagOid())){
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
             isManagerAndTrainer = true;
@@ -531,8 +532,7 @@ public class SurveyService {
 
         return surveyMapper.mapToSurveyByClassroomResponseDtoList(surveyList
                 .stream()
-                .filter(survey -> survey.getUsers()
-                        .stream()
+                .filter(survey -> survey.getStudentsWhoAnswered().stream().map(Student::getUser)
                         .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
     }
 

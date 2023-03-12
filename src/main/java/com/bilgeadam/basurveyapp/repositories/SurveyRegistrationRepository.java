@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,5 @@ public interface SurveyRegistrationRepository extends BaseRepository<SurveyRegis
 
     List<SurveyRegistration> findAllByEndDateAfter(LocalDateTime localDateTime);
 
-    SurveyRegistration findByClassroomOidAndSurveyOid(Long classroomOid, Long surveyOid);
+    SurveyRegistration findByStudentTagAndSurveyOid(StudentTag studentTag, Long surveyOid);
 }

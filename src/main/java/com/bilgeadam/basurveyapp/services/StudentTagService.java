@@ -24,4 +24,8 @@ public class StudentTagService {
     public List<Student> findByStudentTagOid(Long studentTagOid) {
         return studentTagRepository.findByStudentTagOid(studentTagOid);
     }
+
+    public Optional<StudentTag> findActiveById(Long studentTagOid) {
+        return studentTagRepository.findActiveById(studentTagOid);
+    }
 }

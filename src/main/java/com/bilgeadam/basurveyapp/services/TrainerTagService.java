@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,5 +21,9 @@ public class TrainerTagService {
 
     public Optional<TrainerTag> findActiveById(Long trainerTagOid) {
         return trainerTagRepository.findActiveById(trainerTagOid);
+    }
+
+    public Set<TrainerTag> getTrainerTags(Trainer trainer) {
+        return trainerTagRepository.findActiveTrainerTagsByTrainerId(trainer.getOid());
     }
 }
