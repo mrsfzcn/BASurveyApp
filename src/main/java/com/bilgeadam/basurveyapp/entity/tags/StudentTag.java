@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Entity
 @SuperBuilder
-@EqualsAndHashCode
-@Table(name = "studenttag")
+@Table(name = "studenttags")
 public class StudentTag extends BaseTag<Student> {
+
 }

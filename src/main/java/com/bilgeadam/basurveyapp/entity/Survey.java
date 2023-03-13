@@ -25,9 +25,13 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SurveyRegistration> surveyRegistrations;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Student> studentsWhoAnswered;
+
     @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questions;
 
-    @ManyToMany(mappedBy = "surveys", fetch = FetchType.LAZY)
-    private List<User> users;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Trainer whoCreatedSurvey;
+
 }

@@ -1,13 +1,16 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.entity.Manager;
 import com.bilgeadam.basurveyapp.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

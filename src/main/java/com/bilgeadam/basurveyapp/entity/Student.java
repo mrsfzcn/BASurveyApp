@@ -1,9 +1,10 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +14,9 @@ import lombok.*;
 @Builder
 @Table(name = "students")
 public class Student extends BaseEntity {
+    @OneToOne
     User user;
+    @ManyToMany(mappedBy = "studentsWhoAnswered",  fetch = FetchType.LAZY)
+    Set<Survey> surveysAnswered;
 
 }

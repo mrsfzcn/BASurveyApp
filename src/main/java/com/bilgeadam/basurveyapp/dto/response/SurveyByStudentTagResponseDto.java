@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class SurveyByClassroomResponseDto {
+public class SurveyByStudentTagResponseDto {
 
     private Long surveyOid;
     private String surveyTitle;

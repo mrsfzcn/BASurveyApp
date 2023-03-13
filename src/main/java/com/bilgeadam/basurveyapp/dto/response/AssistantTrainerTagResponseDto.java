@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class MasterTrainerClassroomResponseDto {
-    private String name;
+public class AssistantTrainerTagResponseDto {
+    private String tagString;
 }
