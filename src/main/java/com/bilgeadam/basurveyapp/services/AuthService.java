@@ -1,12 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
-import com.bilgeadam.basurveyapp.entity.Role;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -53,6 +53,20 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .roles(userRoles)
                 .build());
+        if(roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
+                || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)){
+            Manager manager = new Manager();
+            manager.setUser(auth);
+        }
+        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_STUDENT)){
+            Student student = new Student();
+            student.setUser(auth);
+        }
+        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
+                ||roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)){
+            Trainer trainer = new Trainer();
+            trainer.setUser(auth);
+        }
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(auth))
                 .build();
