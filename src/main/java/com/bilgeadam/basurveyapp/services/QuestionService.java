@@ -51,7 +51,10 @@ public class QuestionService {
 //                    .subtag(subTagList)
                     .build();
             questionRepository.save(question);
-
+            questionTagList.forEach(questionTag -> {
+                questionTag.getTargetEntities().add(question);
+                questionTagRepository.save(questionTag);
+            });
         return true;
     }
 
