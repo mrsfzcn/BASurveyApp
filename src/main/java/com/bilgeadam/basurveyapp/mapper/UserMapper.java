@@ -5,6 +5,8 @@ package com.bilgeadam.basurveyapp.mapper;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -18,13 +20,13 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     List<StudentResponseDto> toStudentResponseDto(final List<User> users);
-//    List<StudentClassroomResponseDto> toStudentClassroomResponseDto(final List<Classroom> classroom);
+    List<StudentTagResponseDto> toStudentStudentTagResponseDto(final List<StudentTag> studentTags);
 
     List<MasterTrainerResponseDto> toMasterTrainerResponseDto(final List<User> users);
-//    List<MasterTrainerClassroomResponseDto> toMasterTrainerClassroomResponseDto(final List<Classroom> classroom);
+    List<MasterTrainerTagResponseDto> toMasterTrainerTagResponseDto(final List<TrainerTag> trainerTags);
 
     List<AssistantTrainerResponseDto> toAssistantTrainerResponseDto(final List<User> users);
-//    List<AssistantTrainerClassroomResponseDto> toAssistantTrainerClassroomResponseDto(final List<Classroom> classroom);
+    List<AssistantTrainerTagResponseDto> toAssistantTrainerTagResponseDto(final List<TrainerTag> trainerTags);
 
     List<ManagerResponseDto> toManagerResponseDto(final List<User> users);
 
