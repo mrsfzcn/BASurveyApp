@@ -1,9 +1,7 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Survey;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 /**

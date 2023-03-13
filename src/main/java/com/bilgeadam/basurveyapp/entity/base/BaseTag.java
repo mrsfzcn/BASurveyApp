@@ -1,11 +1,12 @@
 package com.bilgeadam.basurveyapp.entity.base;
 
-import com.bilgeadam.basurveyapp.entity.Question;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 import java.util.Set;
 
 
