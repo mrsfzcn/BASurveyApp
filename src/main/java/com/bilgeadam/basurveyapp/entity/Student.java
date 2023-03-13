@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,5 +19,8 @@ public class Student extends BaseEntity {
     User user;
     @ManyToMany(mappedBy = "studentsWhoAnswered",  fetch = FetchType.LAZY)
     Set<Survey> surveysAnswered;
+
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy ="targetEntities"  ,fetch = FetchType.EAGER)
+    Set<StudentTag> studentTags;
 
 }

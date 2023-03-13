@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -18,5 +19,5 @@ public abstract class BaseTag<T> extends BaseEntity{
     @Column(name = "tag_string")
      String tagString;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    List<T> targetEntities;
+    Set<T> targetEntities;
 }

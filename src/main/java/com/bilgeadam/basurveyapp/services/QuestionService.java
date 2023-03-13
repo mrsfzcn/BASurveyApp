@@ -10,10 +10,7 @@ import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,12 +28,10 @@ public class QuestionService {
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        List<QuestionTag> questionTagList = new ArrayList<>();
-//        List<SubTag> subTagList = new ArrayList<>();
-        for (int i = 0; i < createQuestionDto.getTagOids().size(); i++) {
-            Optional<QuestionTag> tagTemp = questionTagRepository.findActiveById(createQuestionDto.getTagOids().get(i));
-            tagTemp.ifPresent(questionTagList::add);
-        }
+        Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
+        createQuestionDto.getTagOids().forEach(questTagOid ->
+                   questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
+
 //        for (int i = 0; i < createQuestionDto.getSubTagOids().size(); i++) {
 //            Optional<SubTag> subTagTemp = subTagRepository.findActiveById(createQuestionDto.getSubTagOids().get(i));
 //            subTagTemp.ifPresent(subTagList::add);
@@ -62,7 +57,8 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question is not found to update");
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
-            updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(x-> questionTagRepository.findById(x).get()).collect(Collectors.toList()));
+            updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(questionTagOid->
+                    questionTagRepository.findActiveById(questionTagOid).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet()));
 //            updateQuestion.get().setSubtag(updateQuestionDto.getSubTagOids().stream().map(x-> subTagRepository.findById(x).get()).collect(Collectors.toList()));
             Question question = updateQuestion.get();
             questionRepository.save(question);

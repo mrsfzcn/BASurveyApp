@@ -19,5 +19,5 @@ public class TrainerClassroomSurveyResponseDto {
     String lastName;
     String email;
     Set<String> roles;
-    Set<Survey> surveysByThisTrainer;
+    Set<SurveySimpleResponseDto> surveysByThisTrainer;
 }

@@ -65,6 +65,7 @@ public class AuthService {
         if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
                 ||roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)){
             Trainer trainer = new Trainer();
+            trainer.setMasterTrainer(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
             trainer.setUser(auth);
         }
         return AuthenticationResponseDto.builder()

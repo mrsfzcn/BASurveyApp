@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,12 +24,12 @@ public class Question extends BaseEntity {
     @JoinColumn(referencedColumnName = "oid", name = "question_type")
     private QuestionType questionType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Response> responses;
+    private Set<Response> responses;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     //@JoinColumn(referencedColumnName = "oid", name = "survey")
-    private List<Survey> surveys;
+    private Set<Survey> surveys;
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<QuestionTag> questionTag;
+    private Set<QuestionTag> questionTag;
 //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private List<SubTag> subtag;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
