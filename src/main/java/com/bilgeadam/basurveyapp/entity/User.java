@@ -30,18 +30,12 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles;
-//    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL)
-//    private List<Classroom> classrooms;
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<Survey> surveys;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
     }
 
-//    @ManyToMany(mappedBy = "users")
-//    private List<Question> questions;
 
     @Override
     public String getUsername() {

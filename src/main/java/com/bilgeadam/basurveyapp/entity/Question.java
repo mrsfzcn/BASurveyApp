@@ -21,21 +21,13 @@ public class Question extends BaseEntity {
     @Column(name = "question_order")
     private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(referencedColumnName = "oid", name = "question_type")
     private QuestionType questionType;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Response> responses;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //@JoinColumn(referencedColumnName = "oid", name = "survey")
     private Set<Survey> surveys;
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<QuestionTag> questionTag;
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<SubTag> subtag;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable( name = "users_role", joinColumns =
-    @JoinColumn(name = "questions_oid", referencedColumnName = "oid"), inverseJoinColumns = @JoinColumn(name = "users_oid", referencedColumnName = "oid"))
-    private List<User> users;
 
 
 }
