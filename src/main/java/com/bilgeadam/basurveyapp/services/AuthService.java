@@ -36,6 +36,10 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
 
+    private final ManagerService managerService;
+    private final StudentService studentService;
+    private final TrainerService trainerService;
+
     @Transactional
     public AuthenticationResponseDto register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -57,16 +61,19 @@ public class AuthService {
                 || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)){
             Manager manager = new Manager();
             manager.setUser(auth);
+            managerService.createManager(manager);
         }
         if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_STUDENT)){
             Student student = new Student();
             student.setUser(auth);
+            studentService.createStudent(student);
         }
         if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
                 ||roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)){
             Trainer trainer = new Trainer();
             trainer.setMasterTrainer(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
             trainer.setUser(auth);
+            trainerService.createTrainer(trainer);
         }
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(auth))
