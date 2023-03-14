@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
@@ -203,7 +204,8 @@ public class SurveyService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
 
-        List<Long> participantIdList = getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(student -> student.getUser().getOid()).toList();
+        List<Long> participantIdList = getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(student
+                -> student.getUser().getOid()).toList();
         if (participantIdList.contains(currentUser.getOid())) {
             throw new AlreadyAnsweredSurveyException("User cannot answer a survey more than once.");
         }
@@ -344,7 +346,8 @@ public class SurveyService {
         Long userOid = (Long) authentication.getCredentials();
         User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
         Student student = studentService.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Student does not exist"));
-        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
+        if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) ||
+                roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
             // Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
             List<Student> students = studentService.findByStudentTagOid(studentTagOid);
             if (!students.contains(student)) {
@@ -394,7 +397,7 @@ public class SurveyService {
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
-        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
+        if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) || roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
             Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
             if(trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())){
                 throw new AccessDeniedException("You dont have access to target class data.");
@@ -435,16 +438,13 @@ public class SurveyService {
 
     //TODO method tag yapısına göre refactor edilecek
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
-        Trainer trainer = trainerService.findActiveById((Long)
+        Trainer trainer = trainerService.findTrainerByUserOid((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-
-
-
 //        List<Set<Student>> classrooms = trainer.getSurveysCreatedByTrainer; // set<student> = survey.getStudentsWhoAnswered()
 //        // classroom = List<Set<Student>> = List<Survey.getStudentsWhoAnswered()>
         User user = trainer.getUser();
@@ -453,7 +453,12 @@ public class SurveyService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .roles(user.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
-                .surveysByThisTrainer(trainer.getSurveysCreatedByTrainer())
+                .surveysByThisTrainer(trainer.getSurveysCreatedByTrainer().stream().map(survey ->
+                        SurveySimpleResponseDto.builder()
+                                .surveyOid(survey.getOid())
+                                .surveyTitle(survey.getSurveyTitle())
+                                .courseTopic(survey.getCourseTopic())
+                                .build()).collect(Collectors.toSet()))
                 .build();
     }
 

@@ -1,10 +1,9 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.GetQuestionByRoleRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

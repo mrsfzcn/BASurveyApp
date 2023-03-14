@@ -1,10 +1,10 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -20,5 +20,9 @@ public class Trainer extends BaseEntity {
 
     @OneToMany(mappedBy = "whoCreatedSurvey", fetch = FetchType.EAGER)
     Set<Survey> surveysCreatedByTrainer;
+
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy ="targetEntities"  ,fetch = FetchType.EAGER)
+    Set<TrainerTag> trainerTags;
+    boolean isMasterTrainer;
 
 }
