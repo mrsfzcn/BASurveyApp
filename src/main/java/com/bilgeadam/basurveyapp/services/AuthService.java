@@ -1,12 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
-import com.bilgeadam.basurveyapp.entity.Role;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -36,6 +36,10 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
 
+    private final ManagerService managerService;
+    private final StudentService studentService;
+    private final TrainerService trainerService;
+
     @Transactional
     public AuthenticationResponseDto register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -53,6 +57,24 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .roles(userRoles)
                 .build());
+        if(roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
+                || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)){
+            Manager manager = new Manager();
+            manager.setUser(auth);
+            managerService.createManager(manager);
+        }
+        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_STUDENT)){
+            Student student = new Student();
+            student.setUser(auth);
+            studentService.createStudent(student);
+        }
+        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
+                ||roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)){
+            Trainer trainer = new Trainer();
+            trainer.setMasterTrainer(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+            trainer.setUser(auth);
+            trainerService.createTrainer(trainer);
+        }
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(auth))
                 .build();

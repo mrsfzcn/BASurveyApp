@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +19,6 @@ public class CreateQuestionDto {
     @NotNull
     Long questionTypeOid;
     Integer order;
-    List<Long> tagOids;
-    List<Long> subTagOids;
+    Set<Long> tagOids;
 
 }

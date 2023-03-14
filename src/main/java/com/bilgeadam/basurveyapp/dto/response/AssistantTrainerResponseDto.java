@@ -15,5 +15,5 @@ public class AssistantTrainerResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private List<AssistantTrainerClassroomResponseDto> classrooms;
+    private List<AssistantTrainerTagResponseDto> classrooms;
 }

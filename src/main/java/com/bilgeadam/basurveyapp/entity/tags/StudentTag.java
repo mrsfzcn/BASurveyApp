@@ -4,7 +4,6 @@ import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.base.BaseTag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Entity
 @SuperBuilder
-@EqualsAndHashCode
-@Table(name = "studenttag")
+@Table(name = "studenttags")
 public class StudentTag extends BaseTag<Student> {
+
 }

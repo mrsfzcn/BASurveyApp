@@ -18,9 +18,11 @@ public class SurveyAssignRequestDto {
     Long surveyId;
     @NotBlank
     @NotNull
-    String classroomName;
+    String studentTag;
     @NotBlank
     @NotNull
     Integer days;
     private String startDate;
+
+
 }

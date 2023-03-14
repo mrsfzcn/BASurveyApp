@@ -1,10 +1,9 @@
 package com.bilgeadam.basurveyapp.entity.tags;
 
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.base.BaseTag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,8 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Entity
 @SuperBuilder
-@EqualsAndHashCode
-@Table(name = "usertag")
-public class UserTag extends BaseTag<User> {
+@Table(name = "trainertags")
+public class TrainerTag extends BaseTag<Question> {
 
 }

@@ -1,9 +1,11 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,6 +15,12 @@ import lombok.*;
 @Builder
 @Table(name = "students")
 public class Student extends BaseEntity {
+    @OneToOne
     User user;
+    @ManyToMany(mappedBy = "studentsWhoAnswered",  fetch = FetchType.LAZY)
+    Set<Survey> surveysAnswered;
+
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy ="targetEntities"  ,fetch = FetchType.EAGER)
+    Set<StudentTag> studentTags;
 
 }

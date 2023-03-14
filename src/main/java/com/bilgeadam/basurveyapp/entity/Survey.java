@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,9 +26,16 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SurveyRegistration> surveyRegistrations;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Student> studentsWhoAnswered;
+
     @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questions;
 
-    @ManyToMany(mappedBy = "surveys", fetch = FetchType.LAZY)
-    private List<User> users;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Trainer whoCreatedSurvey;
+
+    @ManyToMany(cascade = CascadeType.ALL,mappedBy = "targetEntities",fetch = FetchType.EAGER)
+    private Set<SurveyTag> surveyTags;
+
 }

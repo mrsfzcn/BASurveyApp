@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,5 +22,5 @@ public class SurveyRegistration extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private Survey survey;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Classroom classroom;
+    private StudentTag studentTag;
 }
