@@ -15,5 +15,5 @@ public class MasterTrainerResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private List<MasterTrainerTagResponseDto> classrooms;
+    private List<MasterTrainerTagResponseDto> trainerTags;
 }

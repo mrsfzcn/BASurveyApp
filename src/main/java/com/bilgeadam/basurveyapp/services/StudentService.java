@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.bilgeadam.basurveyapp.mapper.StudentMapper.Instance;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +33,10 @@ public class StudentService {
     }
 
     public List<StudentResponseDto> getStudentList() {
-        List<Student> studentList = studentRepository.findAll();
-        studentList.forEach(student -> StudentMapper.Instance.toStudentResponseDto(student.getUser(), Instance.toStudentTagResponseDto(student.getStudentTags())));
-        return StudentMapper.Instance.toStudentResponseDtoList(studentList.stream().map(Student::getUser).toList());
 
+        List<Student> students = studentRepository.findAllStudents();
+
+        List<StudentResponseDto> dto = StudentMapper.INSTANCE.toStudentResponseDtoList(students);
+        return dto;
     }
 }

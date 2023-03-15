@@ -32,34 +32,6 @@ public class UserService {
     private final StudentRepository studentRepository;
 
 
-
-    public List<MasterTrainerResponseDto> getMasterTrainerList() {
-        List<User> masterTrainers = userRepository.findMasterTrainers();
-
-        List<MasterTrainerResponseDto> dto = UserMapper.INSTANCE.toMasterTrainerResponseDto(masterTrainers);
-        return dto;
-
-//        return students.stream().map(student -> UserResponseDto.builder()
-//                .firstName(student.getFirstName())
-//                .lastName(student.getLastName())
-//                .email(student.getEmail())
-//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-//                .build()).collect(Collectors.toList());
-    }
-
-    public List<AssistantTrainerResponseDto> getAssistantTrainerList() {
-        List<User> assistanTrainers = userRepository.findAssistantTrainers();
-
-        List<AssistantTrainerResponseDto> dto = UserMapper.INSTANCE.toAssistantTrainerResponseDto(assistanTrainers);
-        return dto;
-//        return students.stream().map(student -> UserResponseDto.builder()
-//                .firstName(student.getFirstName())
-//                .lastName(student.getLastName())
-//                .email(student.getEmail())
-//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-//                .build()).collect(Collectors.toList());
-    }
-
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
 

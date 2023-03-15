@@ -19,23 +19,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "hello";
-    }
-
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/mastertrainers")
-    ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainersList() {
-        return ResponseEntity.ok(userService.getMasterTrainerList());
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/assistanttrainers")
-    ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainersList() {
-        return ResponseEntity.ok(userService.getAssistantTrainerList());
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/managers")
