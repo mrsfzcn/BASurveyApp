@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.SurveySimpleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
@@ -32,7 +33,6 @@ public class QuestionService {
     private final JwtService jwtService;
 
     private final QuestionTagRepository questionTagRepository;
-//    private final SubTagRepository subTagRepository;
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
@@ -134,12 +134,18 @@ public class QuestionService {
         Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         List<QuestionResponseDto> questionsDto = new ArrayList<>();
+
+        //TODO mapper kullanılacak
         for (Question question : questions) {
             questionsDto.add(QuestionResponseDto.builder()
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-//                    .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
+                    .tagOids(question.getQuestionTag().stream().map(
+                            questionTag -> QuestionTagResponseDto.builder()
+                                    .oid(questionTag.getOid())
+                                    .tagString(questionTag.getTagString())
+                                    .build()).collect(Collectors.toList()))
                     .build());
         }
         return questionsDto;
@@ -161,7 +167,11 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-//                        .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
+                        .tagOids(question.getQuestionTag().stream().map(
+                                questionTag -> QuestionTagResponseDto.builder()
+                                        .oid(questionTag.getOid())
+                                        .tagString(questionTag.getTagString())
+                                        .build()).collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
         if (filteredList.size() != 0) {
@@ -185,7 +195,11 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-//                    .tagOids(question.getQuestionTag().stream().map(QuestionTag::getOid).collect(Collectors.toList()))
+                    .tagOids(question.getQuestionTag().stream().map(
+                            questionTag -> QuestionTagResponseDto.builder()
+                                    .oid(questionTag.getOid())
+                                    .tagString(questionTag.getTagString())
+                                    .build()).collect(Collectors.toList()))
                     .build())
                     .collect(Collectors.toList());
         } else {

@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class QuestionTagResponseDto {
     Long oid;
+    String tagString;
 }
