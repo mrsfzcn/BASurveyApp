@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
@@ -29,6 +30,7 @@ public class UserService {
 
     public List<StudentResponseDto> getStudentList() {
         List<User> students = userRepository.findStudents();
+
 
         List<StudentResponseDto> dto = UserMapper.INSTANCE.toStudentResponseDto(students);
         return dto;
@@ -70,6 +72,7 @@ public class UserService {
 
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
+
 
         List<ManagerResponseDto> dto = UserMapper.INSTANCE.toManagerResponseDto(managers);
         return dto;
