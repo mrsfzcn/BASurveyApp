@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class ResponseController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")
-    public ResponseEntity<AnswerResponseDto> findById(@RequestBody @Valid FindByIdRequestDto dto) {
+    public ResponseEntity<AnswerResponseDto> findById(@ParameterObject @Valid FindByIdRequestDto dto) {
         return ResponseEntity.ok(responseService.findByIdResponse(dto.getOid()));
 
     }

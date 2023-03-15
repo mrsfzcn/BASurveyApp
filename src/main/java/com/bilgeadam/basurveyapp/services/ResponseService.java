@@ -13,6 +13,7 @@ import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
+import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
@@ -51,13 +52,9 @@ public class ResponseService {
         Long userOid = (Long) authentication.getCredentials();
         userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-        Response response = Response.builder()
-                .responseString(responseRequestDto.getResponseString())
-                .question(questionRepository
-                        .findActiveById(responseRequestDto
-                                .getQuestionOid()).orElseThrow(()->new ResourceNotFoundException("question not found")))
-                .user(userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")))
-                .build();
+        Response response = ResponseMapper.INSTANCE.toResponse(responseRequestDto, questionRepository
+                .findActiveById(responseRequestDto
+                        .getQuestionOid()).orElseThrow(() -> new ResourceNotFoundException("question not found")), userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")));
         responseRepository.save(response);
     }
 
@@ -76,22 +73,26 @@ public class ResponseService {
         if (response.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding response");
         }
-        return AnswerResponseDto.builder()
-                .responseString(response.get().getResponseString())
-                .userOid(response.get().getUser().getOid())
-                .questionOid(response.get().getQuestion().getOid())
-                .build();
+        return ResponseMapper.INSTANCE.toAnswerResponseDto(response.get());
+//                AnswerResponseDto.builder()
+//                .responseString(response.get().getResponseString())
+//              .userOid(response.get().getUser().getOid())
+//                .questionOid(response.get().getQuestion().getOid())
+//                .build();
     }
 
     public List<AnswerResponseDto> findAll() {
+        ResponseMapper responseMapper = ResponseMapper.INSTANCE;
         List<Response> findAllList = responseRepository.findAllActive();
-        List<AnswerResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(response ->
-                responseDtoList.add(AnswerResponseDto.builder()
-                        .responseString(response.getResponseString())
-                        .userOid(response.getUser().getOid())
-                        .questionOid(response.getQuestion().getOid())
-                        .build()));
+        List<AnswerResponseDto> responseDtoList = findAllList.stream()
+                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
+//        List<AnswerResponseDto> responseDtoList = new ArrayList<>();
+//        findAllList.forEach(response ->
+//                responseDtoList.add(AnswerResponseDto.builder()
+//                        .responseString(response.getResponseString())
+//                        .userOid(response.getUser().getOid())
+//                        .questionOid(response.getQuestion().getOid())
+//                        .build()));
         return responseDtoList;
     }
 
@@ -123,17 +124,18 @@ public class ResponseService {
     }
 
     public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+        ResponseMapper responseMapper = ResponseMapper.INSTANCE;
         userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
         return responseRepository
                 .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(survey.getOid()))
                 .stream()
-                .map(response -> AnswerResponseDto.builder()
-                        .responseString(response.getResponseString())
-                        .questionOid(response.getQuestion().getOid())
-                        .userOid(response.getUser().getOid())
-                        .build()
-                ).collect(Collectors.toList());
+                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
+//                        -> AnswerResponseDto.builder()
+//                        .responseString(response.getResponseString())
+//                        .questionOid(response.getQuestion().getOid())
+//                     .userOid(response.getUser().getOid())
+//                        .build()
     }
 
     public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
