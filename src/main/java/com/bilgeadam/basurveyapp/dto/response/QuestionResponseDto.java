@@ -1,7 +1,6 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
 
-import com.bilgeadam.basurveyapp.entity.Question;
 import lombok.*;
 
 import java.util.List;
@@ -16,6 +15,6 @@ public class QuestionResponseDto {
     String questionString;
     Long questionTypeOid;
     Integer order;
-    List<QuestionTagResponseDto> tagOids;
+    List<QuestionTagResponseDto> questionTags;
 
 }

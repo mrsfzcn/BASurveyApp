@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
+import com.bilgeadam.basurveyapp.repositories.StudentRepository;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,21 +29,9 @@ public class UserService {
     private final QuestionTypeRepository questionTypeRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
-
-    public List<StudentResponseDto> getStudentList() {
-        List<User> students = userRepository.findStudents();
+    private final StudentRepository studentRepository;
 
 
-        List<StudentResponseDto> dto = UserMapper.INSTANCE.toStudentResponseDto(students);
-        return dto;
-
-//        return students.stream().map(student -> UserResponseDto.builder()
-//                .firstName(student.getFirstName())
-//                .lastName(student.getLastName())
-//                .email(student.getEmail())
-//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-//                .build()).collect(Collectors.toList());
-    }
 
     public List<MasterTrainerResponseDto> getMasterTrainerList() {
         List<User> masterTrainers = userRepository.findMasterTrainers();

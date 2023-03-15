@@ -24,11 +24,6 @@ public class UserController {
         return "hello";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/students")
-    ResponseEntity<List<StudentResponseDto>> getStudentList() {
-        return ResponseEntity.ok(userService.getStudentList());
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/mastertrainers")

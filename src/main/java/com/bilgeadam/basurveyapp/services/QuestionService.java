@@ -5,9 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveySimpleResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
@@ -15,6 +13,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
+import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -141,7 +140,7 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    .tagOids(question.getQuestionTag().stream().map(
+                    .questionTags(question.getQuestionTag().stream().map(
                             questionTag -> QuestionTagResponseDto.builder()
                                     .oid(questionTag.getOid())
                                     .tagString(questionTag.getTagString())
@@ -167,7 +166,7 @@ public class QuestionService {
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
                         .order(question.getOrder())
-                        .tagOids(question.getQuestionTag().stream().map(
+                        .questionTags(question.getQuestionTag().stream().map(
                                 questionTag -> QuestionTagResponseDto.builder()
                                         .oid(questionTag.getOid())
                                         .tagString(questionTag.getTagString())
@@ -195,11 +194,7 @@ public class QuestionService {
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
                     .order(question.getOrder())
-                    .tagOids(question.getQuestionTag().stream().map(
-                            questionTag -> QuestionTagResponseDto.builder()
-                                    .oid(questionTag.getOid())
-                                    .tagString(questionTag.getTagString())
-                                    .build()).collect(Collectors.toList()))
+                    .questionTags(QuestionTagMapper.INSTANCE.toQuestionTagResponseDtoList(question.getQuestionTag()))
                     .build())
                     .collect(Collectors.toList());
         } else {

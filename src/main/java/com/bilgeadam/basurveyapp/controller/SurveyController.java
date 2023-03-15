@@ -59,6 +59,12 @@ public class SurveyController {
     ResponseEntity<Boolean> addQuestionToSurvey( @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
         return ResponseEntity.ok(surveyService.addQuestionToSurvey( dto));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/add-questions-to-survey")
+    ResponseEntity<Boolean> addQuestionsToSurvey( @RequestBody @Valid SurveyAddQuestionsRequestDto dto) {
+        surveyService.addQuestionsToSurvey( dto);
+        return ResponseEntity.ok(true);
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update/{surveyId}")

@@ -7,12 +7,10 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.AlreadyAnsweredSurveyException;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionsAndResponsesDoesNotMatchException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserInsufficientAnswerException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
 import jakarta.mail.MessagingException;
@@ -44,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SurveyService {
     private final SurveyRepository surveyRepository;
-//    private final ClassroomRepository classroomRepository;
+    //    private final ClassroomRepository classroomRepository;
     private final ResponseRepository responseRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -275,7 +273,7 @@ public class SurveyService {
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
         StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
-            .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
         // List<Student> classroom = getStudentsByStudentTag(studentTag);
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
@@ -399,7 +397,7 @@ public class SurveyService {
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) || roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
             Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
-            if(trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())){
+            if (trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
 //            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
@@ -427,13 +425,13 @@ public class SurveyService {
                                 .order(question.getOrder())
                                 .responses(
                                         question.getResponses()
-                                        .stream()
-                                        .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
-                                        .map(Response::getResponseString)
-                                        .collect(Collectors.toList()))
-                               .build()).collect(Collectors.toList())
+                                                .stream()
+                                                .filter(response -> usersInClassroom.contains(response.getUser().getOid()))
+                                                .map(Response::getResponseString)
+                                                .collect(Collectors.toList()))
+                                .build()).collect(Collectors.toList())
                 )
-                        .build();
+                .build();
     }
 
     //TODO method tag yapısına göre refactor edilecek
@@ -478,8 +476,8 @@ public class SurveyService {
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
-            if(trainerTagService.getTrainerTagsOids(trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
-                    new ResourceNotFoundException("No such trainer."))).contains(dto.getStudentTagOid())){
+            if (trainerTagService.getTrainerTagsOids(trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
+                    new ResourceNotFoundException("No such trainer."))).contains(dto.getStudentTagOid())) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
             isManagerAndTrainer = true;
@@ -544,8 +542,40 @@ public class SurveyService {
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        question.getSurveys().add(survey);
         survey.getQuestions().add(question);
         surveyRepository.save(survey);
         return true;
     }
+
+    public void addQuestionsToSurvey(SurveyAddQuestionsRequestDto dto) {
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        List<Question> questions = survey.getQuestions();
+        dto.getQuestionIds().forEach(qId -> {
+            Question question = questionRepository.findActiveById(qId).orElseThrow(() ->
+                    new ResourceNotFoundException("Question not found."));
+            question.getSurveys().add(survey);
+            questions.add(question);
+        });
+        survey.setQuestions(questions);
+        surveyRepository.save(survey);
+    }
+//    Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
+//
+//        createQuestionDto.getTagOids().forEach(questTagOid ->
+//            questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
+//
+//    Question question = Question.builder()
+//            .questionString(createQuestionDto.getQuestionString())
+//            .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+//                    () -> new QuestionTypeNotFoundException("Question type is not found")))
+//            .order(createQuestionDto.getOrder())
+//            .questionTag(questionTagList)
+//            .build();
+//
+//
+//            questionRepository.save(question);
+//            questionTagList.forEach(questionTag -> {
+//        questionTag.getTargetEntities().add(question);
+//        questionT
 }

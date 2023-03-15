@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface QuestionRepository extends BaseRepository<Question, Long> {
@@ -21,7 +22,6 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
 
     @Query(value = "SELECT * FROM questions WHERE oid IN (SELECT questions_oid FROM questions_tag WHERE tag_oid IN ?1)", nativeQuery = true)
     Optional<List<Question>> findQuestionsByTagIds(List<Long> tagIds);
-
 
 
 
