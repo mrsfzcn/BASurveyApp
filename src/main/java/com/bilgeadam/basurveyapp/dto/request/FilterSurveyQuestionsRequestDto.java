@@ -16,7 +16,6 @@ public class FilterSurveyQuestionsRequestDto {
     Long surveyOid;
     @NotNull
     List<Long> tagOids;
-    List<Long> subTagOids;
 
 
 
