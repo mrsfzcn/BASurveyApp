@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class SurveyOfClassroomResponseDto {
+public class SurveyResponseWithAnswersDto {
     private Long surveyOid;
     private String surveyTitle;
     private String courseTopic;
