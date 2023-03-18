@@ -1,48 +1,53 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionAnswersResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByClassroomQuestionsResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.SurveyByStudentTagResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.Survey;
-import org.springframework.stereotype.Component;
+import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
-@Component
-public class SurveyMapper {
+import java.util.Set;
 
-  public List<SurveyByStudentTagResponseDto> mapToSurveyByClassroomResponseDtoList(List<Survey> surveys) {
-        return surveys.stream()
-                .map(survey -> {
-                    SurveyByStudentTagResponseDto surveyDto = new SurveyByStudentTagResponseDto();
-                    surveyDto.setSurveyOid(survey.getOid());
-                    surveyDto.setSurveyTitle(survey.getSurveyTitle());
-                    surveyDto.setCourseTopic(survey.getCourseTopic());
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 
-                    List<SurveyByClassroomQuestionsResponseDto> questionDtoList = survey.getQuestions().stream()
-                            .map(question -> {
-                                SurveyByClassroomQuestionsResponseDto questionDto = new SurveyByClassroomQuestionsResponseDto();
-                                questionDto.setQuestionOid(question.getOid());
-                                questionDto.setQuestionString(question.getQuestionString());
+public interface SurveyMapper {
+    SurveyMapper INSTANCE = Mappers.getMapper(SurveyMapper.class);
 
-                                List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList = question.getResponses().stream()
-                                        .map(answer -> {
-                                            SurveyByClassroomQuestionAnswersResponseDto responseDto = new SurveyByClassroomQuestionAnswersResponseDto();
-                                            responseDto.setResponseOid(answer.getOid());
-                                            responseDto.setResponseString(answer.getResponseString());
-                                            return responseDto;
-                                        })
-                                        .collect(Collectors.toList());
+    List<SurveyByStudentTagResponseDto> toSurveyByStudentTagResponseDtoList(List<Survey> surveys);
+    List<SurveyResponseDto> toSurveyResponseDtoList(List<Survey> surveys);
+    Survey toSurvey(SurveyCreateRequestDto surveyCreateRequestDto);
+    Set<SurveySimpleResponseDto> toSurveySimpleResponseDtoSet(Set<Survey> surveySet);
+    SurveyRegistration toSurveyRegistration(SurveyAssignRequestDto surveyCreateRequestDto, Survey survey, Long studentTagId, LocalDateTime startDate, LocalDateTime endDate);
+    TrainerClassroomSurveyResponseDto toTrainerClassroomSurveyResponseDto(User user, Set<SurveySimpleResponseDto> surveysByThisTrainer);
+    SurveyResponseWithAnswersDto toSurveyResponseWithAnswersDto(Survey survey, List<QuestionWithAnswersResponseDto> surveyAnswers);
 
-                                questionDto.setResponseDtoList(responseDtoList);
-                                return questionDto;
-                            })
-                            .collect(Collectors.toList());
+    SurveyOfClassroomMaskedResponseDto toSurveyOfClassroomMaskedResponseDto(Survey survey, List<QuestionWithAnswersMaskedResponseDto> surveyAnswers);
+    @Mapping(source = "oid", target = "questionOid")
+    @Mapping(source = "questionString", target = "questionString")
+    @Mapping(source = "questionType.oid", target = "questionTypeOid")
+    @Mapping(source = "order", target = "order")
+    QuestionWithAnswersResponseDto toQuestionWithAnswersResponseDto(Question question, List<ResponseUnmaskedDto> responses);
 
-                    surveyDto.setQuestionDtoList(questionDtoList);
-                    return surveyDto;
-                })
-                .collect(Collectors.toList());
+
+    @Mapping(source = "oid", target = "questionOid")
+    @Mapping(source = "questionType.oid", target = "questionTypeOid")
+    @Mapping(target = "responses", expression = "java(mapResponses(question, usersInClassroom))")
+    QuestionWithAnswersMaskedResponseDto toQuestionWithAnswersMaskedResponseDto(Question question, List<Long> usersInClassroom);
+
+    List<ResponseUnmaskedDto> mapResponses(Question question, List<Long> usersInClassroom);
+
+    default ResponseUnmaskedDto toResponseUnmaskedDto(User user, ResponseUnmaskedDto responseString) {
+        ResponseUnmaskedDto unmaskedDto = new ResponseUnmaskedDto();
+        unmaskedDto.setUserOid(user.getOid());
+        unmaskedDto.setResponse(responseString.getResponse());
+        return unmaskedDto;
     }
 }

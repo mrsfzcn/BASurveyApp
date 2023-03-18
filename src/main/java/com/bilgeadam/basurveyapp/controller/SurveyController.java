@@ -121,7 +121,7 @@ public class SurveyController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findsurveyanswersunmasked")
-    ResponseEntity<SurveyOfClassroomResponseDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto){
+    ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto){
         return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
     }
 
