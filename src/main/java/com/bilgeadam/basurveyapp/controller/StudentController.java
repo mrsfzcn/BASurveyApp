@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.UpdateStudentRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.Student;
@@ -25,10 +26,15 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentList());
 
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
         return ResponseEntity.ok(studentService.createStudent(student));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/update")
+    public ResponseEntity<Boolean> updateStudent(@RequestBody UpdateStudentRequestDto dto){
+        return ResponseEntity.ok(studentService.updateStudent(dto));
     }
 
 }
