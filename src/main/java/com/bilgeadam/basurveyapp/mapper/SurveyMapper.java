@@ -4,15 +4,13 @@ package com.bilgeadam.basurveyapp.mapper;
 import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
+import com.bilgeadam.basurveyapp.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -30,24 +28,33 @@ public interface SurveyMapper {
     SurveyResponseWithAnswersDto toSurveyResponseWithAnswersDto(Survey survey, List<QuestionWithAnswersResponseDto> surveyAnswers);
 
     SurveyOfClassroomMaskedResponseDto toSurveyOfClassroomMaskedResponseDto(Survey survey, List<QuestionWithAnswersMaskedResponseDto> surveyAnswers);
-    @Mapping(source = "oid", target = "questionOid")
-    @Mapping(source = "questionString", target = "questionString")
-    @Mapping(source = "questionType.oid", target = "questionTypeOid")
-    @Mapping(source = "order", target = "order")
-    QuestionWithAnswersResponseDto toQuestionWithAnswersResponseDto(Question question, List<ResponseUnmaskedDto> responses);
+    @Mapping(source = "question.oid", target = "questionOid")
+    @Mapping(source = "question.questionString", target = "questionString")
+    @Mapping(source = "question.questionType.oid", target = "questionTypeOid")
+    @Mapping(source = "question.order", target = "order")
+    @Mapping(source = "responseUnmaskedDtos", target = "responses")
+    QuestionWithAnswersResponseDto toQuestionWithAnswersResponseDto(Question question, List<ResponseUnmaskedDto> responseUnmaskedDtos);
 
 
-    @Mapping(source = "oid", target = "questionOid")
-    @Mapping(source = "questionType.oid", target = "questionTypeOid")
-    @Mapping(target = "responses", expression = "java(mapResponses(question, usersInClassroom))")
+    @Mapping(source = "question.oid", target = "questionOid")
+    @Mapping(source = "question.questionType.oid", target = "questionTypeOid")
+    @Mapping(target = "question.responses", expression = "java(mapResponses(question, usersInClassroom))")
     QuestionWithAnswersMaskedResponseDto toQuestionWithAnswersMaskedResponseDto(Question question, List<Long> usersInClassroom);
 
-    List<ResponseUnmaskedDto> mapResponses(Question question, List<Long> usersInClassroom);
+    default List<ResponseUnmaskedDto> mapResponses(Question question, List<Long> usersInClassroom) {
+        List<ResponseUnmaskedDto> responseUnmaskedDtos = new ArrayList<>();
+        for (Response response : question.getResponses()) {
+            if (usersInClassroom.contains(response.getUser().getOid())) {
+                responseUnmaskedDtos.add(toResponseUnmaskedDto(response.getUser(), response.getResponseString()));
+            }
+        }
+        return responseUnmaskedDtos;
+    }
 
-    default ResponseUnmaskedDto toResponseUnmaskedDto(User user, ResponseUnmaskedDto responseString) {
+    default ResponseUnmaskedDto toResponseUnmaskedDto(User user, String responseString) {
         ResponseUnmaskedDto unmaskedDto = new ResponseUnmaskedDto();
         unmaskedDto.setUserOid(user.getOid());
-        unmaskedDto.setResponse(responseString.getResponse());
+        unmaskedDto.setResponse(responseString);
         return unmaskedDto;
     }
 }

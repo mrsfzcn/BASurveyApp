@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
+import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.*;
 
 @AllArgsConstructor

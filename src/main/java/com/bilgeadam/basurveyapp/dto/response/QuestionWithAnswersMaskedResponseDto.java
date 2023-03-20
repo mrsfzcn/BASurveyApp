@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
+import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.*;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public class QuestionWithAnswersMaskedResponseDto {
     String questionString;
     Long questionTypeOid;
     Integer order;
-    List<String> responses;
+    List<Response> responses;
 }

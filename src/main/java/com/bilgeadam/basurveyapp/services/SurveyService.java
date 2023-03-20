@@ -275,7 +275,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
-        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
+        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag().getTagString())
                 .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
         // List<Student> classroom = getStudentsByStudentTag(studentTag);
 

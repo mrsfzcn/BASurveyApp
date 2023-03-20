@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -18,7 +19,7 @@ public class SurveyAssignRequestDto {
     Long surveyId;
     @NotBlank
     @NotNull
-    String studentTag;
+    StudentTag studentTag;
     @NotBlank
     @NotNull
     Integer days;
