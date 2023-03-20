@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.mapper.AuthMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,8 @@ public class AuthService {
         if (userRoles.isEmpty()) {
             throw new ResourceNotFoundException("Given roles not found.");
         }
+
+
         User auth = userRepository.save(User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -57,6 +60,11 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .roles(userRoles)
                 .build());
+
+//        User auth = AuthMapper.INSTANCE.ToUser(request);
+//        userRepository.save(auth);
+
+
         if(roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
                 || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)){
             Manager manager = new Manager();
