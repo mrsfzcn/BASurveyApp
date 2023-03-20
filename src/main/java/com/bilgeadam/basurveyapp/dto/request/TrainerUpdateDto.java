@@ -4,20 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class UpdateQuestionDto {
+public class TrainerUpdateDto {
     @NotBlank
     @NotNull
-    Long questionOid;
+    private Long trainerTagOid;
     @NotBlank
     @NotNull
-    String questionString;
-    List<Long> tagOids;
-
+    private Long trainerOid;
 }

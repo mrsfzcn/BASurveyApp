@@ -39,8 +39,7 @@ public class QuestionTagService {
         if (deleteTag.isEmpty()) {
             throw new RuntimeException("Tag is not found");
         } else {
-            QuestionTag questionTag = deleteTag.get();
-            questionTagRepository.softDelete(questionTag);
+            questionTagRepository.softDeleteById(deleteTag.get().getOid(),"questiontags");
             return true;
         }
 

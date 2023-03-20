@@ -67,8 +67,8 @@ public class QuestionTypeService {
         if (deleteQuestionType.isEmpty()) {
             throw new RuntimeException("QuestionType is not found");
         } else {
-            QuestionType questionType = deleteQuestionType.get();
-            questionTypeRepository.softDelete(questionType);
+//            questionTypeRepository.softDeleteById(questionTypeId,"questiontypes");
+            questionTypeRepository.deleteById(questionTypeId);
             return true;
         }
 

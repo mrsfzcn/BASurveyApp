@@ -86,7 +86,7 @@ public class UserService {
         if (userToBeDeleted.isEmpty()) {
             throw new ResourceNotFoundException("User is not found");
         }
-        userRepository.softDeleteById(userToBeDeleted.get().getOid());
+        userRepository.softDeleteById(userToBeDeleted.get().getOid(),"users");
     }
 
     public User findByOid(Long userId) {
