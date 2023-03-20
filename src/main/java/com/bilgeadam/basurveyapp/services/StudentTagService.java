@@ -1,24 +1,27 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.CreateStudentTagRequestDto;
-import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
-import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class StudentTagService {
     private final StudentTagRepository studentTagRepository;
-    private final BaseRepository studentRepository;
 
+    public void createTag(CreateTagDto dto) {
+        StudentTag studentTag = StudentTag.builder()
+                .tagString(dto.getTagString())
+                .build();
+        studentTagRepository.save(studentTag);
+    }
     public List<Student> getStudentsByStudentTag(StudentTag studentTag) {
         return studentTagRepository.findByStudentTagOid(studentTag.getOid());
     }
@@ -34,15 +37,13 @@ public class StudentTagService {
     public Optional<StudentTag> findActiveById(Long studentTagOid) {
         return studentTagRepository.findActiveById(studentTagOid);
     }
-
-
-    public Boolean createStudentTag(CreateStudentTagRequestDto dto) {
-
-        StudentTag studentTag = StudentTag.builder()
-                .tagString(dto.getTagString())
-                .build();
-        studentTagRepository.save(studentTag);
-        return true;
-
+    public Boolean delete(Long studentTagOid) {
+        Optional<StudentTag> deleteTag = studentTagRepository.findActiveById(studentTagOid);
+        if (deleteTag.isEmpty()) {
+            throw new RuntimeException("Tag is not found");
+        } else {
+            studentTagRepository.softDeleteById(deleteTag.get().getOid(),"studenttags");
+            return true;
+        }
     }
 }

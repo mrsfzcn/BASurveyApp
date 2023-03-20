@@ -56,6 +56,6 @@ public interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE #{#entityName} t SET t.state = 'DELETED' WHERE t.oid = ?1", nativeQuery = true)
-    int softDeleteById(Oid oid);
+    @Query(value = "UPDATE ?2 SET state = 'DELETED' WHERE oid = ?1", nativeQuery = true)
+    int softDeleteById(Oid oid, String entityName);
 }

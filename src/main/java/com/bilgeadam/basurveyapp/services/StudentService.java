@@ -1,61 +1,43 @@
 package com.bilgeadam.basurveyapp.services;
 
-import com.bilgeadam.basurveyapp.dto.request.UpdateStudentRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
+import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.repositories.StudentRepository;
-import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
-import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final StudentTagRepository studentTagRepository;
     private final StudentTagService studentTagService;
-
-
     public Boolean createStudent(Student student) {
         studentRepository.save(student);
         return true;
     }
 
-    public Boolean updateStudent(UpdateStudentRequestDto dto){
+    public StudentResponseDto updateStudent(StudentUpdateDto dto) {
 
-       Optional<Student> student = studentRepository.findById(dto.getOid());
-       if(student.isPresent()){
-           Optional<StudentTag> studentTag = studentTagRepository.findByTagString(dto.getTagString());
-           if (studentTag.isPresent()){
-               student.get().getStudentTags().add(studentTag.get());
-               studentTag.get().getTargetEntities().add(student.get());
-               studentRepository.save(student.get());
-               studentTagRepository.save(studentTag.get());
-               return true;
-           }
-           else {
-               throw new QuestionNotFoundException("StudentTag is not found");
-           }
-
-       }
-       else {
-           throw new QuestionNotFoundException("Student is not found");
-       }
-
-
+        Optional<Student> student = studentRepository.findActiveById(dto.getStudentOid());
+        if (student.isEmpty()) {
+            throw new ResourceNotFoundException("Student is not found");
+        } else {
+            student.get().setStudentTags(studentTagService.findActiveById(dto.getStudentTagOid()).stream().collect(Collectors.toSet()));
+            studentRepository.save(student.get());
+        }
+       StudentResponseDto studentResponseDto = StudentMapper.INSTANCE.toStudentResponseDto(student.get());
+        return studentResponseDto;
     }
-
     public Optional<Student> findByUser(User currentUser) {
         return studentRepository.findByUser(currentUser.getOid());
     }
