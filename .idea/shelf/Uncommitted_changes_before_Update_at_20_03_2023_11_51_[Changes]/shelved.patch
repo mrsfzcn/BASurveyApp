@@ -1,0 +1,466 @@
+Index: src/main/java/com/bilgeadam/basurveyapp/services/StudentService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;\r\nimport com.bilgeadam.basurveyapp.entity.Student;\r\nimport com.bilgeadam.basurveyapp.entity.User;\r\nimport com.bilgeadam.basurveyapp.mapper.StudentMapper;\r\nimport com.bilgeadam.basurveyapp.repositories.StudentRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class StudentService {\r\n    private final StudentRepository studentRepository;\r\n    private final StudentTagService studentTagService;\r\n\r\n    public Boolean createStudent(Student student) {\r\n        studentRepository.save(student);\r\n        return true;\r\n    }\r\n\r\n    public Optional<Student> findByUser(User currentUser) {\r\n        return studentRepository.findByUser(currentUser.getOid());\r\n    }\r\n\r\n    public List<Student> findByStudentTagOid(Long studentTagOid) {\r\n        List<Student> studentList = studentTagService.findByStudentTagOid(studentTagOid);\r\n        return studentList;\r\n    }\r\n\r\n    public List<StudentResponseDto> getStudentList() {\r\n\r\n        List<Student> students = studentRepository.findAllStudents();\r\n\r\n        List<StudentResponseDto> dto = StudentMapper.INSTANCE.toStudentResponseDtoList(students);\r\n        return dto;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/StudentService.java b/src/main/java/com/bilgeadam/basurveyapp/services/StudentService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/StudentService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/StudentService.java	(date 1678976438383)
+@@ -1,8 +1,11 @@
+ package com.bilgeadam.basurveyapp.services;
+ 
++import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
++import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
+ import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
+ import com.bilgeadam.basurveyapp.entity.Student;
+ import com.bilgeadam.basurveyapp.entity.User;
++import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+ import com.bilgeadam.basurveyapp.mapper.StudentMapper;
+ import com.bilgeadam.basurveyapp.repositories.StudentRepository;
+ import lombok.RequiredArgsConstructor;
+@@ -10,6 +13,7 @@
+ 
+ import java.util.List;
+ import java.util.Optional;
++import java.util.stream.Collectors;
+ 
+ 
+ @Service
+@@ -23,6 +27,15 @@
+         return true;
+     }
+ 
++    public StudentResponseDto updateStudent(Long userId, StudentUpdateDto dto) {
++
++        Optional<Student> student = studentRepository.findActiveById(userId);
++        if (student.isEmpty()) {
++            throw new ResourceNotFoundException("Student is not found");
++        }
++        student.get().setStudentTags(studentTagService.findActiveById(dto.getStudentTagOid()).stream().collect(Collectors.toSet()));
++        return studentRepository.save(student.get());
++    }
+     public Optional<Student> findByUser(User currentUser) {
+         return studentRepository.findByUser(currentUser.getOid());
+     }
+Index: src/main/java/com/bilgeadam/basurveyapp/controller/StudentController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.controller;\r\n\r\nimport com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;\r\nimport com.bilgeadam.basurveyapp.entity.User;\r\nimport com.bilgeadam.basurveyapp.entity.Student;\r\nimport com.bilgeadam.basurveyapp.mapper.StudentMapper;\r\nimport com.bilgeadam.basurveyapp.services.StudentService;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.security.access.prepost.PreAuthorize;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.List;\r\nimport java.util.stream.Collectors;\r\n\r\n@RestController\r\n@RequiredArgsConstructor\r\n@RequestMapping(\"/student\")\r\npublic class StudentController {\r\n    private final StudentService studentService;\r\n\r\n    @PreAuthorize(\"hasAnyRole('ADMIN', 'MANAGER')\")\r\n    @GetMapping(\"/students\")\r\n    ResponseEntity<List<StudentResponseDto>> getStudentList() {\r\n        return ResponseEntity.ok(studentService.getStudentList());\r\n\r\n    }\r\n\r\n    @PostMapping(\"/create\")\r\n    public ResponseEntity<Boolean> createStudent(@RequestBody Student student){\r\n        return ResponseEntity.ok(studentService.createStudent(student));\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/controller/StudentController.java b/src/main/java/com/bilgeadam/basurveyapp/controller/StudentController.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/controller/StudentController.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/controller/StudentController.java	(date 1678976137656)
+@@ -1,10 +1,12 @@
+ package com.bilgeadam.basurveyapp.controller;
+ 
++import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
+ import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
+ import com.bilgeadam.basurveyapp.entity.User;
+ import com.bilgeadam.basurveyapp.entity.Student;
+ import com.bilgeadam.basurveyapp.mapper.StudentMapper;
+ import com.bilgeadam.basurveyapp.services.StudentService;
++import jakarta.validation.Valid;
+ import lombok.RequiredArgsConstructor;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.security.access.prepost.PreAuthorize;
+@@ -30,5 +32,10 @@
+     public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
+         return ResponseEntity.ok(studentService.createStudent(student));
+     }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/signtoclass")
++    public ResponseEntity<Student> updateStudent(@RequestBody Long userId, StudentUpdateDto dto){
++        return ResponseEntity.ok(studentService.updateStudent(userId,dto));
++    }
+ 
+ }
+Index: src/main/java/com/bilgeadam/basurveyapp/services/QuestionTypeService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.dto.request.CreateQuestionTypeRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;\r\nimport com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;\r\nimport com.bilgeadam.basurveyapp.entity.QuestionType;\r\nimport com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class QuestionTypeService {\r\n    private final QuestionTypeRepository questionTypeRepository;\r\n\r\n    public void createQuestionType(CreateQuestionTypeRequestDto dto) {\r\n        // TODO Check if exists\r\n        QuestionType questionType = (QuestionType.builder()\r\n                .questionType(dto.getQuestionType())\r\n                .build());\r\n        questionTypeRepository.save(questionType);\r\n    }\r\n\r\n    public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto) {\r\n        Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(dto.getQuestionTypeOid());\r\n        if (updateQuestionType.isEmpty()) {\r\n            // TODO exception\r\n            throw new RuntimeException(\"QuestionType is not found\");\r\n        } else {\r\n            updateQuestionType.get().setQuestionType(dto.getQuestionType());\r\n            QuestionType questionType = updateQuestionType.get();\r\n            questionTypeRepository.save(questionType);\r\n            return true;\r\n        }\r\n    }\r\n\r\n    public QuestionTypeFindByIdResponseDto findById(Long questionTypeId) {\r\n        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionTypeId);\r\n        if (optionalQuestionType.isEmpty()) {\r\n            // TODO exception\r\n            throw new RuntimeException(\"QuestionType is not found\");\r\n        } else {\r\n            return QuestionTypeFindByIdResponseDto.builder()\r\n                    .questionType(optionalQuestionType.get().getQuestionType())\r\n                    .build();\r\n        }\r\n    }\r\n\r\n    public List<AllQuestionTypeResponseDto> findAll() {\r\n        List<QuestionType> findAllList = questionTypeRepository.findAllActive();\r\n        List<AllQuestionTypeResponseDto> responseDtoList = new ArrayList<>();\r\n        findAllList.forEach(questionType ->\r\n                responseDtoList.add(AllQuestionTypeResponseDto.builder()\r\n                        .questionTypeId(questionType.getOid())\r\n                        .questionType(questionType.getQuestionType())\r\n                        .build()));\r\n        return responseDtoList;\r\n    }\r\n\r\n    public Boolean delete(Long questionTypeId) {\r\n        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findActiveById(questionTypeId);\r\n        if (deleteQuestionType.isEmpty()) {\r\n            throw new RuntimeException(\"QuestionType is not found\");\r\n        } else {\r\n            QuestionType questionType = deleteQuestionType.get();\r\n            questionTypeRepository.softDelete(questionType);\r\n            return true;\r\n        }\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTypeService.java b/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTypeService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTypeService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTypeService.java	(date 1678975146915)
+@@ -67,8 +67,8 @@
+         if (deleteQuestionType.isEmpty()) {
+             throw new RuntimeException("QuestionType is not found");
+         } else {
+-            QuestionType questionType = deleteQuestionType.get();
+-            questionTypeRepository.softDelete(questionType);
++//            questionTypeRepository.softDeleteById(questionTypeId,"questiontypes");
++            questionTypeRepository.deleteById(questionTypeId);
+             return true;
+         }
+ 
+Index: src/main/java/com/bilgeadam/basurveyapp/entity/QuestionType.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.entity;\r\n\r\nimport com.bilgeadam.basurveyapp.entity.base.BaseEntity;\r\nimport jakarta.persistence.Column;\r\nimport jakarta.persistence.Entity;\r\nimport jakarta.persistence.Table;\r\nimport lombok.*;\r\n\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@Getter\r\n@Setter\r\n@Entity\r\n@Builder\r\n@Table(name = \"questiontypes\")\r\npublic class QuestionType extends BaseEntity {\r\n    @Column(name = \"question_type\")\r\n    private String questionType;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/entity/QuestionType.java b/src/main/java/com/bilgeadam/basurveyapp/entity/QuestionType.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/entity/QuestionType.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/entity/QuestionType.java	(date 1678975439748)
+@@ -5,6 +5,7 @@
+ import jakarta.persistence.Entity;
+ import jakarta.persistence.Table;
+ import lombok.*;
++import org.hibernate.annotations.SQLDelete;
+ 
+ @NoArgsConstructor
+ @AllArgsConstructor
+@@ -13,6 +14,7 @@
+ @Entity
+ @Builder
+ @Table(name = "questiontypes")
++@SQLDelete(sql = "UPDATE questiontypes SET state = 'DELETED' WHERE oid = ?1")
+ public class QuestionType extends BaseEntity {
+     @Column(name = "question_type")
+     private String questionType;
+Index: src/main/java/com/bilgeadam/basurveyapp/services/TrainerTagService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.entity.Trainer;\r\nimport com.bilgeadam.basurveyapp.entity.tags.TrainerTag;\r\nimport com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.Optional;\r\nimport java.util.Set;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class TrainerTagService {\r\n    private final TrainerTagRepository trainerTagRepository;\r\n    public Set<Long> getTrainerTagsOids(Trainer trainer) {\r\n        return trainerTagRepository.findActiveTrainerTagsByTrainerId(trainer.getOid()).stream().map(TrainerTag::getOid).collect(Collectors.toSet());\r\n    }\r\n\r\n    public Optional<TrainerTag> findActiveById(Long trainerTagOid) {\r\n        return trainerTagRepository.findActiveById(trainerTagOid);\r\n    }\r\n\r\n    public Set<TrainerTag> getTrainerTags(Trainer trainer) {\r\n        return trainerTagRepository.findActiveTrainerTagsByTrainerId(trainer.getOid());\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/TrainerTagService.java b/src/main/java/com/bilgeadam/basurveyapp/services/TrainerTagService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/TrainerTagService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/TrainerTagService.java	(date 1678973898203)
+@@ -1,6 +1,8 @@
+ package com.bilgeadam.basurveyapp.services;
+ 
++import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+ import com.bilgeadam.basurveyapp.entity.Trainer;
++import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+ import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+ import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
+ import lombok.RequiredArgsConstructor;
+@@ -14,6 +16,12 @@
+ @RequiredArgsConstructor
+ public class TrainerTagService {
+     private final TrainerTagRepository trainerTagRepository;
++    public void createTag(CreateTagDto dto) {
++        TrainerTag trainerTag = TrainerTag.builder()
++                .tagString(dto.getTagString())
++                .build();
++        trainerTagRepository.save(trainerTag);
++    }
+     public Set<Long> getTrainerTagsOids(Trainer trainer) {
+         return trainerTagRepository.findActiveTrainerTagsByTrainerId(trainer.getOid()).stream().map(TrainerTag::getOid).collect(Collectors.toSet());
+     }
+@@ -25,4 +33,13 @@
+     public Set<TrainerTag> getTrainerTags(Trainer trainer) {
+         return trainerTagRepository.findActiveTrainerTagsByTrainerId(trainer.getOid());
+     }
++    public Boolean delete(Long trainerTagOid) {
++        Optional<TrainerTag> deleteTag = trainerTagRepository.findActiveById(trainerTagOid);
++        if (deleteTag.isEmpty()) {
++            throw new RuntimeException("Tag is not found");
++        } else {
++            trainerTagRepository.softDeleteById(deleteTag.get().getOid(),"trainertags");
++            return true;
++        }
++    }
+ }
+Index: src/main/java/com/bilgeadam/basurveyapp/services/QuestionTagService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.dto.request.CreateTagDto;\r\nimport com.bilgeadam.basurveyapp.dto.response.TagResponseDto;\r\nimport com.bilgeadam.basurveyapp.entity.tags.QuestionTag;\r\nimport com.bilgeadam.basurveyapp.repositories.QuestionTagRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class QuestionTagService {\r\n\r\n    private final QuestionTagRepository questionTagRepository;\r\n\r\n    //TODO: Bunu dto ile yapmamız lazım.\r\n    public void createTag(CreateTagDto dto) {\r\n        QuestionTag questionTag = QuestionTag.builder()\r\n                .tagString(dto.getTagString())\r\n                .build();\r\n        questionTagRepository.save(questionTag);\r\n    }\r\n    public List<TagResponseDto> findAll() {\r\n        List<QuestionTag> findAllList = questionTagRepository.findAllActive();\r\n        List<TagResponseDto> responseDtoList = new ArrayList<>();\r\n        findAllList.forEach(questionTag ->\r\n                responseDtoList.add(TagResponseDto.builder()\r\n                        .tagStringId(questionTag.getOid())\r\n                        .tagString(questionTag.getTagString())\r\n                        .build()));\r\n        return responseDtoList;\r\n    }\r\n    public Boolean delete(Long tagStringId) {\r\n        Optional<QuestionTag> deleteTag = questionTagRepository.findActiveById(tagStringId);\r\n        if (deleteTag.isEmpty()) {\r\n            throw new RuntimeException(\"Tag is not found\");\r\n        } else {\r\n            QuestionTag questionTag = deleteTag.get();\r\n            questionTagRepository.softDelete(questionTag);\r\n            return true;\r\n        }\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTagService.java b/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTagService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTagService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/QuestionTagService.java	(date 1678973898245)
+@@ -39,8 +39,7 @@
+         if (deleteTag.isEmpty()) {
+             throw new RuntimeException("Tag is not found");
+         } else {
+-            QuestionTag questionTag = deleteTag.get();
+-            questionTagRepository.softDelete(questionTag);
++            questionTagRepository.softDeleteById(deleteTag.get().getOid(),"questiontags");
+             return true;
+         }
+ 
+Index: src/main/java/com/bilgeadam/basurveyapp/repositories/base/BaseRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.repositories.base;\r\n\r\nimport com.bilgeadam.basurveyapp.entity.base.BaseEntity;\r\nimport jakarta.transaction.Transactional;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.data.jpa.repository.Modifying;\r\nimport org.springframework.data.jpa.repository.Query;\r\nimport org.springframework.data.repository.NoRepositoryBean;\r\nimport org.springframework.lang.NonNull;\r\n\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n/**\r\n * @author Eralp Nitelik\r\n */\r\n@NoRepositoryBean\r\npublic interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository<T, Oid> {\r\n\r\n    /*\r\n        Find Methods For Active Entities\r\n     */\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'ACTIVE' AND t.oid = ?1\")\r\n    Optional<T> findActiveById(@NonNull Oid oid);\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'ACTIVE' ORDER BY t.updatedAt DESC\")\r\n    List<T> findAllActive();\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'ACTIVE' ORDER BY t.updatedAt DESC\")\r\n    Page<T> findAllActive(@NonNull Pageable pageable);\r\n\r\n    /*\r\n        Find Methods For Deleted Entities\r\n     */\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'DELETED' AND t.oid = ?1\")\r\n    Optional<T> findDeletedById(Oid oid);\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'DELETED' ORDER BY t.updatedAt DESC\")\r\n    List<T> findAllDeleted();\r\n\r\n    @Query(\"SELECT t FROM #{#entityName} t WHERE t.state = 'DELETED' ORDER BY t.updatedAt DESC\")\r\n    Page<T> findAllDeleted(Pageable pageable);\r\n\r\n    /*\r\n        Modified Delete Methods\r\n     */\r\n\r\n    @Modifying\r\n    @Transactional\r\n    @Query(value = \"UPDATE #{#entityName} t SET t.state = 'DELETED' WHERE t = ?1\", nativeQuery = true)\r\n    int softDelete(T entity);\r\n\r\n    @Modifying\r\n    @Transactional\r\n    @Query(value = \"UPDATE #{#entityName} t SET t.state = 'DELETED' WHERE t.oid = ?1\", nativeQuery = true)\r\n    int softDeleteById(Oid oid);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/repositories/base/BaseRepository.java b/src/main/java/com/bilgeadam/basurveyapp/repositories/base/BaseRepository.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/repositories/base/BaseRepository.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/repositories/base/BaseRepository.java	(date 1678974054058)
+@@ -56,6 +56,6 @@
+ 
+     @Modifying
+     @Transactional
+-    @Query(value = "UPDATE #{#entityName} t SET t.state = 'DELETED' WHERE t.oid = ?1", nativeQuery = true)
+-    int softDeleteById(Oid oid);
++    @Query(value = "UPDATE ?2 SET state = 'DELETED' WHERE oid = ?1", nativeQuery = true)
++    int softDeleteById(Oid oid, String entityName);
+ }
+Index: src/main/java/com/bilgeadam/basurveyapp/services/StudentTagService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.entity.Student;\r\nimport com.bilgeadam.basurveyapp.entity.tags.StudentTag;\r\nimport com.bilgeadam.basurveyapp.repositories.StudentTagRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\nimport java.util.Optional;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class StudentTagService {\r\n    private final StudentTagRepository studentTagRepository;\r\n    public List<Student> getStudentsByStudentTag(StudentTag studentTag) {\r\n        return studentTagRepository.findByStudentTagOid(studentTag.getOid());\r\n    }\r\n\r\n    public Optional<StudentTag> findByStudentTagName(String studentTag) {\r\n        return studentTagRepository.findByTagName(studentTag);\r\n    }\r\n\r\n    public List<Student> findByStudentTagOid(Long studentTagOid) {\r\n        return studentTagRepository.findByStudentTagOid(studentTagOid);\r\n    }\r\n\r\n    public Optional<StudentTag> findActiveById(Long studentTagOid) {\r\n        return studentTagRepository.findActiveById(studentTagOid);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/StudentTagService.java b/src/main/java/com/bilgeadam/basurveyapp/services/StudentTagService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/StudentTagService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/StudentTagService.java	(date 1678973898231)
+@@ -1,6 +1,8 @@
+ package com.bilgeadam.basurveyapp.services;
+ 
++import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+ import com.bilgeadam.basurveyapp.entity.Student;
++import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+ import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+ import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
+ import lombok.RequiredArgsConstructor;
+@@ -13,6 +15,13 @@
+ @RequiredArgsConstructor
+ public class StudentTagService {
+     private final StudentTagRepository studentTagRepository;
++
++    public void createTag(CreateTagDto dto) {
++        StudentTag studentTag = StudentTag.builder()
++                .tagString(dto.getTagString())
++                .build();
++        studentTagRepository.save(studentTag);
++    }
+     public List<Student> getStudentsByStudentTag(StudentTag studentTag) {
+         return studentTagRepository.findByStudentTagOid(studentTag.getOid());
+     }
+@@ -28,4 +37,13 @@
+     public Optional<StudentTag> findActiveById(Long studentTagOid) {
+         return studentTagRepository.findActiveById(studentTagOid);
+     }
++    public Boolean delete(Long studentTagOid) {
++        Optional<StudentTag> deleteTag = studentTagRepository.findActiveById(studentTagOid);
++        if (deleteTag.isEmpty()) {
++            throw new RuntimeException("Tag is not found");
++        } else {
++            studentTagRepository.softDeleteById(deleteTag.get().getOid(),"studenttags");
++            return true;
++        }
++    }
+ }
+Index: src/main/java/com/bilgeadam/basurveyapp/services/ResponseService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.configuration.jwt.JwtService;\r\nimport com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;\r\nimport com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;\r\nimport com.bilgeadam.basurveyapp.entity.Question;\r\nimport com.bilgeadam.basurveyapp.entity.Response;\r\nimport com.bilgeadam.basurveyapp.entity.Survey;\r\nimport com.bilgeadam.basurveyapp.entity.User;\r\nimport com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;\r\nimport com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;\r\nimport com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;\r\nimport com.bilgeadam.basurveyapp.mapper.ResponseMapper;\r\nimport com.bilgeadam.basurveyapp.repositories.QuestionRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.ResponseRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.SurveyRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.UserRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.security.access.AccessDeniedException;\r\nimport org.springframework.security.core.Authentication;\r\nimport org.springframework.security.core.context.SecurityContextHolder;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\nimport java.util.Optional;\r\nimport java.util.stream.Collectors;\r\n\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class ResponseService {\r\n    private final ResponseRepository responseRepository;\r\n    private final QuestionRepository questionRepository;\r\n    private final UserRepository userRepository;\r\n    private final JwtService jwtService;\r\n    private final SurveyRepository surveyRepository;\r\n//    private final ClassroomRepository classroomRepository;\r\n    private final RoleService roleService;\r\n\r\n    public void createResponse(ResponseRequestSaveDto responseRequestDto) {\r\n        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();\r\n        if (authentication == null || !authentication.isAuthenticated()) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        if (\"anonymousUser\".equals(authentication.getPrincipal())) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        Long userOid = (Long) authentication.getCredentials();\r\n        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException(\"User does not exist\"));\r\n\r\n        Response response = ResponseMapper.INSTANCE.toResponse(responseRequestDto, questionRepository\r\n                .findActiveById(responseRequestDto\r\n                        .getQuestionOid()).orElseThrow(() -> new ResourceNotFoundException(\"question not found\")), userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException(\"User does not exist\")));\r\n        responseRepository.save(response);\r\n    }\r\n\r\n    public void updateResponse(ResponseRequestDto responseRequestDto) {\r\n        Optional<Response> updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());\r\n        if (updatedResponse.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding response\");\r\n        } else {\r\n            updatedResponse.get().setResponseString(responseRequestDto.getResponseString());\r\n            responseRepository.save(updatedResponse.get());\r\n        }\r\n    }\r\n\r\n    public AnswerResponseDto findByIdResponse(Long responseOid) {\r\n        Optional<Response> response = responseRepository.findActiveById(responseOid);\r\n        if (response.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding response\");\r\n        }\r\n        return ResponseMapper.INSTANCE.toAnswerResponseDto(response.get());\r\n//                AnswerResponseDto.builder()\r\n//                .responseString(response.get().getResponseString())\r\n//              .userOid(response.get().getUser().getOid())\r\n//                .questionOid(response.get().getQuestion().getOid())\r\n//                .build();\r\n    }\r\n\r\n    public List<AnswerResponseDto> findAll() {\r\n        ResponseMapper responseMapper = ResponseMapper.INSTANCE;\r\n        List<Response> findAllList = responseRepository.findAllActive();\r\n        List<AnswerResponseDto> responseDtoList = findAllList.stream()\r\n                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());\r\n//        List<AnswerResponseDto> responseDtoList = new ArrayList<>();\r\n//        findAllList.forEach(response ->\r\n//                responseDtoList.add(AnswerResponseDto.builder()\r\n//                        .responseString(response.getResponseString())\r\n//                        .userOid(response.getUser().getOid())\r\n//                        .questionOid(response.getQuestion().getOid())\r\n//                        .build()));\r\n        return responseDtoList;\r\n    }\r\n\r\n    public Boolean deleteResponseById(Long responseOid) {\r\n        Optional<Response> response = responseRepository.findActiveById(responseOid);\r\n        if (response.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding response\");\r\n        } else {\r\n            responseRepository.softDeleteById(response.get().getOid());\r\n            return true;\r\n        }\r\n    }\r\n\r\n    public Boolean saveAll(String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList) {\r\n        User user = userRepository.findByEmail(jwtService.extractEmail(token)).orElseThrow(() -> new ResourceNotFoundException(\"No such user.\"));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.\r\n\r\n        if (!responseRepository.isSurveyAnsweredByUser(user.getOid())) {\r\n            responseRequestSaveDtoList.forEach(response -> { //gelenleri listeye kaydetmek için for each kullanıldı.\r\n                responseRepository.save(Response.builder()\r\n                        .user(user) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).\r\n                        .responseString(response.getResponseString())\r\n                        .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException(\"Question not found\"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a\r\n                        .build());\r\n            });\r\n            return true;\r\n        } else {\r\n            return false;\r\n        }\r\n    }\r\n\r\n    public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {\r\n        ResponseMapper responseMapper = ResponseMapper.INSTANCE;\r\n        userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException(\"User does not exists or deleted.\"));\r\n        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException(\"Survey does not exists or deleted.\"));\r\n        return responseRepository\r\n                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(survey.getOid()))\r\n                .stream()\r\n                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());\r\n//                        -> AnswerResponseDto.builder()\r\n//                        .responseString(response.getResponseString())\r\n//                        .questionOid(response.getQuestion().getOid())\r\n//                     .userOid(response.getUser().getOid())\r\n//                        .build()\r\n    }\r\n\r\n    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {\r\n        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();\r\n        if (authentication == null || !authentication.isAuthenticated()) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        if (\"anonymousUser\".equals(authentication.getPrincipal())) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        Long userOid = (Long) authentication.getCredentials();\r\n        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException(\"User does not exist\"));\r\n\r\n//        if (roleService.userHasRole(user, \"ASSISTANT_TRAINER\") || roleService.userHasRole(user, \"MASTER_TRAINER\")) {\r\n//            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException(\"Classroom does not exist\"));\r\n//            if (!classroom.getUsers().contains(user)) {\r\n//                throw new AccessDeniedException(\"authentication failure.\");\r\n//            }\r\n//        }\r\n//        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);\r\n//        if (classroomOptional.isEmpty()) {\r\n//            throw new ResourceNotFoundException(\"Classroom is not found.\");\r\n//        }\r\n        List<Survey> surveyList = surveyRepository.findAllActive();\r\n        if (surveyList.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding survey list\");\r\n        }\r\n        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()\r\n        ).toList();\r\n        if (questionList.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding questions\");\r\n        }\r\n        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();\r\n        if (responseList.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding response\");\r\n        }\r\n        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();\r\n        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()\r\n                .responseString(r.getResponseString())\r\n                .userOid(r.getUser().getOid())\r\n                .questionOid(r.getQuestion().getOid())\r\n                .build()));\r\n        return answerResponseDtoList;\r\n    }\r\n\r\n    public Boolean updateStudentAnswers(Long surveyOid, SurveyUpdateResponseRequestDto dto){\r\n        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();\r\n        if (authentication == null || !authentication.isAuthenticated()) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        if (\"anonymousUser\".equals(authentication.getPrincipal())) {\r\n            throw new AccessDeniedException(\"authentication failure.\");\r\n        }\r\n        Long userOid = (Long) authentication.getCredentials();\r\n        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException(\"User does not exist\"));\r\n        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(()->new ResourceNotFoundException(\"There's a error while finding survey\"));\r\n        List<Response>responseList=survey.getQuestions().stream().flatMap(q->q.getResponses().stream()).toList();\r\n        if (responseList.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"There's a error while finding response\");\r\n        }\r\n        responseList\r\n                .stream()\r\n                .filter(r->r.getUser().getOid().equals(userOid))\r\n                .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));\r\n        responseRepository.saveAll(responseList);\r\n        return true;\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/ResponseService.java b/src/main/java/com/bilgeadam/basurveyapp/services/ResponseService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/ResponseService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/ResponseService.java	(date 1678973898219)
+@@ -101,7 +101,7 @@
+         if (response.isEmpty()) {
+             throw new ResourceNotFoundException("There's a error while finding response");
+         } else {
+-            responseRepository.softDeleteById(response.get().getOid());
++            responseRepository.softDeleteById(response.get().getOid(),"responses");
+             return true;
+         }
+     }
+Index: src/main/java/com/bilgeadam/basurveyapp/controller/StudentTagController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.controller;\r\n\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.web.bind.annotation.RestController;\r\n\r\n@RestController\r\n@RequestMapping(\"/studenttag\")\r\n@RequiredArgsConstructor\r\npublic class StudentTagController {\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/controller/StudentTagController.java b/src/main/java/com/bilgeadam/basurveyapp/controller/StudentTagController.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/controller/StudentTagController.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/controller/StudentTagController.java	(date 1678970729108)
+@@ -1,11 +1,53 @@
+ package com.bilgeadam.basurveyapp.controller;
+ 
++import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
++import com.bilgeadam.basurveyapp.entity.Student;
++import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
++import com.bilgeadam.basurveyapp.services.StudentTagService;
++import jakarta.validation.Valid;
+ import lombok.RequiredArgsConstructor;
+-import org.springframework.web.bind.annotation.RequestMapping;
+-import org.springframework.web.bind.annotation.RestController;
++import org.springframework.http.ResponseEntity;
++import org.springframework.security.access.prepost.PreAuthorize;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++import java.util.Optional;
+ 
+ @RestController
+ @RequestMapping("/studenttag")
+ @RequiredArgsConstructor
+ public class StudentTagController {
++
++    private final StudentTagService studentTagService;
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/create")
++    public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
++        studentTagService.createTag(dto);
++        return ResponseEntity.ok(dto.getTagString());
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/getStudentsByStudentTag")
++    public ResponseEntity<List<Student>> getStudentsByStudentTag(@RequestBody @Valid StudentTag studentTag ){
++        return ResponseEntity.ok(studentTagService.getStudentsByStudentTag(studentTag));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/findByStudentTagName")
++    public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestBody @Valid String studentTag ){
++        return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/findByStudentTagOid")
++    public ResponseEntity<List<Student>> findByStudentTagOid(@RequestBody @Valid Long studentTagOid ){
++        return ResponseEntity.ok(studentTagService.findByStudentTagOid(studentTagOid));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/findActiveById")
++    public ResponseEntity<Optional<StudentTag>> findActiveById(@RequestBody @Valid Long studentTagOid ){
++        return ResponseEntity.ok(studentTagService.findActiveById(studentTagOid));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @DeleteMapping("/delete")
++    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long studentTagOid ){
++        return ResponseEntity.ok(studentTagService.delete(studentTagOid));
++    }
+ }
+Index: src/main/java/com/bilgeadam/basurveyapp/services/UserService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.services;\r\n\r\nimport com.bilgeadam.basurveyapp.configuration.jwt.JwtService;\r\nimport com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;\r\nimport com.bilgeadam.basurveyapp.dto.response.*;\r\nimport com.bilgeadam.basurveyapp.entity.User;\r\nimport com.bilgeadam.basurveyapp.entity.tags.QuestionTag;\r\nimport com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;\r\nimport com.bilgeadam.basurveyapp.mapper.UserMapper;\r\nimport com.bilgeadam.basurveyapp.repositories.QuestionRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.StudentRepository;\r\nimport com.bilgeadam.basurveyapp.repositories.UserRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.security.access.AccessDeniedException;\r\nimport org.springframework.stereotype.Service;\r\n\r\nimport java.util.List;\r\nimport java.util.Optional;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class UserService {\r\n    private final UserRepository userRepository;\r\n    private final QuestionRepository questionRepository;\r\n    private final QuestionTypeRepository questionTypeRepository;\r\n    private final JwtService jwtService;\r\n    private final RoleService roleService;\r\n    private final StudentRepository studentRepository;\r\n\r\n\r\n    public List<ManagerResponseDto> getManagerList() {\r\n        List<User> managers = userRepository.findManagers();\r\n\r\n\r\n        List<ManagerResponseDto> dto = UserMapper.INSTANCE.toManagerResponseDto(managers);\r\n        return dto;\r\n\r\n//        return students.stream().map(student -> UserResponseDto.builder()\r\n//                .firstName(student.getFirstName())\r\n//                .lastName(student.getLastName())\r\n//                .email(student.getEmail())\r\n//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))\r\n//                .build()).collect(Collectors.toList());\r\n    }\r\n\r\n    public List<AdminResponseDto> getAdminList() {\r\n        List<User> admins = userRepository.findAdmins();\r\n\r\n        List<AdminResponseDto> dto = UserMapper.INSTANCE.toAdminResponseDto(admins);\r\n        return dto;\r\n\r\n//        return students.stream().map(student -> UserResponseDto.builder()\r\n//                .firstName(student.getFirstName())\r\n//                .lastName(student.getLastName())\r\n//                .email(student.getEmail())\r\n//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))\r\n//                .build()).collect(Collectors.toList());\r\n    }\r\n\r\n    public Page<User> getUserPage(Pageable pageable) {\r\n        // getCurrentUser()\r\n        // user check\r\n        return userRepository.findAllActive(pageable);\r\n    }\r\n\r\n    public User updateUser(Long userId, UserUpdateRequestDto dto) {\r\n        // getCurrentUser()\r\n        // user check\r\n        Optional<User> userToBeUpdated = userRepository.findActiveById(userId);\r\n        if (userToBeUpdated.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"User is not found\");\r\n        }\r\n        userToBeUpdated.get().setFirstName(dto.getFirstName());\r\n        userToBeUpdated.get().setLastName(dto.getLastName());\r\n        return userRepository.save(userToBeUpdated.get());\r\n    }\r\n\r\n    public void deleteUser(Long userId) {\r\n        // getCurrentUser()\r\n        // user check\r\n        Optional<User> userToBeDeleted = userRepository.findActiveById(userId);\r\n        if (userToBeDeleted.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"User is not found\");\r\n        }\r\n        userRepository.softDeleteById(userToBeDeleted.get().getOid());\r\n    }\r\n\r\n    public User findByOid(Long userId) {\r\n        // getCurrentUser()\r\n        // user check\r\n        Optional<User> userById = userRepository.findActiveById(userId);\r\n        if (userById.isEmpty()) {\r\n            throw new ResourceNotFoundException(\"User is not found\");\r\n        }\r\n        return userById.get();\r\n    }\r\n\r\n    public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {\r\n        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));\r\n        if (user.isEmpty()) throw new ResourceNotFoundException(\"User is not found\");\r\n        if (!roleService.userHasRole(user.get(), \"MANAGER\")) throw new AccessDeniedException(\"Unauthorized account\");\r\n\r\n        List<User> trainersWithStudent = userRepository.findTrainersAndStudents();\r\n\r\n        List<UserTrainersAndStudentsResponseDto> dto = UserMapper.INSTANCE.toUserTrainersAndStudentsResponseDto(trainersWithStudent);\r\n        return dto;\r\n\r\n//        return\r\n//        List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList =\r\n//                users.stream().map(u -> UserTrainersAndStudentsResponseDto.builder()\r\n//                        .firstName(u.getFirstName())\r\n//                        .lastName(u.getLastName())\r\n//                        .email(u.getEmail())\r\n//                        .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))\r\n//                        .build()).collect(Collectors.toList());\r\n//        return Optional.of(trainersAndStudentsList);\r\n    }\r\n\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/services/UserService.java b/src/main/java/com/bilgeadam/basurveyapp/services/UserService.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/services/UserService.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/services/UserService.java	(date 1678973898210)
+@@ -86,7 +86,7 @@
+         if (userToBeDeleted.isEmpty()) {
+             throw new ResourceNotFoundException("User is not found");
+         }
+-        userRepository.softDeleteById(userToBeDeleted.get().getOid());
++        userRepository.softDeleteById(userToBeDeleted.get().getOid(),"users");
+     }
+ 
+     public User findByOid(Long userId) {
+Index: src/main/java/com/bilgeadam/basurveyapp/controller/TrainerTagController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/controller/TrainerTagController.java b/src/main/java/com/bilgeadam/basurveyapp/controller/TrainerTagController.java
+new file mode 100644
+--- /dev/null	(date 1678970729114)
++++ b/src/main/java/com/bilgeadam/basurveyapp/controller/TrainerTagController.java	(date 1678970729114)
+@@ -0,0 +1,48 @@
++package com.bilgeadam.basurveyapp.controller;
++
++import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
++import com.bilgeadam.basurveyapp.entity.Trainer;
++import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
++import com.bilgeadam.basurveyapp.services.TrainerTagService;
++import jakarta.validation.Valid;
++import lombok.RequiredArgsConstructor;
++import org.springframework.http.ResponseEntity;
++import org.springframework.security.access.prepost.PreAuthorize;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.Optional;
++import java.util.Set;
++
++@RestController
++@RequestMapping("/trainertag")
++@RequiredArgsConstructor
++public class TrainerTagController {
++    private final TrainerTagService trainerTagService;
++
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/create")
++    public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
++        trainerTagService.createTag(dto);
++        return ResponseEntity.ok(dto.getTagString());
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/getTrainerTagsOids")
++    public ResponseEntity<Set<Long>> getTrainerTagsOids(@RequestBody @Valid Trainer trainer ){
++        return ResponseEntity.ok(trainerTagService.getTrainerTagsOids(trainer));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/findActiveById")
++    public ResponseEntity<Optional<TrainerTag>> findActiveById(@RequestBody @Valid Long trainerTagOid ){
++        return ResponseEntity.ok(trainerTagService.findActiveById(trainerTagOid));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @PostMapping("/getTrainerTags")
++    public ResponseEntity<Set<TrainerTag>> getTrainerTags(@RequestBody @Valid Trainer trainer ){
++        return ResponseEntity.ok(trainerTagService.getTrainerTags(trainer));
++    }
++    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
++    @DeleteMapping ("/delete")
++    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long trainerTagOid ){
++        return ResponseEntity.ok(trainerTagService.delete(trainerTagOid));
++    }
++}
+Index: src/main/java/com/bilgeadam/basurveyapp/dto/request/StudentUpdateDto.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/dto/request/StudentUpdateDto.java b/src/main/java/com/bilgeadam/basurveyapp/dto/request/StudentUpdateDto.java
+new file mode 100644
+--- /dev/null	(date 1678972871366)
++++ b/src/main/java/com/bilgeadam/basurveyapp/dto/request/StudentUpdateDto.java	(date 1678972871366)
+@@ -0,0 +1,17 @@
++package com.bilgeadam.basurveyapp.dto.request;
++
++import jakarta.validation.constraints.NotBlank;
++import jakarta.validation.constraints.NotNull;
++import lombok.*;
++
++@AllArgsConstructor
++@NoArgsConstructor
++@Getter
++@Setter
++@Builder
++public class StudentUpdateDto {
++    @NotBlank
++    @NotNull
++    private Long studentTagOid;
++
++}
+Index: src/main/java/com/bilgeadam/basurveyapp/entity/base/BaseEntity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.bilgeadam.basurveyapp.entity.base;\r\n\r\nimport com.bilgeadam.basurveyapp.entity.enums.State;\r\nimport jakarta.annotation.Nonnull;\r\nimport jakarta.persistence.*;\r\nimport lombok.EqualsAndHashCode;\r\nimport lombok.Getter;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.Setter;\r\nimport lombok.experimental.SuperBuilder;\r\nimport org.springframework.data.annotation.CreatedBy;\r\nimport org.springframework.data.annotation.LastModifiedBy;\r\nimport org.springframework.data.jpa.domain.support.AuditingEntityListener;\r\n\r\nimport java.util.Date;\r\n\r\n/**\r\n * @author Eralp Nitelik\r\n */\r\n@Getter\r\n@Setter\r\n@EntityListeners(AuditingEntityListener.class)\r\n@RequiredArgsConstructor\r\n@EqualsAndHashCode\r\n@SuperBuilder\r\n@MappedSuperclass\r\npublic abstract class BaseEntity {\r\n    @Id\r\n    @GeneratedValue\r\n    private Long oid;\r\n\r\n    @Column(name = \"created_at\")\r\n    @Temporal(TemporalType.TIMESTAMP)\r\n    private Date createdAt;\r\n\r\n    @Column(name = \"updated_at\")\r\n    @Temporal(TemporalType.TIMESTAMP)\r\n    private Date updatedAt;\r\n\r\n\r\n    // Saves as 0 if auditor is anonymous.\r\n    @CreatedBy\r\n    @Column(name = \"created_by\")\r\n    private Long createdBy;\r\n\r\n    @LastModifiedBy\r\n    @Column(name = \"updated_by\")\r\n    private Long updatedBy;\r\n\r\n    @Enumerated(EnumType.STRING)\r\n    @Nonnull\r\n    private State state;\r\n\r\n    @PrePersist\r\n    public void prePersist() {\r\n        setCreatedAt(new Date());\r\n        setUpdatedAt(new Date());\r\n        setState(State.ACTIVE);\r\n    }\r\n\r\n    @PreUpdate\r\n    public void preUpdate() {\r\n        setUpdatedAt(new Date());\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/bilgeadam/basurveyapp/entity/base/BaseEntity.java b/src/main/java/com/bilgeadam/basurveyapp/entity/base/BaseEntity.java
+--- a/src/main/java/com/bilgeadam/basurveyapp/entity/base/BaseEntity.java	(revision 16a4260cd63fba40ae32fb8e593fb575ce028d77)
++++ b/src/main/java/com/bilgeadam/basurveyapp/entity/base/BaseEntity.java	(date 1678975439739)
+@@ -8,6 +8,7 @@
+ import lombok.RequiredArgsConstructor;
+ import lombok.Setter;
+ import lombok.experimental.SuperBuilder;
++import org.hibernate.annotations.SQLDelete;
+ import org.springframework.data.annotation.CreatedBy;
+ import org.springframework.data.annotation.LastModifiedBy;
+ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
