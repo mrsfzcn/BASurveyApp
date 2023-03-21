@@ -1,11 +1,14 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
+import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
+import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
@@ -19,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -102,7 +104,7 @@ public class UserService {
     public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
-        if (!roleService.userHasRole(user.get(), "MANAGER")) throw new AccessDeniedException("Unauthorized account");
+        if (!roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER)) throw new AccessDeniedException("Unauthorized account");
 
         List<User> trainersWithStudent = userRepository.findTrainersAndStudents();
 
@@ -121,4 +123,21 @@ public class UserService {
     }
 
 
+    public Boolean assignRoleToUser(AssignRoleToUserRequestDto request) {
+//        if(!roleService.userHasRole(
+//                userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken())).get(),
+//                ROLE_CONSTANTS.ROLE_ADMIN))
+//            throw new AccessDeniedException("Unauthorized account");
+        Optional<User> user = userRepository.findByEmail(request.getUserEmail());
+        if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
+        if(!roleService.hasRole(request.getRole()))  throw new ResourceNotFoundException("Role is not found");
+        if(roleService.userHasRole(user.get(), request.getRole())) throw new RoleAlreadyExistException("Role already exist");
+        Role role = roleService.findActiveRole(request.getRole());
+        user.get().getRoles().add(role);
+        role.getUsers().add(user.get());
+        userRepository.save(user.get());
+        roleService.save(role);
+
+        return true;
+    }
 }

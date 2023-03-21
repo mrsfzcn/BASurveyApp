@@ -28,14 +28,15 @@ public class User extends BaseEntity implements UserDetails {
     private String firstName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
+    @Column(name = "authorized_role")
+    private Set<String> authorizedRole;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+        return authorizedRole.stream().map(authorizedRole -> new SimpleGrantedAuthority("ROLE_" + authorizedRole)).collect(Collectors.toList());
     }
-
 
     @Override
     public String getUsername() {
