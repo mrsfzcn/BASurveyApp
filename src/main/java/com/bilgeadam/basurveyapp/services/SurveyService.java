@@ -141,13 +141,13 @@ public class SurveyService {
         return surveyRepository.softDeleteById(surveyToBeDeleted.get().getOid());
     }
 
-    public Survey findByOid(Long surveyId) {
+    public SurveySimpleResponseDto findByOid(Long surveyId) {
 
         Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
         if (surveyById.isEmpty()) {
             throw new ResourceNotFoundException("Survey is not found");
         }
-        return surveyById.get();
+        return SurveyMapper.INSTANCE.toSurveySimpleResponseDto(surveyById.get());
     }
 
     public Boolean responseSurveyQuestions(String token, List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
