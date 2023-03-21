@@ -8,10 +8,12 @@ import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.mapper.TrainerMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
+import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,17 +26,25 @@ import java.util.stream.Collectors;
 public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TrainerTagService trainerTagService;
+    private final TrainerTagRepository trainerTagRepository;
     public Boolean createTrainer(Trainer trainer) {
         trainerRepository.save(trainer);
         return true;
     }
     public TrainerResponseDto updateTrainer (TrainerUpdateDto dto){
         Optional<Trainer> trainer = trainerRepository.findActiveById(dto.getTrainerOid());
+        Optional<TrainerTag> trainerTag = trainerTagRepository.findActiveById(dto.getTrainerTagOid());
+
+        if (trainerTag.isEmpty()) {
+            throw new ResourceNotFoundException("Trainer tag is not found");
+        }
         if (trainer.isEmpty()) {
             throw new ResourceNotFoundException("Trainer is not found");
         } else {
-            trainer.get().setTrainerTags(trainerTagService.findActiveById(dto.getTrainerTagOid()).stream().collect(Collectors.toSet()));
+            trainer.get().getTrainerTags().add(trainerTag.get());
+            trainerTag.get().getTargetEntities().add(trainer.get());
             trainerRepository.save(trainer.get());
+            trainerTagRepository.save(trainerTag.get());
         }
         return TrainerMapper.INSTANCE.toTrainerResponseDto(trainer.get());
     }
