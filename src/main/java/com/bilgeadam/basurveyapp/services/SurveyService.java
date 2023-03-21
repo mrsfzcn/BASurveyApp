@@ -132,13 +132,13 @@ public class SurveyService {
         return surveyRepository.save(surveyToBeUpdated.get());
     }
 
-    public void delete(Long surveyId) {
+    public boolean delete(Long surveyId) {
 
         Optional<Survey> surveyToBeDeleted = surveyRepository.findActiveById(surveyId);
         if (surveyToBeDeleted.isEmpty()) {
             throw new ResourceNotFoundException("Survey is not found");
         }
-        surveyRepository.softDelete(surveyToBeDeleted.get());
+        return surveyRepository.softDeleteById(surveyToBeDeleted.get().getOid());
     }
 
     public Survey findByOid(Long surveyId) {

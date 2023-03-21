@@ -1,6 +1,8 @@
 package com.bilgeadam.basurveyapp.repositories.base;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,13 +51,11 @@ public interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository
         Modified Delete Methods
      */
 
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE #{#entityName} t SET t.state = 'DELETED' WHERE t = ?1", nativeQuery = true)
-    int softDelete(T entity);
 
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE ?2 SET state = 'DELETED' WHERE oid = ?1", nativeQuery = true)
-    int softDeleteById(Oid oid, String entityName);
+    default boolean softDeleteById(Oid oid){
+        T entity = findActiveById(oid).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        entity.setState(State.DELETED);
+        save(entity);
+        return true;
+    };
 }
