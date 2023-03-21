@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.ChangeAuthorizedRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
@@ -8,6 +9,7 @@ import com.bilgeadam.basurveyapp.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +38,14 @@ public class AuthController {
      * @param request
      * authorizedToken must kept in front-end for change between accounts
      */
-    @PostMapping("/changeauthenticate")
-    public ResponseEntity<AuthenticationResponseDto> changeAuthenticate(@RequestBody @Valid ChangeLoginRequestDto request) {
-        return ResponseEntity.ok(authService.changeAuthenticate(request));
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/changelogin")
+    public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
+        return ResponseEntity.ok(authService.changeLogin(request));
+    }
+
+    @PostMapping("/changeauthorized")
+    public ResponseEntity<AuthenticationResponseDto> changeAuthorized(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
+        return ResponseEntity.ok(authService.changeAuthorized(request));
     }
 }

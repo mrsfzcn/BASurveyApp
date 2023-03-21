@@ -148,6 +148,20 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(CLASSROOM_ALREADY_EXISTS, exception, request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(RoleAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleRoleAlradyExistException(RoleAlreadyExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.ROLE_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(ROLE_ALREADY_EXISTS, exception, request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleRoleNotFoundException(RoleNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.ROLE_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(ROLE_NOT_FOUND, exception, request);
+    }
+
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType, Exception exception, HttpServletRequest request) {
         String exceptionName = exceptionType.name();
         Locale locale;

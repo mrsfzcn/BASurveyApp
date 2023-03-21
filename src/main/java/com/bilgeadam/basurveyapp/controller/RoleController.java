@@ -23,13 +23,13 @@ public class RoleController {
     private final RoleService roleService;
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/createrole")
     public ResponseEntity<CreateRoleResponseDto> createRole(CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping
+    @GetMapping("/findroles")
     public ResponseEntity<List<String>> findRoles() {
         return ResponseEntity.ok(roleService.findRoleStrings());
     }

@@ -38,6 +38,8 @@ public enum ExceptionType {
     QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH(9011, "Questions and responses does not matches", BAD_REQUEST),
     QUESTION_TYPE_NOT_FOUND(9012, "Question type is not Found", BAD_REQUEST),
     SURVEY_NOT_FOUND(9013, "Survey is not found", BAD_REQUEST),
+    ROLE_ALREADY_EXISTS(9014, "Role is already exists", BAD_REQUEST),
+    ROLE_NOT_FOUND(9015, "Role is not foun", BAD_REQUEST),
     /*
         Validation errors.
      */

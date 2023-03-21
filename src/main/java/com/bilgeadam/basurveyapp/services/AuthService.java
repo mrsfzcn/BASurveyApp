@@ -2,12 +2,14 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
+import com.bilgeadam.basurveyapp.dto.request.ChangeAuthorizedRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.mapper.AuthMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -93,30 +95,59 @@ public class AuthService {
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
+        if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ADMIN)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ADMIN));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MANAGER));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_STUDENT));
+        else throw new RoleNotFoundException("Role is not found");
+        userRepository.save(user.get());
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
+
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
     }
 
-    public AuthenticationResponseDto changeAuthenticate(ChangeLoginRequestDto request) {
+    public AuthenticationResponseDto changeLogin(ChangeLoginRequestDto request) {
         Optional<User> authorizedUser = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (authorizedUser.isEmpty()) throw new ResourceNotFoundException("User is not found");
-        if (!roleService.userHasRole(authorizedUser.get(), "MANAGER"))
-            throw new AccessDeniedException("Unauthorized account");
+//        if (!roleService.userHasAuthorizedRole(authorizedUser.get(), ROLE_CONSTANTS.ROLE_MANAGER))
+//            throw new AccessDeniedException("Unauthorized account");
         Optional<User> user = userRepository.findByEmail(request.getUserEmail());
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
 
-        if (roleService.userHasRole(user.get(), "MANAGER") || roleService.userHasRole(user.get(), "ADMIN")) {
+        if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER) || roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ADMIN)) {
             throw new AccessDeniedException("Unauthorized account");
         }
+
+        if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
+        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_STUDENT));
+        else throw new RoleNotFoundException("Role is not found");
+        userRepository.save(user.get());
+
+        return AuthenticationResponseDto.builder()
+                .token(jwtService.generateToken(user.get()))
+                .build();
+    }
+
+    public AuthenticationResponseDto changeAuthorized(ChangeAuthorizedRequestDto request) {
+        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
+        if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
+
+        if(roleService.userHasRole(user.get(), request.getAuthorizedRole())) user.get().setAuthorizedRole(Set.of(request.getAuthorizedRole()));
+        else throw new RoleNotFoundException("Role is not found");
+
+        userRepository.save(user.get());
 
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))

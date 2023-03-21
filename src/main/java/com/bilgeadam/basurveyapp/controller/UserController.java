@@ -1,9 +1,12 @@
 package com.bilgeadam.basurveyapp.controller;
 
+import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,6 +69,13 @@ public class UserController {
     @GetMapping("/trainersandstudents")
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/assingroletouser")
+    ResponseEntity<Boolean> assignRoleToUser(@RequestBody @Valid AssignRoleToUserRequestDto request) {
+
+        return ResponseEntity.ok(userService.assignRoleToUser(request));
     }
 
 }
