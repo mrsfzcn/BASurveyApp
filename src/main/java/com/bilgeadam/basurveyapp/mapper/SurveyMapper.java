@@ -22,6 +22,8 @@ public interface SurveyMapper {
     List<SurveyByStudentTagResponseDto> toSurveyByStudentTagResponseDtoList(List<Survey> surveys);
     List<SurveyResponseDto> toSurveyResponseDtoList(List<Survey> surveys);
     Survey toSurvey(SurveyCreateRequestDto surveyCreateRequestDto);
+    @Mapping(target = "surveyOid", source = "survey.oid")
+    SurveySimpleResponseDto toSurveySimpleResponseDto(final Survey survey);
     Set<SurveySimpleResponseDto> toSurveySimpleResponseDtoSet(Set<Survey> surveySet);
     SurveyRegistration toSurveyRegistration(SurveyAssignRequestDto surveyCreateRequestDto, Survey survey, Long studentTagId, LocalDateTime startDate, LocalDateTime endDate);
     TrainerClassroomSurveyResponseDto toTrainerClassroomSurveyResponseDto(User user, Set<SurveySimpleResponseDto> surveysByThisTrainer);
