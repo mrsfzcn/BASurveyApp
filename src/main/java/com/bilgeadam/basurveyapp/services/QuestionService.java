@@ -119,8 +119,7 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question not found to delete");
         } else {
             Question question = deleteQuestion.get();
-            questionRepository.softDelete(question);
-            return true;
+           return questionRepository.softDeleteById(question.getOid());
         }
     }
 

@@ -38,8 +38,7 @@ public class TrainerTagService {
         if (deleteTag.isEmpty()) {
             throw new RuntimeException("Tag is not found");
         } else {
-            trainerTagRepository.softDeleteById(deleteTag.get().getOid(),"trainertags");
-            return true;
+            return trainerTagRepository.softDeleteById(deleteTag.get().getOid());
         }
     }
 }

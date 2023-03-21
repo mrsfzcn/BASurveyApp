@@ -79,14 +79,14 @@ public class UserService {
         return userRepository.save(userToBeUpdated.get());
     }
 
-    public void deleteUser(Long userId) {
+    public boolean deleteUser(Long userId) {
         // getCurrentUser()
         // user check
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
         if (userToBeDeleted.isEmpty()) {
             throw new ResourceNotFoundException("User is not found");
         }
-        userRepository.softDeleteById(userToBeDeleted.get().getOid(),"users");
+        return userRepository.softDeleteById(userToBeDeleted.get().getOid());
     }
 
     public User findByOid(Long userId) {

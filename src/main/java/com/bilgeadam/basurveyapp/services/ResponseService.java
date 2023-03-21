@@ -101,8 +101,7 @@ public class ResponseService {
         if (response.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding response");
         } else {
-            responseRepository.softDeleteById(response.get().getOid(),"responses");
-            return true;
+           return responseRepository.softDeleteById(response.get().getOid());
         }
     }
 

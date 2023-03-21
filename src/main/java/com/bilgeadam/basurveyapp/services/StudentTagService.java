@@ -42,8 +42,7 @@ public class StudentTagService {
         if (deleteTag.isEmpty()) {
             throw new RuntimeException("Tag is not found");
         } else {
-            studentTagRepository.softDeleteById(deleteTag.get().getOid(),"studenttags");
-            return true;
+            return studentTagRepository.softDeleteById(deleteTag.get().getOid());
         }
     }
 }
