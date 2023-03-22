@@ -270,12 +270,12 @@ public class SurveyService {
         return survey;
     }
 
-    public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
+    public Boolean assignSurveyToClassroom(SurveyAssignRequestAdapter dto) throws MessagingException {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
 
-        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag().getTagString())
+        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
                 .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
         // List<Student> classroom = getStudentsByStudentTag(studentTag);
 
@@ -295,7 +295,15 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
-        SurveyRegistration surveyRegistration = INSTANCE.toSurveyRegistration(dto, survey, studentTag.getOid(),
+        StudentTag studentTagConverter = studentTagService.findByStudentTagName(dto.getStudentTag())
+                .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
+        SurveyAssignRequestDto surveyAssignRequestDto = SurveyAssignRequestDto.builder()
+                .surveyId(survey.getOid())
+                .studentTag(studentTagService.findByStudentTagName(dto.getStudentTag()).get())
+                .startDate(dto.getStartDate())
+                .days(dto.getDays())
+                .build();
+        SurveyRegistration surveyRegistration = INSTANCE.toSurveyRegistration(surveyAssignRequestDto, survey, studentTag.getOid(),
                 startDate, startDate.plusDays(dto.getDays()));
 
 

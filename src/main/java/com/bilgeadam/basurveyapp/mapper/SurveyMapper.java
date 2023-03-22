@@ -1,10 +1,14 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 
+import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestAdapter;
 import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
+import com.bilgeadam.basurveyapp.services.StudentTagService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -57,4 +61,6 @@ public interface SurveyMapper {
         unmaskedDto.setResponse(responseString);
         return unmaskedDto;
     }
+
+
 }

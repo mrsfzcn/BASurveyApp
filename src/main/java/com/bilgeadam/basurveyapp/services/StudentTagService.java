@@ -17,10 +17,12 @@ public class StudentTagService {
         return studentTagRepository.findByStudentTagOid(studentTag.getOid());
     }
 
+    public Optional<StudentTag> findByStudentTag(StudentTag studentTag) {
+        return studentTagRepository.findByTagName(studentTag.getTagString());
+    }
     public Optional<StudentTag> findByStudentTagName(String studentTag) {
         return studentTagRepository.findByTagName(studentTag);
     }
-
     public List<Student> findByStudentTagOid(Long studentTagOid) {
         return studentTagRepository.findByStudentTagOid(studentTagOid);
     }
