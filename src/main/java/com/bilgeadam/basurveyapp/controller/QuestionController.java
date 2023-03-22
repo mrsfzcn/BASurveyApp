@@ -72,7 +72,7 @@ public class QuestionController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
     @PostMapping("/getquestionbyrole")
-    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody GetQuestionByRoleRequestDto dto) {
+    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody GetQuestionByRoleIdRequestDto dto) {
 
         return ResponseEntity.ok(questionService.getQuestionByRole(dto));
     }

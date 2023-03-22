@@ -3,11 +3,8 @@ package com.bilgeadam.basurveyapp.mapper;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.services.QuestionService;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -34,14 +31,17 @@ public interface QuestionMapper {
     Question toQuestion(final CreateQuestionDto createQuestionDto);
 
 
+
     /**
      *
      * findAll
      */
     @Mapping(target = "questionTypeOid", source = "questionType.oid")
     @Mapping(target = "questionOid", source = "oid")
+    @Mapping(target = "questionTags", source = "questionTag")
     QuestionResponseDto toQuestionResponseDto(Question question);
     List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
+
 
     List<QuestionTagResponseDto> toQuestionTagResponseDto(List<QuestionTag> questionTags);
 

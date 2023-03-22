@@ -5,7 +5,6 @@ import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor

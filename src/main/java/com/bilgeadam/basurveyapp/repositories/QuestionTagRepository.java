@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface QuestionTagRepository extends BaseRepository<QuestionTag, Long> {
-    @Query(value = "SELECT oid from questiontags_target_entities where oid IN (SELECT oid FROM questiontags where tag_string = ?1)", nativeQuery = true)
+    @Query(value = "SELECT target_entities_oid from questiontags_target_entities where question_tag_oid IN (SELECT oid FROM questiontags where tag_string = ?1)", nativeQuery = true)
     List<Long> findAllByTagString(String role);
 
 }

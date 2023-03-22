@@ -12,13 +12,11 @@ import java.util.List;
 @Setter
 @Builder
 public class UpdateQuestionDto {
-    @NotBlank
     @NotNull
     Long questionOid;
+    List<Long> tagOids;
     @NotBlank
     @NotNull
     String questionString;
-    List<Long> tagOids;
-    List<Long> subTagOids;
 
 }
