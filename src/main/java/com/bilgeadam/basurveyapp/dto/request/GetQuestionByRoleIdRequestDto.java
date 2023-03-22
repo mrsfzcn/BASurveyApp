@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class GetQuestionByRoleRequestDto {
+public class GetQuestionByRoleIdRequestDto {
 
     @NotNull
     Long trainerId;
+    Long surveyId;
 
 }
