@@ -1,6 +1,9 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
+import com.bilgeadam.basurveyapp.entity.Role;
 import lombok.*;
+
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,5 +14,5 @@ public class SurveyUserResponseDto {
 
     private String firstName;
     private String lastName;
-    private String role;
+    private Set<Role> roles;
 }

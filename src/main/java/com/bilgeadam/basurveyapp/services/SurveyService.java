@@ -420,18 +420,18 @@ public class SurveyService {
         SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey, questionsMaskedDto);
         return result;
     }
+    // TODO surveyler trainerlara atandığında test edilecek
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
         Trainer trainer = trainerService.findTrainerByUserOid((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
-        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
-        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-        User user = trainer.getUser();
+        ).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
+//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
+//        User user = trainer.getUser();
 
-        return INSTANCE.toTrainerClassroomSurveyResponseDto(user,
-                INSTANCE.toSurveySimpleResponseDtoSet(trainer.getSurveysCreatedByTrainer()));
+        return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 
     //TODO method tag yapısına göre refactor edilecek
@@ -460,10 +460,10 @@ public class SurveyService {
         List<QuestionWithAnswersResponseDto> questionsDto = questions.parallelStream()
                 .map(question -> {
                     List<ResponseUnmaskedDto> responses = INSTANCE.mapResponses(question,  userOidList);
-                    return INSTANCE.toQuestionWithAnswersResponseDto(question, responses);
+                    return INSTANCE.toQuestionWithAnswersResponseDto(question);
                 })
                 .collect(toList());
-        return INSTANCE.toSurveyResponseWithAnswersDto(survey, questionsDto);
+        return INSTANCE.toSurveyResponseWithAnswersDto(survey);
     }
 
     private ResponseUnmaskedDto getUnmaskedDto(User user, String responseString, Boolean isManagerAndTrainer) {
