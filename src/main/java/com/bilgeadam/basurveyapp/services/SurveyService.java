@@ -308,6 +308,7 @@ public class SurveyService {
 
         surveyRepository.save(survey);
 
+        //TODO mail gönderme sıkıntı yaratıyor
         if (surveyRegistration.getStartDate().isBefore(LocalDateTime.now())) {
             sendEmail(surveyRegistration, dto.getDays());
         }
