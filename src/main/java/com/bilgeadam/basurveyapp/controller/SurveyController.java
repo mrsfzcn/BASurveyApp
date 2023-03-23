@@ -50,7 +50,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    ResponseEntity<Boolean> create(@RequestBody SurveyCreateRequestDto dto) {
+    ResponseEntity<Boolean> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
 

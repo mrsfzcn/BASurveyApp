@@ -16,5 +16,5 @@ public class SurveyResponseWithAnswersDto {
     private Long surveyOid;
     private String surveyTitle;
     private String courseTopic;
-    private List<QuestionWithAnswersResponseDto> surveyAnswers;
+    private List<QuestionWithAnswersResponseDto> questions;
 }
