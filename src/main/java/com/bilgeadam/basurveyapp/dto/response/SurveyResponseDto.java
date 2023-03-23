@@ -11,11 +11,11 @@ import java.util.List;
 @Setter
 @Builder
 public class SurveyResponseDto {
-    private Long surveyOid;
+    private Long oid;
     private String surveyTitle;
     private String courseTopic;
 
-    private List<SurveyClassroomResponseDto> surveyClassroomResponseDtoList;
-    private List<SurveyQuestionResponseDto> surveyQuestionResponseDtoList;
-    private List<SurveyUserResponseDto> surveyUserResponseDtoList;
+    private List<SurveyClassroomResponseDto> surveyTags;
+    private List<SurveyQuestionResponseDto> questions;
+    private List<SurveyStudentResponseDto> studentsWhoAnswered;
 }

@@ -17,6 +17,5 @@ public class TrainerClassroomSurveyResponseDto {
     String firstName;
     String lastName;
     String email;
-    Set<Role> roles;
     Set<SurveySimpleResponseDto> surveysByThisTrainer;
 }

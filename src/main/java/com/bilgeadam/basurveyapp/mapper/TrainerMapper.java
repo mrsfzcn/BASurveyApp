@@ -1,9 +1,7 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.Trainer;
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
