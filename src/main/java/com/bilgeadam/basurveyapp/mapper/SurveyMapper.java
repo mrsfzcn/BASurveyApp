@@ -1,12 +1,14 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 
+import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestAdapter;
 import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
+import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
+import com.bilgeadam.basurveyapp.services.StudentTagService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -21,35 +23,20 @@ import java.util.Set;
 public interface SurveyMapper {
     SurveyMapper INSTANCE = Mappers.getMapper(SurveyMapper.class);
 
-    List<SurveyByStudentTagResponseDto> toSurveyByStudentTagResponseDtoList(final List<Survey> surveys);
-    Survey toSurvey(final SurveyCreateRequestDto surveyCreateRequestDto);
-    @Mapping(target = "surveyOid", source = "oid")
-    SurveySimpleResponseDto toSurveySimpleResponseDto(final Survey survey);
-    List<SurveyResponseDto> toSurveyResponseDtoList(final List<Survey> surveys);
-    @Mapping(source = "tagString", target = "name")
-    SurveyClassroomResponseDto toSurveyClassroomResponseDto(final SurveyTag surveyTag);
-    List<SurveyClassroomResponseDto> toSurveyClassroomResponseDto(final List<SurveyTag> surveyTags);
-    @Mapping(target = "lastName", source = "user.lastName")
-    @Mapping(target = "firstName", source = "user.lastName")
-    @Mapping(target = "email", source = "user.email")
-    SurveyStudentResponseDto toSurveyStudentResponseDto(final Student student);
-    List<SurveyStudentResponseDto> toSurveyStudentResponseDto(final List<Student> studentsWhoAnswered);
+    List<SurveyByStudentTagResponseDto> toSurveyByStudentTagResponseDtoList(List<Survey> surveys);
+    List<SurveyResponseDto> toSurveyResponseDtoList(List<Survey> surveys);
+    Survey toSurvey(SurveyCreateRequestDto surveyCreateRequestDto);
+    Set<SurveySimpleResponseDto> toSurveySimpleResponseDtoSet(Set<Survey> surveySet);
+    TrainerClassroomSurveyResponseDto toTrainerClassroomSurveyResponseDto(User user, Set<SurveySimpleResponseDto> surveysByThisTrainer);
+    SurveyResponseWithAnswersDto toSurveyResponseWithAnswersDto(Survey survey, List<QuestionWithAnswersResponseDto> surveyAnswers);
 
-
-
-    TrainerClassroomSurveyResponseDto toTrainerClassroomSurveyResponseDto(final Trainer trainer);
-    Set<SurveySimpleResponseDto> toSurveySimpleResponseDtoSet(final Set<Survey> surveySet);
-    SurveyRegistration toSurveyRegistration(final SurveyAssignRequestDto surveyCreateRequestDto, Survey survey, Long studentTagId, LocalDateTime startDate, LocalDateTime endDate);
-
-
-    @Mapping(source = "oid", target = "surveyOid")
-    SurveyResponseWithAnswersDto toSurveyResponseWithAnswersDto(final Survey survey);
-
-    @Mapping(source = "questionType.questionType", target = "questionType")
-    SurveyQuestionResponseDto toSurveyQuestionResponseDto(final Question question);
-    List<SurveyQuestionResponseDto> toSurveyQuestionResponseDto(final List<Question> question);
-
-    List<QuestionWithAnswersResponseDto> toQuestionWithAnswersResponseDto(final List<Question> question);
+    SurveyOfClassroomMaskedResponseDto toSurveyOfClassroomMaskedResponseDto(Survey survey, List<QuestionWithAnswersMaskedResponseDto> surveyAnswers);
+    @Mapping(source = "question.oid", target = "questionOid")
+    @Mapping(source = "question.questionString", target = "questionString")
+    @Mapping(source = "question.questionType.oid", target = "questionTypeOid")
+    @Mapping(source = "question.order", target = "order")
+    @Mapping(source = "responseUnmaskedDtos", target = "responses")
+    QuestionWithAnswersResponseDto toQuestionWithAnswersResponseDto(Question question, List<ResponseUnmaskedDto> responseUnmaskedDtos);
 
     @Mapping(source = "survey.oid", target = "surveyOid")
     SurveyOfClassroomMaskedResponseDto toSurveyOfClassroomMaskedResponseDto(final Survey survey);
@@ -95,4 +82,6 @@ public interface SurveyMapper {
         unmaskedDto.setResponse(responseString);
         return unmaskedDto;
     }
+
+
 }
