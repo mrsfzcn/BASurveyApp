@@ -17,6 +17,7 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -270,7 +271,8 @@ public class SurveyService {
         return survey;
     }
 
-    public Boolean assignSurveyToClassroom(SurveyAssignRequestAdapter dto) throws MessagingException {
+    @Transactional
+    public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
@@ -295,17 +297,12 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
-        StudentTag studentTagConverter = studentTagService.findByStudentTagName(dto.getStudentTag())
-                .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
-        SurveyAssignRequestDto surveyAssignRequestDto = SurveyAssignRequestDto.builder()
-                .surveyId(survey.getOid())
-                .studentTag(studentTagService.findByStudentTagName(dto.getStudentTag()).get())
-                .startDate(dto.getStartDate())
-                .days(dto.getDays())
-                .build();
-        SurveyRegistration surveyRegistration = INSTANCE.toSurveyRegistration(surveyAssignRequestDto, survey, studentTag.getOid(),
-                startDate, startDate.plusDays(dto.getDays()));
-
+        SurveyRegistration surveyRegistration = surveyRegistrationRepository.save( SurveyRegistration.builder()
+                .survey(survey)
+                .studentTag(studentTag)
+                .startDate(startDate)
+                .endDate(startDate.plusDays(dto.getDays()))
+                .build());
 
         survey.getSurveyRegistrations().add(surveyRegistration);
 
@@ -324,10 +321,13 @@ public class SurveyService {
     private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Map<String, String> emailTokenMap = new HashMap<>();
-        List<User> users = getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(Student::getUser).toList();
+        //TODO: burada hata atıyor
+        List<Student> students = getStudentsByStudentTag(surveyRegistration.getStudentTag());
+        List<User> users = students.stream().map(student ->
+            student.getUser()
+        ).toList();
 
         users
-                .parallelStream()
                 .forEach(user -> emailTokenMap.put(
                         user.getEmail(),
                         jwtService.generateSurveyEmailToken(

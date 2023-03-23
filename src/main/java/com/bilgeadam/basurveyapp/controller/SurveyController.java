@@ -88,8 +88,8 @@ public class SurveyController {
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestAdapter surveyAssignRequestAdapter) throws MessagingException, ParseException {
-        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestAdapter));
+    ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException, ParseException {
+        return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
 
     @PostMapping("/response/{token}")

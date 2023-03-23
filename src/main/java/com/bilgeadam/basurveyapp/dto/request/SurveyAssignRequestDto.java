@@ -14,13 +14,12 @@ import lombok.*;
 @Setter
 @Builder
 public class SurveyAssignRequestDto {
-    @NotBlank
     @NotNull
     Long surveyId;
     @NotBlank
     @NotNull
-    StudentTag studentTag;
-    @NotBlank
+    String studentTag;
+
     @NotNull
     Integer days;
     private String startDate;
