@@ -417,7 +417,7 @@ public class SurveyService {
                 .collect(toList());
 
 // Assuming you have a SurveyOfClassroomMaskedResponseDto and corresponding mapper
-        SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey, questionsMaskedDto);
+        SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);
         return result;
     }
     // TODO surveyler trainerlara atandığında test edilecek

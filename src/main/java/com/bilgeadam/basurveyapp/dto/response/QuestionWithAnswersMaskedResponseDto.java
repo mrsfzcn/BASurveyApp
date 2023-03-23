@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Eralp Nitelik
@@ -18,5 +19,5 @@ public class QuestionWithAnswersMaskedResponseDto {
     String questionString;
     Long questionTypeOid;
     Integer order;
-    List<Response> responses;
+    Set<Response> responses;
 }
