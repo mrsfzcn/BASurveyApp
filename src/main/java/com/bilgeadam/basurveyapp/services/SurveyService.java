@@ -70,10 +70,10 @@ public class SurveyService {
      *
      * @throws MessagingException
      */
-    private List<Student> getStudentsByStudentTag(StudentTag studentTag) {
-
-        return studentTagService.getStudentsByStudentTag(studentTag);
-    }
+//    private List<Student> getStudentsByStudentTag(StudentTag studentTag) {
+//
+//        return studentTagService.getStudentsByStudentTag(studentTag);
+//    }
 
     @Async
     @Scheduled(cron = "0 30 9 * * MON-FRI")
@@ -89,7 +89,7 @@ public class SurveyService {
             surveyRegistrations
                     .parallelStream()
                     .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
-                    .forEach(sR -> getStudentsByStudentTag(sR.getStudentTag())
+                    .forEach(sR -> studentTagService.getStudentsByStudentTag(sR.getStudentTag())
                             .stream()
                             .forEach(student -> emailTokenMap.put(
                                     student.getUser().getEmail(),
@@ -160,10 +160,11 @@ public class SurveyService {
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
+        //TODO student tag oid ile student tag bulunacak
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
-                .filter(sR -> getStudentsByStudentTag(sR.getStudentTag()).equals(studentTagOid))
+                .filter(sR -> sR.getStudentTag().getOid().equals(studentTagOid))
                 .findAny()
                 .orElseThrow(() -> new ResourceNotFoundException("Survey has not assigned to the classroom."));
 
@@ -197,7 +198,7 @@ public class SurveyService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
 
-        List<Long> participantIdList = getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(student
+        List<Long> participantIdList = studentTagService.getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(student
                 -> student.getUser().getOid()).toList();
         if (participantIdList.contains(currentUser.getOid())) {
             throw new AlreadyAnsweredSurveyException("User cannot answer a survey more than once.");
@@ -323,7 +324,7 @@ public class SurveyService {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Map<String, String> emailTokenMap = new HashMap<>();
         //TODO: burada hata atıyor
-        List<Student> students = getStudentsByStudentTag(surveyRegistration.getStudentTag());
+        List<Student> students = studentTagService.getStudentsByStudentTag(surveyRegistration.getStudentTag());
         List<User> users = students.stream().map(student ->
             student.getUser()
         ).toList();
