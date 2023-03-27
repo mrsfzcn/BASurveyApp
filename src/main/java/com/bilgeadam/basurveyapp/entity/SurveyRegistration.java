@@ -16,7 +16,9 @@ import java.time.LocalDateTime;
 @Table(name = "survey_registration")
 public class SurveyRegistration extends BaseEntity {
 
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime startDate;
+    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)

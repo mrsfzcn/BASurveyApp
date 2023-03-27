@@ -13,10 +13,13 @@ import java.util.Optional;
 public interface StudentTagRepository extends BaseRepository<StudentTag, Long> {
 
 
-    @Query(value = "SELECT * FROM studenttags WHERE state='ACTIVE' AND tag_string = ?1", nativeQuery = true)
+    @Query("SELECT st FROM StudentTag st WHERE st.state='ACTIVE' AND st.tagString = ?1")
     Optional<StudentTag> findByTagName(String studentTag);
 
     @Query(value = "SELECT * FROM students WHERE state='ACTIVE' AND oid IN (SELECT target_entities_oid FROM studenttags_target_entities WHERE student_tags_oid = ?1)", nativeQuery = true)
     List<Student> findByStudentTagOid(Long studentTagOid);
+
+    @Query(value = "SELECT user_oid FROM students WHERE state='ACTIVE' AND oid IN (SELECT target_entities_oid FROM studenttags_target_entities WHERE student_tags_oid = ?1)", nativeQuery = true)
+    List<Long> findUserOidByStudentTagOid(Long studentTagOid);
 
 }

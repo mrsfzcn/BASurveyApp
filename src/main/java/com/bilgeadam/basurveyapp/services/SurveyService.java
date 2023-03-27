@@ -59,6 +59,7 @@ public class SurveyService {
     private final StudentService studentService;
     private final TrainerService trainerService;
     private final TrainerTagService trainerTagService;
+    private final StudentTagRepository studentTagRepository;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -74,7 +75,6 @@ public class SurveyService {
 //
 //        return studentTagService.getStudentsByStudentTag(studentTag);
 //    }
-
     @Async
     @Scheduled(cron = "0 30 9 * * MON-FRI")
     public void initiateSurveys() throws MessagingException {
@@ -298,7 +298,7 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
-        SurveyRegistration surveyRegistration = surveyRegistrationRepository.save( SurveyRegistration.builder()
+        SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
                 .studentTag(studentTag)
                 .startDate(startDate)
@@ -321,20 +321,20 @@ public class SurveyService {
     }
 
     private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
-//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Map<String, String> emailTokenMap = new HashMap<>();
-        //TODO: burada hata atıyor
-        List<Student> students = studentTagService.getStudentsByStudentTag(surveyRegistration.getStudentTag());
-        List<User> users = students.stream().map(student ->
-            student.getUser()
-        ).toList();
+        Long studentTagOid = surveyRegistrationRepository.findStudentTagOfSurveyRegistration(surveyRegistration.getOid());
+        List<Long> userOids = studentTagRepository.findUserOidByStudentTagOid(studentTagOid);
+        List<User> users = userOids.stream()
+                .map(oid -> userRepository.findActiveById(oid)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found!")))
+                .toList();
 
         users
                 .forEach(user -> emailTokenMap.put(
                         user.getEmail(),
                         jwtService.generateSurveyEmailToken(
                                 surveyRegistration.getSurvey().getOid(),
-                                surveyRegistration.getStudentTag().getOid(),
+                                studentTagOid,
                                 user.getEmail(),
                                 days)));
 
@@ -430,6 +430,7 @@ public class SurveyService {
         SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);
         return result;
     }
+
     // TODO surveyler trainerlara atandığında test edilecek
     public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
         Trainer trainer = trainerService.findTrainerByUserOid((Long)
@@ -469,7 +470,7 @@ public class SurveyService {
         boolean finalIsManagerAndTrainer = isManagerAndTrainer;
         List<QuestionWithAnswersResponseDto> questionsDto = questions.parallelStream()
                 .map(question -> {
-                    List<ResponseUnmaskedDto> responses = INSTANCE.mapResponses(question,  userOidList);
+                    List<ResponseUnmaskedDto> responses = INSTANCE.mapResponses(question, userOidList);
                     return INSTANCE.toQuestionWithAnswersResponseDto(question);
                 })
                 .collect(toList());

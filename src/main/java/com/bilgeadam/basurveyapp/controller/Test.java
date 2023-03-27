@@ -14,16 +14,28 @@ public class Test {
         return "BASurveyApp";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/student")
     public ResponseEntity<String> testUser() {
         return ResponseEntity.ok("Student test successful!");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping("/manager")
     public ResponseEntity<String> testManager() {
         return ResponseEntity.ok("Manager test successful!");
+    }
+
+    @PreAuthorize("hasRole('MASTER_TRAINER')")
+    @GetMapping("/mtrainer")
+    public ResponseEntity<String> testMT() {
+        return ResponseEntity.ok("MT test successful!");
+    }
+
+    @PreAuthorize("hasRole('ASSISTANT_TRAINER')")
+    @GetMapping("/atrainer")
+    public ResponseEntity<String> testAT() {
+        return ResponseEntity.ok("AT test successful!");
     }
 
     @PreAuthorize("hasRole('ADMIN')")

@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 @SuperBuilder
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @MappedSuperclass
 public abstract class BaseTag<T> extends BaseEntity{

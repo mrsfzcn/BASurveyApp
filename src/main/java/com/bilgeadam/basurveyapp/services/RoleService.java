@@ -24,7 +24,8 @@ public class RoleService {
     }
 
     public boolean userHasAuthorizedRole(User user, String role) {
-        return user.getAuthorizedRole().stream().anyMatch(roleString -> roleString.equals(role));
+        return user.getAuthorizedRole().equals(role);
+//        user.getAuthorizedRole().stream().anyMatch(roleString -> roleString.equals(role));
     }
 
     public boolean hasRole(String role) {
@@ -54,7 +55,7 @@ public class RoleService {
     }
 
     public List<User> findUsersInRole(String role) {
-        return  roleRepository.findUsersWithRole(role);
+        return roleRepository.findUsersWithRole(role);
     }
 
     public Role save(Role role) {

@@ -55,33 +55,45 @@ public class AuthService {
         }
 
 
-        User auth = userRepository.save(User.builder()
+        User auth = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .roles(userRoles)
-                .build());
+                .build();
+        if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN))
+            auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_ADMIN));
+        else if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER))
+            auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_MANAGER));
+        else if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MASTER_TRAINER))
+            auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+        else if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER))
+            auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
+        else if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_STUDENT))
+            auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
+        else throw new RoleNotFoundException("Role is not found");
+        userRepository.save(auth);
 
 //        User auth = AuthMapper.INSTANCE.ToUser(request);
 //        userRepository.save(auth);
 
 
-        if(roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
-                || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)){
+        if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
+                || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MANAGER)) {
             Manager manager = new Manager();
             manager.setUser(auth);
             managerService.createManager(manager);
         }
-        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_STUDENT)){
+        if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_STUDENT)) {
             Student student = new Student();
             student.setUser(auth);
             studentService.createStudent(student);
         }
-        if(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
-                ||roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)){
+        if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)
+                || roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)) {
             Trainer trainer = new Trainer();
-            trainer.setMasterTrainer(roleService.userHasRole(auth,ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+            trainer.setMasterTrainer(roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
             trainer.setUser(auth);
             trainerService.createTrainer(trainer);
         }
@@ -95,11 +107,16 @@ public class AuthService {
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
-        if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ADMIN)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ADMIN));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MANAGER));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_STUDENT));
+        if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ADMIN))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_ADMIN));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_MANAGER));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
         else throw new RoleNotFoundException("Role is not found");
         userRepository.save(user.get());
 
@@ -129,9 +146,12 @@ public class AuthService {
             throw new AccessDeniedException("Unauthorized account");
         }
 
-        if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
-        else if(roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT)) user.get().setAuthorizedRole(Set.of(ROLE_CONSTANTS.ROLE_STUDENT));
+        if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_MASTER_TRAINER));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER));
+        else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT))
+            user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
         else throw new RoleNotFoundException("Role is not found");
         userRepository.save(user.get());
 
@@ -144,7 +164,8 @@ public class AuthService {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
 
-        if(roleService.userHasRole(user.get(), request.getAuthorizedRole())) user.get().setAuthorizedRole(Set.of(request.getAuthorizedRole()));
+        if (roleService.userHasRole(user.get(), request.getAuthorizedRole()))
+            user.get().setAuthorizedRole((request.getAuthorizedRole()));
         else throw new RoleNotFoundException("Role is not found");
 
         userRepository.save(user.get());
