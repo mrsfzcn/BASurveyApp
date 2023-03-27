@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.Survey;
@@ -231,7 +232,7 @@ public class QuestionService {
     }
 
 
-    public List<QuestionResponseDto> getQuestionByRole(GetQuestionByRoleIdRequestDto dto) {
+    public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(GetQuestionByRoleIdRequestDto dto) {
 
         Optional<Trainer> trainer = trainerRepository.findActiveById(dto.getTrainerId());
         if(trainer.isEmpty()){
@@ -253,8 +254,8 @@ public class QuestionService {
        List<Question> trainerQuestions = questions.stream().filter(question -> question.getQuestionTag().contains(trainerQuestionTag)).toList();
 
 
-        List<QuestionResponseDto> questionResponseDto = QuestionMapper.INSTANCE.toQuestionResponseDtos(trainerQuestions);
-        return questionResponseDto;
+        List<QuestionsTrainerTypeResponseDto> questionsTrainerTypeResponseDto = QuestionMapper.INSTANCE.toQuestionsTrainerTypeResponseDto(trainerQuestions);
+        return questionsTrainerTypeResponseDto;
 
     }
 

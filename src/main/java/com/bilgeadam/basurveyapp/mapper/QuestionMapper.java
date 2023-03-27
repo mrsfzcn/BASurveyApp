@@ -42,6 +42,12 @@ public interface QuestionMapper {
     QuestionResponseDto toQuestionResponseDto(Question question);
     List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
 
+    @Mapping(target = "questionTypeOid", source = "questionType.oid")
+    @Mapping(target = "questionOid", source = "oid")
+    @Mapping(target = "questionTags", source = "questionTag")
+    QuestionsTrainerTypeResponseDto toQuestionsTrainerTypeResponseDto(Question questions);
+    List<QuestionsTrainerTypeResponseDto> toQuestionsTrainerTypeResponseDto(List<Question> questions);
+
 
     List<QuestionTagResponseDto> toQuestionTagResponseDto(List<QuestionTag> questionTags);
 
