@@ -16,5 +16,5 @@ public class SurveyOfClassroomMaskedResponseDto {
     private Long surveyOid;
     private String surveyTitle;
     private String courseTopic;
-    private List<QuestionWithAnswersMaskedResponseDto> surveyAnswers;
+    private List<QuestionWithAnswersMaskedResponseDto> questions;
 }
