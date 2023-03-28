@@ -200,12 +200,13 @@ public class SurveyService {
         // authentication ******
         List<Question> surveyQuestions = survey.getQuestions();
         Set<Response> surveyResponses = responseRepository.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
+        List<Response> updatedResponses = new ArrayList<>();
         surveyQuestions.forEach(question -> {
-            SurveyResponseQuestionRequestDto srqrDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findFirst().orElse(null);
+            SurveyResponseQuestionRequestDto srqrDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findAny().orElse(null);
             if (srqrDto != null) {
                 List<Response> surveySingleResponse = surveyResponses.stream().filter(response -> response.getQuestion().getOid().equals(question.getOid())).toList();
                 if (surveySingleResponse.isEmpty()) {
-                    responseRepository.save(Response.builder()
+                    updatedResponses.add(Response.builder()
                             .responseString(srqrDto.getResponseString())
                             .question(question)
                             .survey(survey)
@@ -214,10 +215,11 @@ public class SurveyService {
                 } else {
                     Response response = surveySingleResponse.get(0);
                     response.setResponseString(srqrDto.getResponseString());
-                    responseRepository.save(response);
+                    updatedResponses.add(response);
                 }
             }
         });
+        responseRepository.saveAll(updatedResponses);
         return true;
     }
 
