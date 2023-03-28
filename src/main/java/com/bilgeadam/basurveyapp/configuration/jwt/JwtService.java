@@ -101,7 +101,7 @@ public class JwtService {
 
     public boolean isSurveyEmailTokenValid(String jwtToken) {
         final String email = extractEmail(jwtToken);
-        return isTokenNotExpired(jwtToken) && userRepository.findByEmail(email).isPresent();
+        return !isTokenNotExpired(jwtToken) || userRepository.findByEmail(email).isEmpty();
     }
 
     public String extractEmail(String jwtToken) {

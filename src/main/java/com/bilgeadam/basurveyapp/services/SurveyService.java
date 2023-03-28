@@ -8,7 +8,6 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
@@ -153,14 +152,16 @@ public class SurveyService {
 
     public Boolean responseSurveyQuestions(String token, List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
 
-        if (!jwtService.isSurveyEmailTokenValid(token)) {
+        if (jwtService.isSurveyEmailTokenValid(token)) {
             throw new AccessDeniedException("Invalid token");
         }
         Long studentTagOid = jwtService.extractStudentTagOid(token);
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
-        //TODO student tag oid ile student tag bulunacak
+        StudentTag studentTag = studentTagRepository.findActiveById(studentTagOid).orElseThrow(
+                () -> new ResourceNotFoundException("StudentTag is not Found."));
+
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
@@ -197,54 +198,26 @@ public class SurveyService {
         );
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
-
-        List<Long> participantIdList = studentTagService.getStudentsByStudentTag(surveyRegistration.getStudentTag()).parallelStream().map(student
-                -> student.getUser().getOid()).toList();
-        if (participantIdList.contains(currentUser.getOid())) {
-            throw new AlreadyAnsweredSurveyException("User cannot answer a survey more than once.");
-        }
-
         List<Question> surveyQuestions = survey.getQuestions();
-
-        List<ResponseRequestDataObject> responseDtoList = dtoList.parallelStream()
-                .collect(groupingBy(SurveyResponseQuestionRequestDto::getQuestionOid))
-                .entrySet()
-                .stream()
-                .map(entry -> {
-                    String questionOid = String.valueOf(entry.getKey());
-                    SurveyResponseQuestionRequestDto firstDto = entry.getValue().get(0);
-                    Question question = surveyQuestions.stream()
-                            .filter(q -> q.getOid().equals(questionOid))
-                            .findAny()
-                            .orElse(null);
-
-                    ResponseRequestDataObject responseDto = new ResponseRequestDataObject();
-                    responseDto.setResponseString(firstDto.getResponseString());
-                    responseDto.setQuestion(question);
-                    responseDto.setUser(currentUser);
-
-                    return responseDto;
-                })
-                .collect(toList());
-
-        List<Response> responses = ResponseMapper.INSTANCE.toResponseList(responseDtoList);
-
-        for (Response response : responses) {
-            Optional<Question> questionOptional = surveyQuestions
-                    .parallelStream()
-                    .filter(question -> question.getOid().equals(response.getQuestion().getOid()))
-                    .findAny();
-            questionOptional.ifPresent(question -> question.getResponses().add(response));
-        }
-        Student student = studentService.findByUser(currentUser)
-                .orElseThrow(() -> new ResourceNotFoundException("Student is not found"));
-
-        survey.getStudentsWhoAnswered().add(student);
-        Set<Survey> surveys = student.getSurveysAnswered();
-        surveys.add(survey);
-        student.setSurveysAnswered(surveys);
-
-        surveyRepository.save(survey);
+        Set<Response> surveyResponses = responseRepository.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
+        surveyQuestions.forEach(question -> {
+            SurveyResponseQuestionRequestDto srqrDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findFirst().orElse(null);
+            if (srqrDto != null) {
+                List<Response> surveySingleResponse = surveyResponses.stream().filter(response -> response.getQuestion().getOid().equals(question.getOid())).toList();
+                if (surveySingleResponse.isEmpty()) {
+                    responseRepository.save(Response.builder()
+                            .responseString(srqrDto.getResponseString())
+                            .question(question)
+                            .survey(survey)
+                            .user(currentUser)
+                            .build());
+                } else {
+                    Response response = surveySingleResponse.get(0);
+                    response.setResponseString(srqrDto.getResponseString());
+                    responseRepository.save(response);
+                }
+            }
+        });
         return true;
     }
 
