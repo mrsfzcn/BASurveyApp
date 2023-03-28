@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
 import com.bilgeadam.basurveyapp.services.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +72,10 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
-    @PostMapping("/getquestionbyrole")
-    ResponseEntity<List<QuestionResponseDto>> getQuestionByRole(@RequestBody GetQuestionByRoleIdRequestDto dto) {
+    @PostMapping("/questionsbytrainertype")
+    ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestBody GetQuestionByRoleIdRequestDto dto) {
 
-        return ResponseEntity.ok(questionService.getQuestionByRole(dto));
+        return ResponseEntity.ok(questionService.questionByTrainerType(dto));
     }
 
 }
