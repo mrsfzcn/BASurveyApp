@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ResponseRepository extends BaseRepository<Response, Long> {
@@ -18,4 +19,7 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
 
     @Query("SELECT r FROM Response r WHERE r.user.oid = ?1 AND r.question.oid = ?2")
     Optional<Response> findByUserOidAndQuestionOid(Long userOid, Long questionOid);
+
+    @Query("SELECT r FROM Response r WHERE r.state='ACTIVE' AND r.user.oid= ?1 AND r.survey.oid = ?2")
+    Set<Response> findResponsesByUserOidAndSurveyOid(Long userOid, Long surveyOid);
 }

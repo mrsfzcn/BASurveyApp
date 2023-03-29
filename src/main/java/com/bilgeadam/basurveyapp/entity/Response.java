@@ -3,6 +3,9 @@ package com.bilgeadam.basurveyapp.entity;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,5 +24,8 @@ public class Response extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_oid", nullable=false)
     private User user;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Survey survey;
 
 }

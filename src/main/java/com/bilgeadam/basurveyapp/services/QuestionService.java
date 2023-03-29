@@ -7,7 +7,6 @@ import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
 import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
@@ -116,7 +115,7 @@ public class QuestionService {
 
     // TODO Metod doğru çalışmıyor düzenlenecek
     public List<QuestionResponseDto> findAllSurveyQuestions(String token) {
-        if (!jwtService.isSurveyEmailTokenValid(token)) {
+        if (jwtService.isSurveyEmailTokenValid(token)) {
             throw new RuntimeException("Invalid token.");
         }
         Long surveyOid = jwtService.extractSurveyOid(token);

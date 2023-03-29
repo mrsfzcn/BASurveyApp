@@ -35,7 +35,10 @@ public class Survey extends BaseEntity {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Trainer whoCreatedSurvey;
 
-    @ManyToMany(cascade = CascadeType.ALL,mappedBy = "targetEntities",fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.EAGER)
     private Set<SurveyTag> surveyTags;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Response> responses;
 
 }
