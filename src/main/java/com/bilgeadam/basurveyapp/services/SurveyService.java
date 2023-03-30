@@ -447,6 +447,7 @@ public class SurveyService {
 
     //TODO method tag yapısına göre refactor edilecek
     public SurveyResponseWithAnswersDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
+
         List<Student> students = studentService.findByStudentTagOid(dto.getStudentTagOid());
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
@@ -461,8 +462,10 @@ public class SurveyService {
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
-            if (trainerTagService.getTrainerTagsOids(trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
-                    new ResourceNotFoundException("No such trainer."))).contains(dto.getStudentTagOid())) {
+       StudentTag studentTag=studentTagRepository.findActiveById(dto.getStudentTagOid()).orElseThrow(() ->new ResourceNotFoundException("Student Tag Not Found."));
+            if (trainerTagService.getTrainerTags(
+                    trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
+                    new ResourceNotFoundException("No such trainer."))).stream().anyMatch(trainerTag ->trainerTag.getTagString().equalsIgnoreCase(studentTag.getTagString()))) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
             isManagerAndTrainer = true;
@@ -474,7 +477,24 @@ public class SurveyService {
                     return INSTANCE.toQuestionWithAnswersResponseDto(question);
                 })
                 .collect(toList());
-        return INSTANCE.toSurveyResponseWithAnswersDto(survey);
+        return SurveyResponseWithAnswersDto.builder()
+                .surveyOid(survey.getOid())
+                .surveyTitle(survey.getSurveyTitle())
+                .courseTopic(survey.getCourseTopic())
+                .questions(questions.parallelStream().map(question ->
+                        QuestionWithAnswersResponseDto.builder()
+                                .questionOid(question.getOid())
+                                .questionString(question.getQuestionString())
+                                .questionTypeOid(question.getQuestionType().getOid())
+                                .order(question.getOrder())
+                                .responses(
+                                        question.getResponses()
+                                                .stream()
+                                                .filter(response -> userOidList.contains(response.getUser().getOid()))
+                                                .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
+                                                .collect(Collectors.toList()))
+                                .build()).collect(Collectors.toList())
+                ).build();
     }
 
     private ResponseUnmaskedDto getUnmaskedDto(User user, String responseString, Boolean isManagerAndTrainer) {

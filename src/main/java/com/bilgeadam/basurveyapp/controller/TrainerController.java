@@ -1,10 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
 import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.services.TrainerService;
@@ -41,7 +39,7 @@ public class TrainerController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/signtoclass")
-    public ResponseEntity<TrainerResponseDto> updateStudent(@RequestBody TrainerUpdateDto dto){
+    public ResponseEntity<TrainerResponseDto> assignTrainerTag(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));
     }
 }
