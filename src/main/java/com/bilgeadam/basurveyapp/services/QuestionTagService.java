@@ -3,6 +3,8 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.repositories.QuestionTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,11 @@ public class QuestionTagService {
 
     //TODO: Bunu dto ile yapmamız lazım.
     public void createTag(CreateTagDto dto) {
+
+        if(questionTagRepository.findOptionalByTagString(dto.getTagString()).isPresent()){
+            throw new QuestionTagExistException("Question Tag already exist!");
+        }
+
         QuestionTag questionTag = QuestionTag.builder()
                 .tagString(dto.getTagString())
                 .build();

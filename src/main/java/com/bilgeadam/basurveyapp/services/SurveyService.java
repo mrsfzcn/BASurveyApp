@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
@@ -219,7 +220,10 @@ public class SurveyService {
                 }
             }
         });
+        questionRepository.saveAll(surveyQuestions);
         responseRepository.saveAll(updatedResponses);
+        surveyRepository.save(survey);
+
         return true;
     }
 
@@ -390,16 +394,23 @@ public class SurveyService {
         }
 //        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(()
 //        -> new ResourceNotFoundException("Classroom not found."));
+
         StudentTag studentTag = studentTagService.findActiveById(dto.getStudentTagOid()).orElseThrow(()
                 -> new ResourceNotFoundException("TrainerTag not found."));
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-        List<Question> questions = survey.getQuestions();
-//        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
-        List<Long> usersInClassroom = studentService.findByStudentTagOid(studentTag.getOid()).stream().map(Student::getUser).map(User::getOid).toList();
 
-        List<QuestionWithAnswersMaskedResponseDto> questionsMaskedDto = questions.parallelStream()
-                .map(question -> INSTANCE.toQuestionWithAnswersMaskedResponseDto(question, usersInClassroom))
-                .collect(toList());
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+//        List<Question> questions = survey.getQuestions();
+//        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
+//        List<Student> studentInClassroom = studentService.findByStudentTagOid(studentTag.getOid());
+//
+//        List<Long> studentOidInClassroom = studentInClassroom.stream().map(studentOid->studentOid.getOid()).collect(toList());
+
+
+//        List<Long> studentOidInClassroom = studentTagRepository.findUserOidByStudentTagOid(studentTag.getOid());
+//
+//        List<QuestionWithAnswersMaskedResponseDto> questionsMaskedDto = questions.parallelStream()
+//                .map(question -> INSTANCE.toQuestionWithAnswersMaskedResponseDto(question, studentOidInClassroom))
+//                .collect(toList());
 
 // Assuming you have a SurveyOfClassroomMaskedResponseDto and corresponding mapper
         SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);

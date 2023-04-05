@@ -147,6 +147,33 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.CLASSROOM_ALREADY_EXISTS", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(CLASSROOM_ALREADY_EXISTS, exception, request);
     }
+    @ResponseBody
+    @ExceptionHandler(StudentTagExistException.class)
+    public ResponseEntity<ExceptionResponse> handleStudentTagExistException(StudentTagExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.STUDENT_TAG_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(STUDENT_TAG_ALREADY_EXISTS, exception, request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(QuestionTagExistException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionTagExistException(QuestionTagExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.QUESTION_TAG_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(QUESTION_TAG_ALREADY_EXISTS, exception, request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(TrainerTagExistException.class)
+    public ResponseEntity<ExceptionResponse> handleTrainerTagExistException(TrainerTagExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TRAINER_TAG_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TRAINER_TAG_ALREADY_EXISTS, exception, request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(SurveyTagExistException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyTagExistException(SurveyTagExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_TAG_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_TAG_ALREADY_EXISTS, exception, request);
+    }
 
     @ResponseBody
     @ExceptionHandler(RoleAlreadyExistException.class)

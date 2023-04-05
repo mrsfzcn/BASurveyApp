@@ -19,5 +19,5 @@ public class QuestionWithAnswersMaskedResponseDto {
     String questionString;
     Long questionTypeOid;
     Integer order;
-    Set<Response> responses;
+    Set<SimpleResponseDto> responses;
 }
