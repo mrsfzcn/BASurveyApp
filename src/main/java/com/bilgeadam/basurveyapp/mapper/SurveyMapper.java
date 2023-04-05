@@ -55,12 +55,12 @@ public interface SurveyMapper {
 
     List<QuestionWithAnswersResponseDto> toQuestionWithAnswersResponseDto(final List<Question> question);
 
-    @Mapping(source = "survey.oid", target = "surveyOid")
+    @Mapping(source = "oid", target = "surveyOid")
     SurveyOfClassroomMaskedResponseDto toSurveyOfClassroomMaskedResponseDto(final Survey survey);
     @Mapping(source = "oid", target = "questionOid")
     @Mapping(source = "questionType.oid", target = "questionTypeOid")
     QuestionWithAnswersMaskedResponseDto toQuestionWithAnswersMaskedResponseDto(final Question question);
-    List<QuestionWithAnswersMaskedResponseDto> toQuestionWithAnswersMaskedResponseDto(final List<Response> response);
+    List<QuestionWithAnswersMaskedResponseDto> toQuestionWithAnswersMaskedResponseDto(final List<Question> questions);
     @Mapping(source = "oid", target = "questionOid")
     @Mapping(source = "questionString", target = "questionString")
     @Mapping(source = "questionType.oid", target = "questionTypeOid")
@@ -74,7 +74,7 @@ public interface SurveyMapper {
     @Mapping(source = "user.email", target = "email")
     ResponseUnmaskedDto toResponseUnmaskedDto(final Response response);
 
-
+    Set<SimpleResponseDto> toSimpleResponseDto(final Set<Response> responses);
 
     List<ResponseUnmaskedDto> toResponseUnmaskedDto(final List<Response> responses);
 

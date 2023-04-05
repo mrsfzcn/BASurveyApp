@@ -4,6 +4,8 @@ import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,10 @@ import java.util.stream.Collectors;
 public class TrainerTagService {
     private final TrainerTagRepository trainerTagRepository;
     public void createTag(CreateTagDto dto) {
+        if(trainerTagRepository.findByTrainerTagName(dto.getTagString()).isPresent()){
+            throw new TrainerTagExistException("Trainer Tag already exist!");
+        }
+
         TrainerTag trainerTag = TrainerTag.builder()
                 .tagString(dto.getTagString())
                 .build();

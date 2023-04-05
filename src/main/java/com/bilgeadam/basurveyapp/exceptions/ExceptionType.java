@@ -39,7 +39,13 @@ public enum ExceptionType {
     QUESTION_TYPE_NOT_FOUND(9012, "Question type is not Found", BAD_REQUEST),
     SURVEY_NOT_FOUND(9013, "Survey is not found", BAD_REQUEST),
     ROLE_ALREADY_EXISTS(9014, "Role is already exists", BAD_REQUEST),
-    ROLE_NOT_FOUND(9015, "Role is not foun", BAD_REQUEST),
+    ROLE_NOT_FOUND(9015, "Role is not found", BAD_REQUEST),
+
+    STUDENT_TAG_ALREADY_EXISTS(9016, "Student Tag is already exists", INTERNAL_SERVER_ERROR),
+    QUESTION_TAG_ALREADY_EXISTS(9017, "Question Tag is already exists", INTERNAL_SERVER_ERROR),
+    TRAINER_TAG_ALREADY_EXISTS(9018, "Trainer Tag is already exists", INTERNAL_SERVER_ERROR),
+    SURVEY_TAG_ALREADY_EXISTS(9019, "Survey Tag is already exists", INTERNAL_SERVER_ERROR),
+
     /*
         Validation errors.
      */
