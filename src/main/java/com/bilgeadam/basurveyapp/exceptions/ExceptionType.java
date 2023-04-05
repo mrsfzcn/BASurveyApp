@@ -31,14 +31,14 @@ public enum ExceptionType {
 
     QUESTION_NOT_FOUND(9005, "Question is not Found", BAD_REQUEST),
     CLASSROOM_NOT_FOUND(9006, "Classroom is not found", BAD_REQUEST),
-    CLASSROOM_ALREADY_EXISTS(9007, "Classroom is already exists", BAD_REQUEST),
-    SURVEY_ALREADY_ANSWERED(9008, "This user already has answers for this survey.", BAD_REQUEST),
+    CLASSROOM_ALREADY_EXISTS(9007, "Classroom is already exists", INTERNAL_SERVER_ERROR),
+    SURVEY_ALREADY_ANSWERED(9008, "This user already has answers for this survey.", INTERNAL_SERVER_ERROR),
     USER_DOES_NOT_EXIST(9009, "No such user.", BAD_REQUEST),
     USER_INSUFFICIENT_ANSWER(9010, "User must answer all the questions.", BAD_REQUEST),
     QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH(9011, "Questions and responses does not matches", BAD_REQUEST),
     QUESTION_TYPE_NOT_FOUND(9012, "Question type is not Found", BAD_REQUEST),
     SURVEY_NOT_FOUND(9013, "Survey is not found", BAD_REQUEST),
-    ROLE_ALREADY_EXISTS(9014, "Role is already exists", BAD_REQUEST),
+    ROLE_ALREADY_EXISTS(9014, "Role is already exists", INTERNAL_SERVER_ERROR),
     ROLE_NOT_FOUND(9015, "Role is not found", BAD_REQUEST),
 
     STUDENT_TAG_ALREADY_EXISTS(9016, "Student Tag is already exists", INTERNAL_SERVER_ERROR),
@@ -61,7 +61,7 @@ public enum ExceptionType {
     /*
         Register errors.
      */
-    REGISTER_ERROR_DATA_EXISTS(3001, "Data already exists.", BAD_REQUEST);
+    REGISTER_ERROR_DATA_EXISTS(3001, "Data already exists.", INTERNAL_SERVER_ERROR);
 
     private int code;
     private String message;

@@ -22,7 +22,8 @@ public class QuestionTagService {
     //TODO: Bunu dto ile yapmamız lazım.
     public void createTag(CreateTagDto dto) {
 
-        if(questionTagRepository.findOptionalByTagString(dto.getTagString()).isPresent()){
+        Optional<QuestionTag> questionTag1 = questionTagRepository.findOptionalByTagString(dto.getTagString());
+        if(questionTag1.isPresent()){
             throw new QuestionTagExistException("Question Tag already exist!");
         }
 
