@@ -5,16 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class AssistantTrainerResponseDto {
+public class TrainerTagDetailResponseDto {
     private Long oid;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private List<AssistantTrainerTagResponseDto> trainerTags;
+    private String tagString;
 }

@@ -1,15 +1,18 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
+import com.bilgeadam.basurveyapp.mapper.TagMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,5 +49,9 @@ public class TrainerTagService {
         } else {
             return trainerTagRepository.softDeleteById(deleteTag.get().getOid());
         }
+    }
+
+    public List<TrainerTagDetailResponseDto> getTrainerTagList() {
+        return TagMapper.INSTANCE.toTrainerTagDetailResponseDtoList(trainerTagRepository.findAllActive());
     }
 }

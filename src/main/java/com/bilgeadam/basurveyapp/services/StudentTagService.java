@@ -1,10 +1,12 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
+import com.bilgeadam.basurveyapp.mapper.TagMapper;
 import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,5 +54,9 @@ public class StudentTagService {
         } else {
             return studentTagRepository.softDeleteById(deleteTag.get().getOid());
         }
+    }
+
+    public List<StudentTagDetailResponseDto> getStudentTagList() {
+        return TagMapper.INSTANCE.toStudentTagDetailResponseDtoList(studentTagRepository.findAllActive());
     }
 }
