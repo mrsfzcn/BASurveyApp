@@ -473,26 +473,27 @@ public class SurveyService {
                                         question.getResponses()
                                                 .stream()
                                                 .filter(response -> userOidList.contains(response.getUser().getOid()))
-                                                .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
+//                                                .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
+                                                .map(response -> getUnmaskedDto(response, finalIsManagerAndTrainer))
                                                 .collect(Collectors.toList()))
                                 .build()).collect(Collectors.toList())
                 ).build();
     }
 
-    private ResponseUnmaskedDto getUnmaskedDto(User user, String responseString, Boolean isManagerAndTrainer) {
+    private ResponseUnmaskedDto getUnmaskedDto(Response response, Boolean isManagerAndTrainer) {
         // Intentionally keep builder pattern to keep masking user details
         ResponseUnmaskedDto responseUnmaskedDto = ResponseUnmaskedDto.builder()
-                .userOid(user.getOid())
-                .responseOid(user.getOid())
-                .response(responseString)
+                .userOid(response.getUser().getOid())
+                .responseOid(response.getOid())
+                .response(response.getResponseString())
                 .firstName("****")
                 .lastName("****")
                 .email("****")
                 .build();
         if (!isManagerAndTrainer) {
-            responseUnmaskedDto.setFirstName(user.getFirstName());
-            responseUnmaskedDto.setLastName(user.getLastName());
-            responseUnmaskedDto.setEmail(user.getEmail());
+            responseUnmaskedDto.setFirstName(response.getUser().getFirstName());
+            responseUnmaskedDto.setLastName(response.getUser().getLastName());
+            responseUnmaskedDto.setEmail(response.getUser().getEmail());
 
         }
         return responseUnmaskedDto;

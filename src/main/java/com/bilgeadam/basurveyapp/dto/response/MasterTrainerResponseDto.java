@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class MasterTrainerResponseDto {
+    private Long oid;
     private String firstName;
     private String lastName;
     private String email;
