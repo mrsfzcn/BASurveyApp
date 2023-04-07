@@ -448,21 +448,17 @@ public class SurveyService {
                         .getCredentials()
         ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
         if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
+
        StudentTag studentTag=studentTagRepository.findActiveById(dto.getStudentTagOid()).orElseThrow(() ->new ResourceNotFoundException("Student Tag Not Found."));
-            if (trainerTagService.getTrainerTags(
+            if (!trainerTagService.getTrainerTags(
                     trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
-                    new ResourceNotFoundException("No such trainer."))).stream().anyMatch(trainerTag ->trainerTag.getTagString().equalsIgnoreCase(studentTag.getTagString()))) {
+                    new ResourceNotFoundException("No such trainer."))).stream()
+                    .anyMatch(trainerTag ->trainerTag.getTagString().equalsIgnoreCase(studentTag.getTagString()))) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
             isManagerAndTrainer = true;
         }
-        boolean finalIsManagerAndTrainer = isManagerAndTrainer;
-        List<QuestionWithAnswersResponseDto> questionsDto = questions.parallelStream()
-                .map(question -> {
-                    List<ResponseUnmaskedDto> responses = INSTANCE.mapResponses(question, userOidList);
-                    return INSTANCE.toQuestionWithAnswersResponseDto(question);
-                })
-                .collect(toList());
+         boolean finalIsManagerAndTrainer = isManagerAndTrainer;
         return SurveyResponseWithAnswersDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())
@@ -497,6 +493,7 @@ public class SurveyService {
             responseUnmaskedDto.setFirstName(user.getFirstName());
             responseUnmaskedDto.setLastName(user.getLastName());
             responseUnmaskedDto.setEmail(user.getEmail());
+
         }
         return responseUnmaskedDto;
     }

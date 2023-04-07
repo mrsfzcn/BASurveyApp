@@ -54,8 +54,9 @@ public class StudentService {
     }
 
     public List<Student> findByStudentTagOid(Long studentTagOid) {
-        List<Student> studentList = studentTagService.findByStudentTagOid(studentTagOid);
-        return studentList;
+        return studentRepository.findByStudentTagOid(studentTagOid);
+//        List<Student> studentList = studentTagService.findByStudentTagOid(studentTagOid);
+//        return studentList;
     }
 
     public List<StudentResponseDto> getStudentList() {
