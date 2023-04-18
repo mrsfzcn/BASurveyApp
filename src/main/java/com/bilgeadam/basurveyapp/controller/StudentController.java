@@ -32,11 +32,13 @@ public class StudentController {
     controller. Just in case, I leave the method in comment line.
      */
 /*
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
         return ResponseEntity.ok(studentService.createStudent(student));
     }
+
  */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/signtoclass")
