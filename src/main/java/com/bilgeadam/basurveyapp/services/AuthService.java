@@ -143,7 +143,7 @@ public class AuthService {
         }
 
         if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER) || roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_ADMIN)) {
-            throw new AccessDeniedException("Unauthorized account");
+            throw new AccessDeniedException("You can't change login to other admin or manager account");
         }
 
         if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MASTER_TRAINER))

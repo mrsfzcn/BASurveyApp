@@ -6,10 +6,12 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAdminList());
     }
 
+    //TODO front-end de ilerleyen aşamada test edilecek. 12.04.2023
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/page")
     ResponseEntity<Page<User>> getUserPage(Pageable pageable) {
@@ -44,14 +47,15 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/{userId}")
-    ResponseEntity<User> findById(@PathVariable("userId") Long userId) {
+    ResponseEntity<UserSimpleResponseDto> findById(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.findByOid(userId));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update/{userId}")
-    ResponseEntity<User> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto dto) {
-        return ResponseEntity.ok(userService.updateUser(userId, dto));
+    @PutMapping("/update/{userEmail}")
+    ResponseEntity<Void> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UserUpdateRequestDto dto) {
+        userService.updateUser(userEmail, dto);
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -65,7 +69,7 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping("/trainersandstudents")
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken));

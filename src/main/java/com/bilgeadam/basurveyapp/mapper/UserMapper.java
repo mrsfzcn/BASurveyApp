@@ -36,6 +36,8 @@ public interface UserMapper {
 
     Set<UserTrainersAndStudentsRolesResponseDto> toUserTrainersAndStudentsRolesResponseDto(final Set<Role> roles);
 
+    UserSimpleResponseDto toUserSimpleResponseDto(final User user);
+
 
 
 

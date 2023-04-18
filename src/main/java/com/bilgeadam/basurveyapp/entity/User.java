@@ -2,6 +2,9 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,6 +15,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@JsonIgnoreType
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -30,6 +34,7 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
     @Column(name = "authorized_role")
     private String authorizedRole;
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Role> roles;
 

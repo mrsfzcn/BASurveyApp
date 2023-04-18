@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
