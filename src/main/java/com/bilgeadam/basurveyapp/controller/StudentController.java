@@ -27,11 +27,11 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentList());
 
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/create")
-    public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
-        return ResponseEntity.ok(studentService.createStudent(student));
-    }
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    @PostMapping("/create")
+//    public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
+//        return ResponseEntity.ok(studentService.createStudent(student));
+//    }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/signtoclass")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
