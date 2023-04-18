@@ -27,6 +27,4 @@ public class Question extends BaseEntity {
     private Set<Survey> surveys;
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<QuestionTag> questionTag;
-
-
 }

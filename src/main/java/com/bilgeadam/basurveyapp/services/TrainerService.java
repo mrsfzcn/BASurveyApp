@@ -27,6 +27,7 @@ public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TrainerTagService trainerTagService;
     private final TrainerTagRepository trainerTagRepository;
+
     public Boolean createTrainer(Trainer trainer) {
         trainerRepository.save(trainer);
         return true;

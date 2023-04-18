@@ -27,11 +27,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
-    private final QuestionTypeRepository questionTypeRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
-    private final StudentRepository studentRepository;
+
 
 
     public List<ManagerResponseDto> getManagerList() {
@@ -40,13 +38,6 @@ public class UserService {
 
         List<ManagerResponseDto> dto = UserMapper.INSTANCE.toManagerResponseDto(managers);
         return dto;
-
-//        return students.stream().map(student -> UserResponseDto.builder()
-//                .firstName(student.getFirstName())
-//                .lastName(student.getLastName())
-//                .email(student.getEmail())
-//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-//                .build()).collect(Collectors.toList());
     }
 
     public List<AdminResponseDto> getAdminList() {
@@ -54,13 +45,6 @@ public class UserService {
 
         List<AdminResponseDto> dto = UserMapper.INSTANCE.toAdminResponseDto(admins);
         return dto;
-
-//        return students.stream().map(student -> UserResponseDto.builder()
-//                .firstName(student.getFirstName())
-//                .lastName(student.getLastName())
-//                .email(student.getEmail())
-//                .classrooms(student.getClassrooms().stream().map(Classroom::getName).collect(Collectors.toList()))
-//                .build()).collect(Collectors.toList());
     }
 
     public Page<User> getUserPage(Pageable pageable) {
@@ -110,24 +94,11 @@ public class UserService {
 
         List<UserTrainersAndStudentsResponseDto> dto = UserMapper.INSTANCE.toUserTrainersAndStudentsResponseDto(trainersWithStudent);
         return dto;
-
-//        return
-//        List<UserTrainersAndStudentsResponseDto> trainersAndStudentsList =
-//                users.stream().map(u -> UserTrainersAndStudentsResponseDto.builder()
-//                        .firstName(u.getFirstName())
-//                        .lastName(u.getLastName())
-//                        .email(u.getEmail())
-//                        .roles(u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet()))
-//                        .build()).collect(Collectors.toList());
-//        return Optional.of(trainersAndStudentsList);
     }
 
 
     public Boolean assignRoleToUser(AssignRoleToUserRequestDto request) {
-//        if(!roleService.userHasRole(
-//                userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken())).get(),
-//                ROLE_CONSTANTS.ROLE_ADMIN))
-//            throw new AccessDeniedException("Unauthorized account");
+
         Optional<User> user = userRepository.findByEmail(request.getUserEmail());
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
         if(!roleService.hasRole(request.getRole()))  throw new ResourceNotFoundException("Role is not found");
@@ -140,4 +111,6 @@ public class UserService {
 
         return true;
     }
+
+
 }

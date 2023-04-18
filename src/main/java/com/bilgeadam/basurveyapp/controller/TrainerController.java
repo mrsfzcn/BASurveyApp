@@ -27,7 +27,6 @@ public class TrainerController {
     @GetMapping("/mastertrainers")
     ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainerList() {
         return ResponseEntity.ok(trainerService.getMasterTrainerList());
-
     }
 
 
@@ -35,7 +34,6 @@ public class TrainerController {
     @GetMapping("/assistanttrainers")
     ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainerList() {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
-
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/signtoclass")
