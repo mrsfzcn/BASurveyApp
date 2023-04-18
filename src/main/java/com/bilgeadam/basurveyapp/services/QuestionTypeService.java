@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,8 @@ public class QuestionTypeService {
         return responseDtoList;
     }
 
+
+    /*
     public Boolean delete(Long questionTypeId) {
         Optional<QuestionType> deleteQuestionType = questionTypeRepository.findActiveById(questionTypeId);
         if (deleteQuestionType.isEmpty()) {
@@ -73,4 +76,21 @@ public class QuestionTypeService {
         }
 
     }
+
+     */
+
+    public Boolean delete(Long questionTypeId) {
+        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findByOidAndState(questionTypeId, State.ACTIVE);
+
+        if (deleteQuestionType.isEmpty()) {
+            throw new RuntimeException("QuestionType is not found");
+        } else {
+            deleteQuestionType.get().setState(State.DELETED);
+            questionTypeRepository.save(deleteQuestionType.get());
+            return true;
+        }
+
+    }
+
+
 }

@@ -25,8 +25,12 @@ public interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository
         Find Methods For Active Entities
      */
 
+
     @Query("SELECT t FROM #{#entityName} t WHERE t.state = 'ACTIVE' AND t.oid = ?1")
     Optional<T> findActiveById(@NonNull Oid oid);
+
+
+
 
     @Query("SELECT t FROM #{#entityName} t WHERE t.state = 'ACTIVE' ORDER BY t.updatedAt DESC")
     List<T> findAllActive();
