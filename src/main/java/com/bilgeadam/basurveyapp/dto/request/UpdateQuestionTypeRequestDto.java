@@ -11,9 +11,7 @@ import lombok.*;
 @Builder
 public class UpdateQuestionTypeRequestDto {
     @NotBlank
-    @NotNull
     String questionType;
-    @NotBlank
     @NotNull
     Long questionTypeOid;
 }
