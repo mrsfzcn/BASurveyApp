@@ -10,6 +10,7 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionAlreadyExistsException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
@@ -40,6 +41,11 @@ public class QuestionService {
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
+        if(questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()){
+            throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
+        }
+
+
         Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
 
         List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();

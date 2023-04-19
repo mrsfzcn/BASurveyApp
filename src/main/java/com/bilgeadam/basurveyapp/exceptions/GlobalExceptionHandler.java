@@ -93,6 +93,13 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseBody
+    @ExceptionHandler(QuestionAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionAlreadyExistsException(QuestionAlreadyExistsException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.QUESTION_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(QUESTION_ALREADY_EXISTS, exception, request);
+    }
+
+    @ResponseBody
     @ExceptionHandler(QuestionTypeNotFoundException.class)
     public ResponseEntity<ExceptionResponse> handleQuestionTypeNotFoundException(QuestionTypeNotFoundException exception, HttpServletRequest request) {
         log.warn(messageSource.getMessage("exception.QUESTION_TYPE_NOT_FOUND", null, Locale.getDefault()), exception);
