@@ -53,10 +53,10 @@ public class UserService {
         return userRepository.findAllActive(pageable);
     }
 
-    public User updateUser(Long userId, UserUpdateRequestDto dto) {
+    public User updateUser(String userEmail, UserUpdateRequestDto dto) {
         // getCurrentUser()
         // user check
-        Optional<User> userToBeUpdated = userRepository.findActiveById(userId);
+        Optional<User> userToBeUpdated = userRepository.findByEmail(userEmail);
         if (userToBeUpdated.isEmpty()) {
             throw new ResourceNotFoundException("User is not found");
         }
@@ -75,14 +75,15 @@ public class UserService {
         return userRepository.softDeleteById(userToBeDeleted.get().getOid());
     }
 
-    public User findByOid(Long userId) {
+    public UserSimpleResponseDto findByOid(Long userId) {
         // getCurrentUser()
         // user check
         Optional<User> userById = userRepository.findActiveById(userId);
         if (userById.isEmpty()) {
             throw new ResourceNotFoundException("User is not found");
         }
-        return userById.get();
+        UserSimpleResponseDto dto = UserMapper.INSTANCE.toUserSimpleResponseDto(userById.get());
+        return dto;
     }
 
     public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {

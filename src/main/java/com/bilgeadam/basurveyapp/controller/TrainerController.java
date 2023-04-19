@@ -19,6 +19,7 @@ import java.util.List;
 public class TrainerController {
     private final TrainerService trainerService;
     @PostMapping("/create")
+    //TODO  bu metod kaldırılacak, gereksiz
     public ResponseEntity<Boolean> createTrainer(@RequestBody Trainer trainer){
         return ResponseEntity.ok(trainerService.createTrainer(trainer));
     }

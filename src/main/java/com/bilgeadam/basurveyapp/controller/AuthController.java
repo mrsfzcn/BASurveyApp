@@ -40,11 +40,13 @@ public class AuthController {
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/changelogin")
+    //TODO "changelogin" ismi değişecek
     public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.changeLogin(request));
     }
 
     @PostMapping("/changeauthorized")
+    //TODO "changeauthorized" ismi "switchauthorizationroles" olarak değişecek
     public ResponseEntity<AuthenticationResponseDto> changeAuthorized(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
         return ResponseEntity.ok(authService.changeAuthorized(request));
     }
