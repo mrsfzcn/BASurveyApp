@@ -85,7 +85,6 @@ public class JwtService {
     /*
         Email Related Token Methods!
      */
-
     public String generateSurveyEmailToken(Long surveyOid, Long studentTagOid, String userEmail, Integer day) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("surveyOid", surveyOid);
