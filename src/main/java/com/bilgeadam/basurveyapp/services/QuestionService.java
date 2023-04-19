@@ -44,7 +44,9 @@ public class QuestionService {
 
         createQuestionDto.getTagOids().forEach(questTagOid ->
                    questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
-
+        System.out.println("**********");
+        questionTagList.forEach(System.out::println);
+        System.out.println("**********");
             Question question = Question.builder()
                     .questionString(createQuestionDto.getQuestionString())
                     .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
@@ -53,13 +55,13 @@ public class QuestionService {
                     .questionTag(questionTagList)
                     .build();
 
-
             questionRepository.save(question);
+
             questionTagList.forEach(questionTag -> {
                 questionTag.getTargetEntities().add(question);
                 questionTagRepository.save(questionTag);
             });
-        return true;
+        return false;
     }
 
 // TODO questionTag ile target entitites

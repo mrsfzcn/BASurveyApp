@@ -18,7 +18,6 @@ public enum ExceptionType {
         Unknown errors.
      */
     UNEXPECTED_ERROR(9000, "Unexpected Error! Please submit a report.", INTERNAL_SERVER_ERROR),
-
     RUNTIME_EXCEPTION(9000, "Unhandled runtime error occurred!", INTERNAL_SERVER_ERROR),
 
     /*
@@ -45,6 +44,7 @@ public enum ExceptionType {
     QUESTION_TAG_ALREADY_EXISTS(9017, "Question Tag is already exists", INTERNAL_SERVER_ERROR),
     TRAINER_TAG_ALREADY_EXISTS(9018, "Trainer Tag is already exists", INTERNAL_SERVER_ERROR),
     SURVEY_TAG_ALREADY_EXISTS(9019, "Survey Tag is already exists", INTERNAL_SERVER_ERROR),
+    TRAINER_TAG_NOT_FOUND(9020, "Trainer Tag not found", INTERNAL_SERVER_ERROR),
 
     /*
         Validation errors.

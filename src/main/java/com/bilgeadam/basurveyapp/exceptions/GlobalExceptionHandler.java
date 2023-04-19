@@ -207,4 +207,13 @@ public class GlobalExceptionHandler {
                 .build(), exceptionType.getHttpStatus());
     }
 
+    @ResponseBody
+    @ExceptionHandler(TrainerTagNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleTrainerTagNotFoundException(TrainerTagNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TRAINER_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TRAINER_TAG_NOT_FOUND, exception, request);
+    }
+
+
+
 }

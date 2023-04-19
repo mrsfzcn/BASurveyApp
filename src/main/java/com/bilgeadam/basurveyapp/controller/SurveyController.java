@@ -25,11 +25,6 @@ import java.util.List;
 public class SurveyController {
     private final SurveyService surveyService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "survey";
-    }
-
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
     ResponseEntity<List<SurveyResponseDto>> getSurveyList() {
