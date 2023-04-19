@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

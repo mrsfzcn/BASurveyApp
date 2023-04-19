@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +18,6 @@ import java.util.Set;
 public class Trainer extends BaseEntity {
     @OneToOne
     User user;
-
     @OneToMany(mappedBy = "whoCreatedSurvey", fetch = FetchType.EAGER)
     Set<Survey> surveysCreatedByTrainer;
 

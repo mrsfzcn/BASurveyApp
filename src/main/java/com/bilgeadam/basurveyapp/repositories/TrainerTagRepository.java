@@ -16,4 +16,10 @@ public interface TrainerTagRepository extends BaseRepository<TrainerTag, Long> {
 
     @Query(value ="SELECT * FROM trainertags WHERE state='ACTIVE' AND tag_string = ?1 ", nativeQuery = true)
     Optional<TrainerTag> findByTrainerTagName(String tagString);
+
+
+
+
+
+
 }
