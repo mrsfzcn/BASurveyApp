@@ -42,26 +42,24 @@ public class QuestionService {
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
         Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
 
-        createQuestionDto.getTagOids().forEach(questTagOid ->
-                   questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
-        System.out.println("**********");
-        questionTagList.forEach(System.out::println);
-        System.out.println("**********");
-            Question question = Question.builder()
-                    .questionString(createQuestionDto.getQuestionString())
-                    .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
-                            () -> new QuestionTypeNotFoundException("Question type is not found")))
-                    .order(createQuestionDto.getOrder())
-                    .questionTag(questionTagList)
-                    .build();
+        List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
+        tagOids.forEach(questTagOid -> questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
 
-            questionRepository.save(question);
+        Question question = Question.builder()
+                .questionString(createQuestionDto.getQuestionString())
+                .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                        () -> new QuestionTypeNotFoundException("Question type is not found")))
+                .order(createQuestionDto.getOrder())
+                .questionTag(questionTagList)
+                .build();
 
-            questionTagList.forEach(questionTag -> {
-                questionTag.getTargetEntities().add(question);
-                questionTagRepository.save(questionTag);
-            });
-        return false;
+        questionRepository.save(question);
+        List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
+        questionTagsToAdd.forEach(questionTag -> {
+            questionTag.getTargetEntities().add(question);
+            questionTagRepository.save(questionTag);
+        });
+        return true;
     }
 
 // TODO questionTag ile target entitites
