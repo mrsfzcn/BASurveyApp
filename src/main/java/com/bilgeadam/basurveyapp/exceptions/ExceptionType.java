@@ -18,33 +18,34 @@ public enum ExceptionType {
         Unknown errors.
      */
     UNEXPECTED_ERROR(9000, "Unexpected Error! Please submit a report.", INTERNAL_SERVER_ERROR),
-    RUNTIME_EXCEPTION(9000, "Unhandled runtime error occurred!", INTERNAL_SERVER_ERROR),
+    RUNTIME_EXCEPTION(9001, "Unhandled runtime error occurred!", INTERNAL_SERVER_ERROR),
 
     /*
         General errors.
      */
-    INTERNAL_ERROR(9001, "Internal Server Error", INTERNAL_SERVER_ERROR),
-    BAD_REQUEST_ERROR(9002, "Invalid Parameter Error", BAD_REQUEST),
-    RESOURCE_NOT_FOUND(9003, "Resource is not Found", NOT_FOUND),
-    RESPONSE_NOT_FOUND(9004, "Response is not Found", BAD_REQUEST),
+    INTERNAL_ERROR(9002, "Internal Server Error", INTERNAL_SERVER_ERROR),
+    BAD_REQUEST_ERROR(9003, "Invalid Parameter Error", BAD_REQUEST),
+    RESOURCE_NOT_FOUND(9004, "Resource is not Found", NOT_FOUND),
+    RESPONSE_NOT_FOUND(9005, "Response is not Found", BAD_REQUEST),
 
-    QUESTION_NOT_FOUND(9005, "Question is not Found", BAD_REQUEST),
-    CLASSROOM_NOT_FOUND(9006, "Classroom is not found", BAD_REQUEST),
-    CLASSROOM_ALREADY_EXISTS(9007, "Classroom is already exists", INTERNAL_SERVER_ERROR),
-    SURVEY_ALREADY_ANSWERED(9008, "This user already has answers for this survey.", INTERNAL_SERVER_ERROR),
-    USER_DOES_NOT_EXIST(9009, "No such user.", BAD_REQUEST),
-    USER_INSUFFICIENT_ANSWER(9010, "User must answer all the questions.", BAD_REQUEST),
-    QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH(9011, "Questions and responses does not matches", BAD_REQUEST),
-    QUESTION_TYPE_NOT_FOUND(9012, "Question type is not Found", BAD_REQUEST),
-    SURVEY_NOT_FOUND(9013, "Survey is not found", BAD_REQUEST),
-    ROLE_ALREADY_EXISTS(9014, "Role is already exists", INTERNAL_SERVER_ERROR),
-    ROLE_NOT_FOUND(9015, "Role is not found", BAD_REQUEST),
+    QUESTION_NOT_FOUND(9006, "Question is not Found", BAD_REQUEST),
+    QUESTION_ALREADY_EXISTS(9007, "Question with the same question string already exists.", BAD_REQUEST),
+    CLASSROOM_NOT_FOUND(9008, "Classroom is not found", BAD_REQUEST),
+    CLASSROOM_ALREADY_EXISTS(9009, "Classroom is already exists", INTERNAL_SERVER_ERROR),
+    SURVEY_ALREADY_ANSWERED(9010, "This user already has answers for this survey.", INTERNAL_SERVER_ERROR),
+    USER_DOES_NOT_EXIST(9011, "No such user.", BAD_REQUEST),
+    USER_INSUFFICIENT_ANSWER(9012, "User must answer all the questions.", BAD_REQUEST),
+    QUESTIONS_AND_RESPONSES_DOES_NOT_MATCH(9013, "Questions and responses does not matches", BAD_REQUEST),
+    QUESTION_TYPE_NOT_FOUND(9014, "Question type is not Found", BAD_REQUEST),
+    SURVEY_NOT_FOUND(9015, "Survey is not found", BAD_REQUEST),
+    ROLE_ALREADY_EXISTS(9016, "Role is already exists", INTERNAL_SERVER_ERROR),
+    ROLE_NOT_FOUND(9017, "Role is not found", BAD_REQUEST),
 
-    STUDENT_TAG_ALREADY_EXISTS(9016, "Student Tag is already exists", INTERNAL_SERVER_ERROR),
-    QUESTION_TAG_ALREADY_EXISTS(9017, "Question Tag is already exists", INTERNAL_SERVER_ERROR),
-    TRAINER_TAG_ALREADY_EXISTS(9018, "Trainer Tag is already exists", INTERNAL_SERVER_ERROR),
-    SURVEY_TAG_ALREADY_EXISTS(9019, "Survey Tag is already exists", INTERNAL_SERVER_ERROR),
-    TRAINER_TAG_NOT_FOUND(9020, "Trainer Tag not found", INTERNAL_SERVER_ERROR),
+    STUDENT_TAG_ALREADY_EXISTS(9018, "Student Tag is already exists", INTERNAL_SERVER_ERROR),
+    QUESTION_TAG_ALREADY_EXISTS(9019, "Question Tag is already exists", INTERNAL_SERVER_ERROR),
+    TRAINER_TAG_ALREADY_EXISTS(9020, "Trainer Tag is already exists", INTERNAL_SERVER_ERROR),
+    SURVEY_TAG_ALREADY_EXISTS(9021, "Survey Tag is already exists", INTERNAL_SERVER_ERROR),
+    TRAINER_TAG_NOT_FOUND(9022, "Trainer Tag not found", INTERNAL_SERVER_ERROR),
 
     /*
         Validation errors.
