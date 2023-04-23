@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.entity;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "students")
+@JsonIgnoreProperties({"surveysAnswered", "studentTags"})
 public class Student extends BaseEntity {
     @OneToOne
     User user;

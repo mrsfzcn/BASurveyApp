@@ -35,7 +35,7 @@ public class StudentTagController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findByStudentTagName")
-    public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestBody @Valid String studentTag ){
+    public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
         return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
