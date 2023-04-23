@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AdminResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.ManagerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
@@ -85,22 +86,22 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUser() {
-        Long userId = 1L;
+        String email = "test@bilgeadam.com";
 
         UserUpdateRequestDto dto = new UserUpdateRequestDto();
         dto.setFirstName("Ad");
         dto.setLastName("Soyad");
 
         User userToBeUpdated = new User();
-        userToBeUpdated.setOid(userId);
+        userToBeUpdated.setOid(1L);
         userToBeUpdated.setEmail("test@bilgeadam.com");
         userToBeUpdated.setFirstName("Ad");
         userToBeUpdated.setLastName("Soyad");
 
-        when(userRepository.findActiveById(userId)).thenReturn(Optional.of(userToBeUpdated));
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userToBeUpdated));
         when(userRepository.save(userToBeUpdated)).thenReturn(userToBeUpdated);
 
-        User result = userService.updateUser(userId, dto);
+        User result = userService.updateUser(email, dto);
 
         assertEquals(dto.getFirstName(), result.getFirstName());
         assertEquals(dto.getLastName(), result.getLastName());
@@ -108,12 +109,12 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateUserWithNonExistingUser()  {
-        Long userId = 1L;
+        String email = "test@bilgeadam.com";
         UserUpdateRequestDto dto = new UserUpdateRequestDto();
-        when(userRepository.findActiveById(userId)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         try {
-            userService.updateUser(userId, dto);
+            userService.updateUser(email, dto);
             fail("Expected ResourceNotFoundException was not thrown");
         } catch (ResourceNotFoundException e) {
             assertEquals("User is not found", e.getMessage());
@@ -138,12 +139,14 @@ public class UserServiceTest {
     public void testFindByOid() {
         Long userId = 1L;
         User user = new User();
-        user.setOid(userId);
+        user.setFirstName("Test");
+        user.setEmail("test@bilgeadam.com");
         when(userRepository.findActiveById(userId)).thenReturn(Optional.of(user));
 
-        User result = userService.findByOid(userId);
+        UserSimpleResponseDto result = userService.findByOid(userId);
 
-        assertEquals(result.getOid(), userId);
+        assertEquals("Test", result.getFirstName());
+        assertEquals("test@bilgeadam.com", result.getEmail());
     }
 
     @Test
