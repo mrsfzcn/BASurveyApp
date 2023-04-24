@@ -37,8 +37,9 @@ public class StudentController {
         return ResponseEntity.ok(studentService.createStudent(student));
     }
      */
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/signtoclass")
+    @PutMapping("/signtoclass")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));
     }

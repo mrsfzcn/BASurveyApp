@@ -39,8 +39,9 @@ public class AuthController {
      * authorizedToken must kept in front-end for change between accounts
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/changelogin")
+    @PostMapping("/updateLoginCredentials")
     //TODO "changelogin" ismi değişecek
+
     public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.changeLogin(request));
     }

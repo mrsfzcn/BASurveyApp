@@ -20,10 +20,7 @@ import java.util.List;
 public class QuestionTypeController {
     private final QuestionTypeService questionTypeService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "questiontype";
-    }
+
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")

@@ -19,10 +19,7 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @GetMapping("/test")
-    public String test() {
-        return "question";
-    }
+
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
@@ -37,10 +34,11 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
     }
 
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/findbyid")
-    public ResponseEntity<QuestionFindByIdResponseDto> findById(@RequestBody @Valid FindByIdRequestDto findByIdRequestDto) {
-        return ResponseEntity.ok(questionService.findById(findByIdRequestDto.getOid()));
+    @GetMapping("/findbyid/{id}")
+    public ResponseEntity<QuestionFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
+        return ResponseEntity.ok(questionService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -66,6 +64,8 @@ public class QuestionController {
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto) {
         return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(dto));
     }
+
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/filtersurveyquestions")
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestBody @Valid FilterSurveyQuestionsRequestDto dto) {
