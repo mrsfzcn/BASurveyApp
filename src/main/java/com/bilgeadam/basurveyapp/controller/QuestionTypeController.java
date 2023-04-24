@@ -24,9 +24,8 @@ public class QuestionTypeController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
-        questionTypeService.createQuestionType(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Boolean> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
+        return ResponseEntity.ok(questionTypeService.createQuestionType(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
