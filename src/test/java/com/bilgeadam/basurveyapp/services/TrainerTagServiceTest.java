@@ -38,7 +38,7 @@ public class TrainerTagServiceTest {
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-        trainerTagService = new TrainerTagService(trainerTagRepository);
+       // trainerTagService = new TrainerTagService(trainerTagRepository);
     }
 
     @Test

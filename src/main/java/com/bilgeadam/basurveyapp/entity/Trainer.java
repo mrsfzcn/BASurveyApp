@@ -20,7 +20,6 @@ public class Trainer extends BaseEntity {
     User user;
     @OneToMany(mappedBy = "whoCreatedSurvey", fetch = FetchType.EAGER)
     Set<Survey> surveysCreatedByTrainer;
-
     @ManyToMany(cascade = CascadeType.ALL, mappedBy ="targetEntities"  ,fetch = FetchType.EAGER)
     Set<TrainerTag> trainerTags;
     boolean isMasterTrainer;

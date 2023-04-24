@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.repositories.base;
 
+import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
@@ -62,4 +63,5 @@ public interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository
         save(entity);
         return true;
     };
+
 }
