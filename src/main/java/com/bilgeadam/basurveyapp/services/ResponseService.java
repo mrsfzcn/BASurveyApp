@@ -12,6 +12,7 @@ import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
@@ -24,9 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -107,14 +106,25 @@ public class ResponseService {
 
     public Boolean saveAll(String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList) {
         User user = userRepository.findByEmail(jwtService.extractEmail(token)).orElseThrow(() -> new ResourceNotFoundException("No such user."));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
-
-        if (!responseRepository.isSurveyAnsweredByUser(user.getOid())) {
-            responseRequestSaveDtoList.forEach(response -> { //gelenleri listeye kaydetmek için for each kullanıldı.
-                responseRepository.save(Response.builder()
-                        .user(user) //tokendan gelen userı, teker teker bütün cevaplara kaydetmiş oluyoruz(bu user bunu cevapladı.).
+        Survey survey = surveyRepository.findActiveById(jwtService.extractSurveyOid(token)).orElseThrow(() -> new ResourceNotFoundException("No such survey."));
+        if (!responseRepository.isSurveyAnsweredByUser(user.getOid(), survey.getOid())) {
+            Map<Long, Question> questionMap = new HashMap<>();
+            responseRequestSaveDtoList.forEach(response -> {
+                Question question = questionMap.computeIfAbsent(response.getQuestionOid(),
+                        id -> questionRepository.findActiveById(id)
+                                .orElseThrow(() -> new QuestionNotFoundException("Question not found")));
+                Response newResponse = Response.builder()
                         .responseString(response.getResponseString())
-                        .question(questionRepository.findActiveById(response.getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("Question not found"))) //orElseThrow() get yapıyor.boşsa exception atıyor. içine kendi exeption atar. a
-                        .build());
+                        .question(question)
+                        .survey(surveyRepository.findActiveById(survey.getOid())
+                                .orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
+                        .user(user)
+                        .build();
+                responseRepository.save(newResponse);
+                question.getResponses().add(newResponse);
+                questionRepository.save(question);
+                survey.getResponses().add(newResponse);
+                surveyRepository.save(survey);
             });
             return true;
         } else {
