@@ -6,9 +6,6 @@ import com.bilgeadam.basurveyapp.dto.request.FindUserByEmailRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
-import com.bilgeadam.basurveyapp.entity.Trainer;
-import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
-import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import com.bilgeadam.basurveyapp.services.TrainerTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -17,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
