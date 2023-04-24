@@ -23,8 +23,10 @@ public class ResponseController {
         responseService.createResponse(dto);
         return ResponseEntity.ok().build();
     }
+
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<Void> updateResponse(@RequestBody @Valid ResponseRequestDto dto) {
         responseService.updateResponse(dto);
         return ResponseEntity.ok().build();
@@ -45,10 +47,16 @@ public class ResponseController {
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
     }
+
     @PutMapping("/savesurveyanswers/{token}")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
-        return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));//tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
+        return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
+        //tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
     }
+
+
+
+
 
     @GetMapping("/findallresponsesofuserfromsurvey")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -61,9 +69,11 @@ public class ResponseController {
     public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
         return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
-    @GetMapping("updateStudentResponses")
-    ResponseEntity<Boolean> updateStudentResponses (@RequestParam Long surveyOid,@RequestBody SurveyUpdateResponseRequestDto dto){
-        return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid,dto));
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STUDENT')")
+    @PostMapping("/updateStudentResponses")
+    public ResponseEntity<Boolean> updateStudentResponses(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
+        return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
     }
 }
