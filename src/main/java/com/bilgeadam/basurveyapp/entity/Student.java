@@ -17,7 +17,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "students")
-@JsonIgnoreProperties({"surveysAnswered", "studentTags"})
+@JsonIgnoreProperties({"surveysAnswered","studentTags"})
 public class Student extends BaseEntity {
     @OneToOne
     User user;
