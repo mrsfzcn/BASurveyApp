@@ -24,7 +24,8 @@ spring:
 #  datasource:
 #    dialect: org.hibernate.dialect.PostgreSQLDialect
 #    driver-class-name: org.postgresql.Driver
-#    url: jdbc:postgresql://34.27.37.245:5444/surveyAppDB
+##    url: jdbc:postgresql://34.27.37.245:5444/surveyAppDB
+#    url: jdbc:postgresql://localhost:5432/surveyapp
 #    username: postgres
 #    password: root
 #  jpa:
