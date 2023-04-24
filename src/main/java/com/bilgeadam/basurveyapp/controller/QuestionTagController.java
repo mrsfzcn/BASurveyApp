@@ -18,7 +18,6 @@ public class QuestionTagController {
 
     private final QuestionTagService questionTagService;
 
-    //TODO: Bunu dto ile yapmamız lazım.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){

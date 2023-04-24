@@ -19,7 +19,6 @@ public class QuestionTagService {
 
     private final QuestionTagRepository questionTagRepository;
 
-    //TODO: Bunu dto ile yapmamız lazım.
     public void createTag(CreateTagDto dto) {
 
         Optional<QuestionTag> questionTag1 = questionTagRepository.findOptionalByTagString(dto.getTagString());
@@ -32,6 +31,7 @@ public class QuestionTagService {
                 .build();
         questionTagRepository.save(questionTag);
     }
+
     public List<TagResponseDto> findAll() {
         List<QuestionTag> findAllList = questionTagRepository.findAllActive();
         List<TagResponseDto> responseDtoList = new ArrayList<>();
