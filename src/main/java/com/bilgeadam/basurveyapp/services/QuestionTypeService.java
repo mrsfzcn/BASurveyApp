@@ -19,12 +19,16 @@ import java.util.Optional;
 public class QuestionTypeService {
     private final QuestionTypeRepository questionTypeRepository;
 
-    public void createQuestionType(CreateQuestionTypeRequestDto dto) {
-        // TODO Check if exists
-        QuestionType questionType = (QuestionType.builder()
-                .questionType(dto.getQuestionType())
-                .build());
-        questionTypeRepository.save(questionType);
+    public boolean createQuestionType(CreateQuestionTypeRequestDto dto) {
+        List<QuestionType> questionTypes = questionTypeRepository.findAll();
+        if(!questionTypes.stream().anyMatch(type -> type.getQuestionType().equalsIgnoreCase(dto.getQuestionType()))){
+            QuestionType questionType = (QuestionType.builder()
+                    .questionType(dto.getQuestionType())
+                    .build());
+            questionTypeRepository.save(questionType);
+            return true;
+        }
+            return false;
     }
 
     public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto) {
