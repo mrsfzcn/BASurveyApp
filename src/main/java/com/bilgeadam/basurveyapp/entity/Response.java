@@ -3,9 +3,6 @@ package com.bilgeadam.basurveyapp.entity;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.repository.Query;
-
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
