@@ -9,7 +9,7 @@ import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
-import com.bilgeadam.basurveyapp.mapper.TagMapper;
+import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,13 +32,15 @@ public class TrainerTagServiceTest {
 
     @Mock
     private TrainerTagRepository trainerTagRepository;
+    @Mock
+    private TrainerRepository trainerRepository;
 
     private TrainerTagService trainerTagService;
 
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-       // trainerTagService = new TrainerTagService(trainerTagRepository);
+       trainerTagService = new TrainerTagService(trainerTagRepository,trainerRepository);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class TrainerTagServiceTest {
         when(trainerTagRepository.softDeleteById(tagOid)).thenReturn(true);
 
         boolean result = trainerTagService.delete(tagOid);
-        assertEquals(true,result);
+        assertTrue(result);
 
         verify(trainerTagRepository).findActiveById(tagOid);
         verify(trainerTagRepository).softDeleteById(tagOid);
@@ -113,8 +115,8 @@ public class TrainerTagServiceTest {
         Set<Long> trainerTagOids = trainerTagService.getTrainerTagsOids(trainer);
 
         assertEquals(2, trainerTagOids.size());
-        assertEquals(true,trainerTagOids.contains(tag1.getOid()));
-        assertEquals(true,trainerTagOids.contains(tag2.getOid()));
+        assertTrue(trainerTagOids.contains(tag1.getOid()));
+        assertTrue(trainerTagOids.contains(tag2.getOid()));
     }
 
     @Test
@@ -183,9 +185,9 @@ public class TrainerTagServiceTest {
         Set<TrainerTag> result = trainerTagService.getTrainerTags(trainer);
 
         assertEquals(2, result.size());
-        assertEquals(true, result.contains(tag1));
-        assertEquals(true, result.contains(tag2));
-        assertEquals(false, result.contains(tag3));
+        assertTrue(result.contains(tag1));
+        assertTrue(result.contains(tag2));
+        assertFalse(result.contains(tag3));
     }
 
     @Test
