@@ -521,6 +521,9 @@ public class SurveyService {
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        if(survey.getQuestions().contains(question)){
+            throw new QuestionAlreadyExistsException("Bu soru ankete onceden eklenmis");
+        }
         question.getSurveys().add(survey);
         survey.getQuestions().add(question);
         surveyRepository.save(survey);
