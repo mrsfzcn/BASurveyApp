@@ -20,4 +20,8 @@ public interface TrainerRepository extends BaseRepository<Trainer, Long> {
 
     @Query(value = "SELECT * FROM trainers WHERE state = 'ACTIVE' AND  is_master_trainer = 'false'", nativeQuery = true)
     List<Trainer> findAllAssistantTrainers();
+
+    @Query(value = "SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.user.email = ?1")
+    Optional<Trainer> findActiveByEmail(String email);
+
 }

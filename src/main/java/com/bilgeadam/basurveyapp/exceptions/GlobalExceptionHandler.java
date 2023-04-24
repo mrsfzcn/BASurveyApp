@@ -220,6 +220,12 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.TRAINER_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(TRAINER_TAG_NOT_FOUND, exception, request);
     }
+    @ResponseBody
+    @ExceptionHandler(TrainerNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleTrainerNotFoundException(TrainerNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TRAINER_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TRAINER_NOT_FOUND, exception, request);
+    }
 
 
 
