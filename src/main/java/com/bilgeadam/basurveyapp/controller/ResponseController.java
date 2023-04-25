@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
     @PostMapping("/create")
     public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
@@ -31,17 +32,20 @@ public class ResponseController {
         responseService.updateResponse(dto);
         return ResponseEntity.ok().build();
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")
     public ResponseEntity<AnswerResponseDto> findById(@ParameterObject @Valid FindByIdRequestDto dto) {
         return ResponseEntity.ok(responseService.findByIdResponse(dto.getOid()));
 
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
     public ResponseEntity<List<AnswerResponseDto>> findAll() {
         return ResponseEntity.ok(responseService.findAll());
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
@@ -49,13 +53,9 @@ public class ResponseController {
     }
 
     @PutMapping("/savesurveyanswers/{token}")
-    public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
+    public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token, @RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList) {
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
-        //tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
     }
-
-
-
 
 
     @GetMapping("/findallresponsesofuserfromsurvey")
@@ -66,7 +66,7 @@ public class ResponseController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
     @GetMapping("/findResponseByClassroomOid")
-    public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
+    public ResponseEntity<List<AnswerResponseDto>> findResponseByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
     }
 

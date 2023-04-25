@@ -6,19 +6,13 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.Response;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
-import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
-import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
-import com.bilgeadam.basurveyapp.repositories.SurveyRepository;
-import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -36,8 +30,10 @@ public class ResponseService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final StudentService studentService;
+    private final StudentRepository studentRepository;
     private final SurveyRepository surveyRepository;
-//    private final ClassroomRepository classroomRepository;
+    //    private final ClassroomRepository classroomRepository;
     private final RoleService roleService;
 
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
@@ -100,7 +96,7 @@ public class ResponseService {
         if (response.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding response");
         } else {
-           return responseRepository.softDeleteById(response.get().getOid());
+            return responseRepository.softDeleteById(response.get().getOid());
         }
     }
 
@@ -120,6 +116,10 @@ public class ResponseService {
                                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
                         .user(user)
                         .build();
+                Optional<Student> student = studentService.findByUser(user);
+                student.get().getSurveysAnswered().add(survey);
+                survey.getStudentsWhoAnswered().add(student.get());
+                studentRepository.save(student.get());
                 responseRepository.save(newResponse);
                 question.getResponses().add(newResponse);
                 questionRepository.save(question);
@@ -190,7 +190,7 @@ public class ResponseService {
         return answerResponseDtoList;
     }
 
-    public Boolean updateStudentAnswers(Long surveyOid, SurveyUpdateResponseRequestDto dto){
+    public Boolean updateStudentAnswers(Long surveyOid, SurveyUpdateResponseRequestDto dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("authentication failure.");
@@ -200,14 +200,14 @@ public class ResponseService {
         }
         Long userOid = (Long) authentication.getCredentials();
         userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
-        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(()->new ResourceNotFoundException("There's a error while finding survey"));
-        List<Response>responseList=survey.getQuestions().stream().flatMap(q->q.getResponses().stream()).toList();
+        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("There's a error while finding survey"));
+        List<Response> responseList = survey.getQuestions().stream().flatMap(q -> q.getResponses().stream()).toList();
         if (responseList.isEmpty()) {
             throw new ResourceNotFoundException("There's a error while finding response");
         }
         responseList
                 .stream()
-                .filter(r->r.getUser().getOid().equals(userOid))
+                .filter(r -> r.getUser().getOid().equals(userOid))
                 .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
         responseRepository.saveAll(responseList);
         return true;
