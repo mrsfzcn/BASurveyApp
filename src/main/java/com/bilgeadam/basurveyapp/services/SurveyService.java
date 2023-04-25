@@ -8,13 +8,10 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
-import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -40,7 +37,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.bilgeadam.basurveyapp.mapper.SurveyMapper.INSTANCE;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -110,15 +106,17 @@ public class SurveyService {
     }
 
     public Page<Survey> getSurveyPage(Pageable pageable) {
+
         return surveyRepository.findAllActive(pageable);
     }
 
     public Boolean create(SurveyCreateRequestDto dto) {
+
         try {
             Survey survey = INSTANCE.toSurvey(dto);
             surveyRepository.save(survey);
         } catch (Exception e) {
-            throw new EntityExistsException("This survey title already in use.");
+            throw new SurveyTitleAlreadyExistException("This survey title already in use.");
         }
         return true;
     }
@@ -127,7 +125,7 @@ public class SurveyService {
 
         Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(surveyId);
         if (surveyToBeUpdated.isEmpty()) {
-            throw new ResourceNotFoundException("Survey is not found");
+            throw new SurveyNotFoundException("Survey is not found");
         }
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
         return surveyRepository.save(surveyToBeUpdated.get());
@@ -137,7 +135,7 @@ public class SurveyService {
 
         Optional<Survey> surveyToBeDeleted = surveyRepository.findActiveById(surveyId);
         if (surveyToBeDeleted.isEmpty()) {
-            throw new ResourceNotFoundException("Survey is not found");
+            throw new SurveyNotFoundException("Survey is not found");
         }
         return surveyRepository.softDeleteById(surveyToBeDeleted.get().getOid());
     }
@@ -146,7 +144,7 @@ public class SurveyService {
 
         Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
         if (surveyById.isEmpty()) {
-            throw new ResourceNotFoundException("Survey is not found");
+            throw new SurveyNotFoundException("Survey is not found");
         }
         return SurveyMapper.INSTANCE.toSurveySimpleResponseDto(surveyById.get());
     }
@@ -159,25 +157,25 @@ public class SurveyService {
         Long studentTagOid = jwtService.extractStudentTagOid(token);
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
-                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found."));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found."));
         StudentTag studentTag = studentTagRepository.findActiveById(studentTagOid).orElseThrow(
-                () -> new ResourceNotFoundException("StudentTag is not Found."));
+                () -> new SurveyTagNotFoundException("StudentTag is not Found."));
 
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()))
                 .filter(sR -> sR.getStudentTag().getOid().equals(studentTagOid))
                 .findAny()
-                .orElseThrow(() -> new ResourceNotFoundException("Survey has not assigned to the classroom."));
+                .orElseThrow(() -> new SurveyHasNotAssignedInToClassroomException("Survey has not assigned to the classroom."));
 
         LocalDate now = LocalDateTime.now().toLocalDate();
         LocalDate surveyStartDate = surveyRegistration.getStartDate().toLocalDate();
         LocalDate surveyEndDate = surveyRegistration.getEndDate().toLocalDate();
 
         if (now.isBefore(surveyStartDate)) {
-            throw new ResourceNotFoundException("Survey has not initiated.");
+            throw new SurveyNotInitiatedException("Survey has not initiated.");
         } else if (now.isAfter(surveyEndDate)) {
-            throw new ResourceNotFoundException("Survey is Expired");
+            throw new SurveyExpiredException("Survey is Expired");
         }
 
         if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndCreateResponses(survey, dtoList))) {
@@ -186,7 +184,7 @@ public class SurveyService {
 
         String userEmail = jwtService.extractEmail(token);
         User currentUser = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+                .orElseThrow(() -> new UserDoesNotExistsException("User is not found"));
 
         // authentication ******
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -230,13 +228,13 @@ public class SurveyService {
     public Survey updateSurveyResponses(Long surveyId, SurveyUpdateResponseRequestDto dto) {
 
         Survey survey = surveyRepository.findActiveById(surveyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found"));
 
         if (Boolean.FALSE.equals(crossCheckSurveyQuestionsAndUpdateResponses(survey, dto.getUpdateResponseMap()))) {
             throw new QuestionsAndResponsesDoesNotMatchException("Questions does not match with responses.");
         }
         Optional<Long> currentUserIdOptional = Optional.of((Long) SecurityContextHolder.getContext().getAuthentication().getCredentials());
-        Long currentUserId = currentUserIdOptional.orElseThrow(() -> new ResourceNotFoundException("Token does not contain User Info"));
+        Long currentUserId = currentUserIdOptional.orElseThrow(() -> new UndefinedTokenException("Token does not contain User Info"));
         List<Response> currentUserResponses = survey.getQuestions()
                 .stream()
                 .flatMap(question -> question.getResponses().stream())
@@ -255,11 +253,10 @@ public class SurveyService {
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Survey is not Found"));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found"));
 
         StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
-                .orElseThrow(() -> new ResourceNotFoundException("Student Tag is not Found"));
-        // List<Student> classroom = getStudentsByStudentTag(studentTag);
+                .orElseThrow(() -> new StudentTagNotFoundException("Student Tag is not Found"));
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
                 .parallelStream()
@@ -305,7 +302,7 @@ public class SurveyService {
         List<Long> userOids = studentTagRepository.findUserOidByStudentTagOid(studentTagOid);
         List<User> users = userOids.stream()
                 .map(oid -> userRepository.findActiveById(oid)
-                        .orElseThrow(() -> new ResourceNotFoundException("User not found!")))
+                        .orElseThrow(() -> new UserDoesNotExistsException("User not found!")))
                 .toList();
 
         users
@@ -382,7 +379,7 @@ public class SurveyService {
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
-        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
+        ).orElseThrow(() -> new UserDoesNotExistsException("No such user."));
         if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) || roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
             Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
             if (trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())) {
@@ -396,7 +393,7 @@ public class SurveyService {
 //        -> new ResourceNotFoundException("Classroom not found."));
 
         StudentTag studentTag = studentTagService.findActiveById(dto.getStudentTagOid()).orElseThrow(()
-                -> new ResourceNotFoundException("TrainerTag not found."));
+                -> new TrainerTagNotFoundException("TrainerTag not found."));
 
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
 //        List<Question> questions = survey.getQuestions();
@@ -413,8 +410,7 @@ public class SurveyService {
 //                .collect(toList());
 
 // Assuming you have a SurveyOfClassroomMaskedResponseDto and corresponding mapper
-        SurveyOfClassroomMaskedResponseDto result = INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);
-        return result;
+        return INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);
     }
 
     // TODO surveyler trainerlara atandığında test edilecek
@@ -424,7 +420,7 @@ public class SurveyService {
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
-        ).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
+        ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
 //        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
 //        User user = trainer.getUser();
 
@@ -446,13 +442,13 @@ public class SurveyService {
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
-        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
+        ).orElseThrow(() -> new UserDoesNotExistsException("No such user."));
         if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
 
        StudentTag studentTag=studentTagRepository.findActiveById(dto.getStudentTagOid()).orElseThrow(() ->new ResourceNotFoundException("Student Tag Not Found."));
             if (!trainerTagService.getTrainerTags(
                     trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
-                    new ResourceNotFoundException("No such trainer."))).stream()
+                    new TrainerNotFoundException("No such trainer."))).stream()
                     .anyMatch(trainerTag ->trainerTag.getTagString().equalsIgnoreCase(studentTag.getTagString()))) {
                 throw new AccessDeniedException("You dont have access to target class data.");
             }
@@ -508,7 +504,7 @@ public class SurveyService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
 
         List<Survey> surveyList = surveyRepository.findAllActive();
 
@@ -519,10 +515,10 @@ public class SurveyService {
     }
 
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new ResourceNotFoundException("Question not found."));
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
+        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
         if(survey.getQuestions().contains(question)){
-            throw new QuestionAlreadyExistsException("Bu soru ankete onceden eklenmis");
+            throw new QuestionAlreadyExistsException("Question already exists");
         }
         question.getSurveys().add(survey);
         survey.getQuestions().add(question);
@@ -531,11 +527,11 @@ public class SurveyService {
     }
 
     public void addQuestionsToSurvey(SurveyAddQuestionsRequestDto dto) {
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         dto.getQuestionIds().forEach(qId -> {
             Question question = questionRepository.findActiveById(qId).orElseThrow(() ->
-                    new ResourceNotFoundException("Question not found."));
+                    new QuestionNotFoundException("Question not found."));
             question.getSurveys().add(survey);
             questions.add(question);
         });
