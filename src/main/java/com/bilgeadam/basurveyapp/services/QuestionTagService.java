@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.repositories.QuestionTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class QuestionTagService {
     public Boolean delete(Long tagStringId) {
         Optional<QuestionTag> deleteTag = questionTagRepository.findActiveById(tagStringId);
         if (deleteTag.isEmpty()) {
-            throw new RuntimeException("Tag is not found");
+            throw new QuestionTagNotFoundException("Question tag not found");
         } else {
             return questionTagRepository.softDeleteById(deleteTag.get().getOid());
         }
