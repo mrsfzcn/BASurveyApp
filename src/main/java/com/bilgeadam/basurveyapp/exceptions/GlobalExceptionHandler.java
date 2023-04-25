@@ -227,6 +227,13 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(TRAINER_NOT_FOUND, exception, request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(SurveyTagNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleTrainerNotFoundException(SurveyTagNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_TAG_NOT_FOUND, exception, request);
+    }
+
 
 
 }

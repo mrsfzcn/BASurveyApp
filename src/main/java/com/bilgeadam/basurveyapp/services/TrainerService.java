@@ -6,7 +6,8 @@ import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TrainerMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
@@ -31,10 +32,10 @@ public class TrainerService {
         Optional<TrainerTag> trainerTag = trainerTagRepository.findActiveById(dto.getTrainerTagOid());
 
         if (trainerTag.isEmpty()) {
-            throw new ResourceNotFoundException("Trainer tag is not found");
+            throw new TrainerTagNotFoundException("Trainer tag is not found");
         }
         if (trainer.isEmpty()) {
-            throw new ResourceNotFoundException("Trainer is not found");
+            throw new TrainerNotFoundException("Trainer is not found");
         } else {
             trainer.get().getTrainerTags().add(trainerTag.get());
             trainerTag.get().getTargetEntities().add(trainer.get());
