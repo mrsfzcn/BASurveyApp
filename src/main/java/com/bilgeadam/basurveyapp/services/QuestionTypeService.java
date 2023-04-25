@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,7 @@ public class QuestionTypeService {
     public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto) {
         Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(dto.getQuestionTypeOid());
         if (updateQuestionType.isEmpty()) {
-            // TODO exception
-            throw new RuntimeException("QuestionType is not found");
+            throw new QuestionTypeNotFoundException("QuestionType is not found");
         } else {
             updateQuestionType.get().setQuestionType(dto.getQuestionType());
             QuestionType questionType = updateQuestionType.get();
@@ -47,8 +47,7 @@ public class QuestionTypeService {
     public QuestionTypeFindByIdResponseDto findById(Long questionTypeId) {
         Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionTypeId);
         if (optionalQuestionType.isEmpty()) {
-            // TODO exception
-            throw new RuntimeException("QuestionType is not found");
+            throw new QuestionTypeNotFoundException("QuestionType is not found");
         } else {
             return QuestionTypeFindByIdResponseDto.builder()
                     .questionType(optionalQuestionType.get().getQuestionType())
@@ -87,7 +86,7 @@ public class QuestionTypeService {
         Optional<QuestionType> deleteQuestionType = questionTypeRepository.findByOidAndState(questionTypeId, State.ACTIVE);
 
         if (deleteQuestionType.isEmpty()) {
-            throw new RuntimeException("QuestionType is not found");
+            throw new QuestionTypeNotFoundException("QuestionType is not found");
         } else {
             deleteQuestionType.get().setState(State.DELETED);
             questionTypeRepository.save(deleteQuestionType.get());
