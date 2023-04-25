@@ -10,7 +10,7 @@ import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
@@ -25,8 +25,7 @@ import org.mockito.Mock;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -116,7 +115,7 @@ public class UserServiceTest {
         try {
             userService.updateUser(email, dto);
             fail("Expected ResourceNotFoundException was not thrown");
-        } catch (ResourceNotFoundException e) {
+        } catch (UserDoesNotExistsException e) {
             assertEquals("User is not found", e.getMessage());
         }
     }
@@ -132,7 +131,7 @@ public class UserServiceTest {
 
         boolean result = userService.deleteUser(userId);
 
-        assertEquals(true,result);
+        assertTrue(result);
     }
 
     @Test
@@ -150,15 +149,15 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testFindByOid_ResourceNotFoundException() {
+    public void testFindByOid_UserDoesNotExistsException() {
         Long userId = 1L;
         Optional<User> mockUser = Optional.empty();
         Mockito.when(userRepository.findActiveById(userId)).thenReturn(mockUser);
 
         try {
             userService.findByOid(userId);
-            fail("Expected ResourceNotFoundException was not thrown");
-        } catch (ResourceNotFoundException e) {
+            fail("Expected UserDoesNotExistsException was not thrown");
+        } catch (UserDoesNotExistsException e) {
             assertEquals("User is not found", e.getMessage());
         }
     }
@@ -170,8 +169,8 @@ public class UserServiceTest {
 
         try {
             userService.deleteUser(userId);
-            fail("Expected ResourceNotFoundException was not thrown");
-        } catch (ResourceNotFoundException e) {
+            fail("Expected UserDoesNotExistsException was not thrown");
+        } catch (UserDoesNotExistsException e) {
         assertEquals("User is not found", e.getMessage());
         }
 
@@ -218,7 +217,7 @@ public class UserServiceTest {
 
         List<UserTrainersAndStudentsResponseDto> actualDto = userService.getTrainersAndStudentsList(jwtToken);
 
-        assertEquals(true, actualDto.toString().equals(expectedDto.toString()));
+        assertTrue(actualDto.toString().equals(expectedDto.toString()));
     }
 
     @Test
@@ -228,7 +227,8 @@ public class UserServiceTest {
 
         try {
             userService.getTrainersAndStudentsList(jwtToken);
-        } catch (ResourceNotFoundException e) {
+            fail("Expected UserDoesNotExistsException was not thrown");
+        } catch (UserDoesNotExistsException e) {
             assertEquals("User is not found", e.getMessage());
         }
     }
@@ -258,9 +258,9 @@ public class UserServiceTest {
 
         Boolean result = userService.assignRoleToUser(request);
 
-        assertEquals(true,result);
-        assertEquals(true,user.getRoles().contains(role));
-        assertEquals(true,role.getUsers().contains(user));
+        assertTrue(result);
+        assertTrue(user.getRoles().contains(role));
+        assertTrue(role.getUsers().contains(user));
         verify(userRepository).save(user);
         verify(roleService).save(role);
     }
