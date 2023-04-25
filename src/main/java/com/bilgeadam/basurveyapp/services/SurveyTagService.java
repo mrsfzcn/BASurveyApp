@@ -2,10 +2,9 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.SurveyTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class SurveyTagService {
     public Boolean delete(Long tagStringId) {
         Optional<SurveyTag> deleteTag = surveyTagRepository.findActiveById(tagStringId);
         if (deleteTag.isEmpty()) {
-            throw new RuntimeException("Tag is not found");
+            throw new SurveyTagNotFoundException("Survey Tag is not found");
         } else {
             return surveyTagRepository.softDeleteById(deleteTag.get().getOid());
         }

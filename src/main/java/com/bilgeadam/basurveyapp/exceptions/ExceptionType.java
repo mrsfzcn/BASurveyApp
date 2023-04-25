@@ -47,6 +47,7 @@ public enum ExceptionType {
     SURVEY_TAG_ALREADY_EXISTS(9021, "Survey Tag is already exists", INTERNAL_SERVER_ERROR),
     TRAINER_TAG_NOT_FOUND(9022, "Trainer Tag not found", INTERNAL_SERVER_ERROR),
     TRAINER_NOT_FOUND(9023, "Trainer not found", INTERNAL_SERVER_ERROR),
+    SURVEY_TAG_NOT_FOUND(9024, "Survey Tag not found", INTERNAL_SERVER_ERROR),
 
     /*
         Validation errors.
