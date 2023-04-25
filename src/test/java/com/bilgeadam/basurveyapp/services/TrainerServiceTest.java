@@ -1,8 +1,13 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,6 +159,32 @@ public class TrainerServiceTest {
             assertEquals(assistantTrainers.get(i).getUser().getFirstName(), dto.get(i).getFirstName());
             assertEquals(assistantTrainers.get(i).getUser().getLastName(), dto.get(i).getLastName());
             assertEquals(assistantTrainers.get(i).getUser().getEmail(), dto.get(i).getEmail());
+        }
+    }
+
+    @Test
+    public void testUpdateTrainer_TrainerTagNotFoundException(){
+        when(trainerRepository.findActiveById(1L)).thenReturn(Optional.empty());
+        when(trainerTagRepository.findActiveById(1L)).thenReturn(Optional.empty());
+
+        try{
+            trainerService.updateTrainer(TrainerUpdateDto.builder().trainerOid(1L).trainerTagOid(1L).build());
+        } catch (TrainerTagNotFoundException e){
+            assertEquals("Trainer tag is not found", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUpdateTrainer_TrainerNotFoundException(){
+        when(trainerRepository.findActiveById(1L)).thenReturn(Optional.empty());
+        when(trainerTagRepository.findActiveById(1L)).thenReturn(Optional.of(TrainerTag.builder()
+                        .state(State.ACTIVE)
+                        .tagString("test")
+                .build()));
+        try{
+            trainerService.updateTrainer(TrainerUpdateDto.builder().trainerOid(1L).trainerTagOid(1L).build());
+        } catch (TrainerNotFoundException e){
+            assertEquals("Trainer is not found", e.getMessage());
         }
     }
 }
