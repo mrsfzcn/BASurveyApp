@@ -2,7 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,12 +24,14 @@ public class Survey extends BaseEntity {
     @Column(name = "course_topic")
     private String courseTopic;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SurveyRegistration> surveyRegistrations;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Student> studentsWhoAnswered;
 
+    @JsonManagedReference
     @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Question> questions;
 

@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,7 @@ public class Response extends BaseEntity {
 
     @Column(name = "response_string", nullable = false)
     private String responseString;
+    @JsonManagedReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "oid", name = "question")
     private Question question;
