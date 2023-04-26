@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +26,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
+    @Operation(summary = "Mail, şifre, isim, soyisim ve rol girilerek yeni kullanıcı oluşturan metot.")
     public ResponseEntity<AuthenticationResponseDto> register(@RequestBody @Valid RegisterRequestDto request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/authenticate")
+    @Operation(summary = "Mail ve şifre ile giriş yapılmasını sağlayan metot.")
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid LoginRequestDto request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
@@ -41,13 +44,14 @@ public class AuthController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/updateLoginCredentials")
     //TODO "changelogin" ismi değişecek
-
+    @Operation(summary = "")
     public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.changeLogin(request));
     }
 
     @PostMapping("/changeauthorized")
     //TODO "changeauthorized" ismi "switchauthorizationroles" olarak değişecek
+    @Operation(summary = "Bir role ait token üzerinden o rolün değiştirilmesini sağlayan metot.")
     public ResponseEntity<AuthenticationResponseDto> changeAuthorized(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
         return ResponseEntity.ok(authService.changeAuthorized(request));
     }

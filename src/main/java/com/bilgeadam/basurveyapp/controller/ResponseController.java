@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.services.ResponseService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -19,6 +20,7 @@ public class ResponseController {
     private final ResponseService responseService;
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
     @PostMapping("/create")
+    @Operation(summary = "String türünde girdi ile yeni bir response oluşmasını sağlar.")
     public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
         responseService.createResponse(dto);
         return ResponseEntity.ok().build();
@@ -27,28 +29,33 @@ public class ResponseController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
+    @Operation(summary = "id ile response bulup string girdisi ile yeni bir response oluşmasını sağlayan metot.")
     public ResponseEntity<Void> updateResponse(@RequestBody @Valid ResponseRequestDto dto) {
         responseService.updateResponse(dto);
         return ResponseEntity.ok().build();
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findbyid")
+    @Operation(summary = "id girilerek bulunan response'un görntülenmesini sağlayan metot.")
     public ResponseEntity<AnswerResponseDto> findById(@ParameterObject @Valid FindByIdRequestDto dto) {
         return ResponseEntity.ok(responseService.findByIdResponse(dto.getOid()));
 
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
+    @Operation(summary = "Tüm response'ların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<AnswerResponseDto>> findAll() {
         return ResponseEntity.ok(responseService.findAll());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping
+    @Operation(summary = "id ile bulunan response'un silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
     }
 
     @PutMapping("/savesurveyanswers/{token}")
+    @Operation(summary = "id ile bulunan question'a verilen tüm response'ları kaydetmeye yarayan metot.")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
         //tokendan hangi survey ve user olduğunun tespit edip response dtodaki response entitye çevirir.
@@ -60,12 +67,14 @@ public class ResponseController {
 
     @GetMapping("/findallresponsesofuserfromsurvey")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "survey id ve user email girilerek bluanan tüm response'ların görüntülenmesini sağlayan metot.")
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
     @GetMapping("/findResponseByClassroomOid")
+    @Operation(summary = "clasroom id'si girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot.")
     public ResponseEntity<List<AnswerResponseDto>>findResponseByClassroomOid(@RequestParam Long classroomOid){
         return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
     }
@@ -73,6 +82,7 @@ public class ResponseController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STUDENT')")
     @PostMapping("/updateStudentResponses")
+    @Operation(summary = "id ile bulunan response için string türünde girdi ile yeni değer atanmasını sağlayan metot.")
     public ResponseEntity<Boolean> updateStudentResponses(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
     }
