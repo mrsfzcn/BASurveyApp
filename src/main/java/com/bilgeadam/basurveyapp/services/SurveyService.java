@@ -427,73 +427,55 @@ public class SurveyService {
         return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 
-    //TODO method tag yapısına göre refactor edilecek
+
     public SurveyResponseWithAnswersDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
+        Survey survey = surveyRepository.findById(dto.getSurveyOid())
+                .orElseThrow(() -> new ResourceNotFoundException("Survey not found with id " + dto.getSurveyOid()));
 
-        List<Student> students = studentService.findByStudentTagOid(dto.getStudentTagOid());
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-        List<Question> questions = survey.getQuestions();
-        List<User> userList = students.stream().map(Student::getUser).toList();
-        List<Long> userOidList = userList.stream().map(User::getOid).toList();
-        boolean isManagerAndTrainer = false;
+        StudentTag studentTag = studentTagRepository.findById(dto.getStudentTagOid())
+                .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + dto.getStudentTagOid()));
 
-        User user = userRepository.findActiveById((Long)
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getCredentials()
-        ).orElseThrow(() -> new UserDoesNotExistsException("No such user."));
-        if (roleService.userHasRole(user, "MANAGER") && roleService.userHasRole(user, "MASTER_TRAINER")) {
-
-       StudentTag studentTag=studentTagRepository.findActiveById(dto.getStudentTagOid()).orElseThrow(() ->new ResourceNotFoundException("Student Tag Not Found."));
-            if (!trainerTagService.getTrainerTags(
-                    trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() ->
-                    new TrainerNotFoundException("No such trainer."))).stream()
-                    .anyMatch(trainerTag ->trainerTag.getTagString().equalsIgnoreCase(studentTag.getTagString()))) {
-                throw new AccessDeniedException("You dont have access to target class data.");
-            }
-            isManagerAndTrainer = true;
+        List<Response> responses = new ArrayList<>();
+        for (Student student : studentTag.getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+            responses.addAll(studentResponses);
         }
-         boolean finalIsManagerAndTrainer = isManagerAndTrainer;
+
+        Map<Question, List<Response>> responsesByQuestion = responses.stream()
+                .collect(Collectors.groupingBy(Response::getQuestion));
+
+        List<QuestionWithAnswersResponseDto> questions = responsesByQuestion.entrySet().stream()
+                .map(entry -> {
+                    Question question = entry.getKey();
+                    List<Response> questionResponses = entry.getValue();
+                    List<ResponseUnmaskedDto> responseDtos = questionResponses.stream()
+                            .map(response -> ResponseUnmaskedDto.builder()
+                                    .userOid(response.getUser().getOid())
+                                    .firstName(response.getUser().getFirstName())
+                                    .lastName(response.getUser().getLastName())
+                                    .email(response.getUser().getEmail())
+                                    .responseOid(response.getOid())
+                                    .response(response.getResponseString())
+                                    .build())
+                            .collect(Collectors.toList());
+                    return QuestionWithAnswersResponseDto.builder()
+                            .questionOid(question.getOid())
+                            .questionString(question.getQuestionString())
+                            .questionTypeOid(question.getQuestionType().getOid())
+                            .order(question.getOrder())
+                            .responses(responseDtos)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
         return SurveyResponseWithAnswersDto.builder()
                 .surveyOid(survey.getOid())
                 .surveyTitle(survey.getSurveyTitle())
                 .courseTopic(survey.getCourseTopic())
-                .questions(questions.parallelStream().map(question ->
-                        QuestionWithAnswersResponseDto.builder()
-                                .questionOid(question.getOid())
-                                .questionString(question.getQuestionString())
-                                .questionTypeOid(question.getQuestionType().getOid())
-                                .order(question.getOrder())
-                                .responses(
-                                        question.getResponses()
-                                                .stream()
-                                                .filter(response -> userOidList.contains(response.getUser().getOid()))
-//                                                .map(response -> getUnmaskedDto(response.getUser(),response.getResponseString(), finalIsManagerAndTrainer))
-                                                .map(response -> getUnmaskedDto(response, finalIsManagerAndTrainer))
-                                                .collect(Collectors.toList()))
-                                .build()).collect(Collectors.toList())
-                ).build();
-    }
-
-    private ResponseUnmaskedDto getUnmaskedDto(Response response, Boolean isManagerAndTrainer) {
-        // Intentionally keep builder pattern to keep masking user details
-        ResponseUnmaskedDto responseUnmaskedDto = ResponseUnmaskedDto.builder()
-                .userOid(response.getUser().getOid())
-                .responseOid(response.getOid())
-                .response(response.getResponseString())
-                .firstName("****")
-                .lastName("****")
-                .email("****")
+                .questions(questions)
                 .build();
-        if (!isManagerAndTrainer) {
-            responseUnmaskedDto.setFirstName(response.getUser().getFirstName());
-            responseUnmaskedDto.setLastName(response.getUser().getLastName());
-            responseUnmaskedDto.setEmail(response.getUser().getEmail());
-
-        }
-        return responseUnmaskedDto;
     }
+
 
     public List<SurveyByStudentTagResponseDto> findStudentSurveys() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -538,4 +520,5 @@ public class SurveyService {
         survey.setQuestions(questions);
         surveyRepository.save(survey);
     }
+
 }

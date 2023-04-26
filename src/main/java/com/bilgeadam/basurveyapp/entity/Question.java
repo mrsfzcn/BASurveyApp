@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,10 +22,14 @@ public class Question extends BaseEntity {
     private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private QuestionType questionType;
+    @JsonBackReference
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Response> responses;
+
+    @JsonBackReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Survey> surveys;
+    @JsonBackReference
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<QuestionTag> questionTag;
 }

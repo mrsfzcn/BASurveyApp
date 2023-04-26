@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.*;
 
 @AllArgsConstructor
@@ -16,6 +15,5 @@ public class ResponseUnmaskedDto {
     String email;
     Long responseOid;
     String response;
-
 
 }
