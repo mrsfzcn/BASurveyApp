@@ -49,7 +49,11 @@ public enum ExceptionType {
     TRAINER_NOT_FOUND(9023, "Trainer not found", INTERNAL_SERVER_ERROR),
     SURVEY_TAG_NOT_FOUND(9024, "Survey Tag not found", INTERNAL_SERVER_ERROR),
     QUESTION_TAG_NOT_FOUND(9025, "Question Tag not found", INTERNAL_SERVER_ERROR),
-
+    SURVEY_TITLE_ALREADY_EXISTS(9025, "Survey Title not found", INTERNAL_SERVER_ERROR),
+    SURVEY_HAS_NOT_ASSIGNED_CLASSROOM(9026, "Survey has not assigned to the classroom", INTERNAL_SERVER_ERROR),
+    SURVEY_EXPIRED(9027, "Survey is Expired", INTERNAL_SERVER_ERROR),
+    SURVEY_NOT_INITIATED(9028, "Survey has not initiated", INTERNAL_SERVER_ERROR),
+    STUDENT_TAG_NOT_FOUND(9029, "Student Tag not found", INTERNAL_SERVER_ERROR),
     /*
         Validation errors.
      */
@@ -61,7 +65,7 @@ public enum ExceptionType {
     ACCESS_DENIED(2000, "Access denied.", UNAUTHORIZED),
     LOGIN_ERROR_USERNAME_DOES_NOT_EXIST(2001, "Username does not exist.", NOT_FOUND),
     LOGIN_ERROR_WRONG_PASSWORD(2002, "Wrong password.", BAD_REQUEST),
-
+    UNDEFINED_TOKEN(2003, "Token does not contain User Info", BAD_REQUEST),
     /*
         Register errors.
      */

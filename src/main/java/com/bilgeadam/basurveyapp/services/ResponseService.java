@@ -45,11 +45,11 @@ public class ResponseService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
 
         Response response = ResponseMapper.INSTANCE.toResponse(responseRequestDto, questionRepository
                 .findActiveById(responseRequestDto
-                        .getQuestionOid()).orElseThrow(() -> new ResourceNotFoundException("question not found")), userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")));
+                        .getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("question not found")), userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")));
         responseRepository.save(response);
     }
 
