@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception exception, HttpServletRequest request) {
-        log.error(messageSource.getMessage("exception.UNEXPECTED_ERROR=", null, Locale.getDefault()), exception);
+        log.error(messageSource.getMessage("exception.UNEXPECTED_ERROR", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(UNEXPECTED_ERROR, exception, request);
     }
 
@@ -241,6 +241,48 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(QUESTION_TAG_NOT_FOUND, exception, request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(SurveyTitleAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyTitleAlreadyExistException(SurveyTitleAlreadyExistException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_TITLE_ALREADY_EXISTS", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_TITLE_ALREADY_EXISTS, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyHasNotAssignedInToClassroomException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyHasNotAssignedInToClassroomException(SurveyHasNotAssignedInToClassroomException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_HAS_NOT_ASSIGNED_CLASSROOM", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_HAS_NOT_ASSIGNED_CLASSROOM, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyExpiredException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyExpiredException(SurveyExpiredException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_EXPIRED", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_EXPIRED, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyNotInitiatedException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyNotInitiatedException(SurveyNotInitiatedException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.SURVEY_NOT_INITIATED", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(SURVEY_NOT_INITIATED, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(UndefinedTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleUndefinedTokenException(UndefinedTokenException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.UNDEFINED_TOKEN", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(UNDEFINED_TOKEN, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(StudentTagNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleStudentTagNotFoundException(StudentTagNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.STUDENT_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(STUDENT_TAG_NOT_FOUND, exception, request);
+    }
 
+    @ResponseBody
+    @ExceptionHandler(ResponseNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleResponseNotFoundException(ResponseNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.RESPONSE_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(RESPONSE_NOT_FOUND, exception, request);
+    }
 
 }
