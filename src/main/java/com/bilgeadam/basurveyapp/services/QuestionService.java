@@ -10,10 +10,7 @@ import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionAlreadyExistsException;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
 import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
@@ -122,7 +119,7 @@ public class QuestionService {
     // TODO Metod doğru çalışmıyor düzenlenecek
     public List<QuestionResponseDto> findAllSurveyQuestions(String token) {
         if (jwtService.isSurveyEmailTokenValid(token)) {
-            throw new RuntimeException("Invalid token.");
+            throw new UndefinedTokenException("Invalid token.");
         }
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
@@ -154,7 +151,7 @@ public class QuestionService {
     //TODO tag ler eklendiğinde test edilecektir.
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
-                .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<QuestionResponseDto> filteredList = allQuestions.stream()
                 .filter(question -> question.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
