@@ -7,10 +7,7 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.SurveyNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +30,6 @@ public class ResponseService {
     private final StudentService studentService;
     private final StudentRepository studentRepository;
     private final SurveyRepository surveyRepository;
-    //    private final ClassroomRepository classroomRepository;
-    private final RoleService roleService;
 
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -56,7 +51,7 @@ public class ResponseService {
     public void updateResponse(ResponseRequestDto responseRequestDto) {
         Optional<Response> updatedResponse = responseRepository.findActiveById(responseRequestDto.getResponseOid());
         if (updatedResponse.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
+            throw new ResponseNotFoundException("There's a error while finding response");
         } else {
             updatedResponse.get().setResponseString(responseRequestDto.getResponseString());
             responseRepository.save(updatedResponse.get());
@@ -66,7 +61,7 @@ public class ResponseService {
     public AnswerResponseDto findByIdResponse(Long responseOid) {
         Optional<Response> response = responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
+            throw new ResponseNotFoundException("There's a error while finding response");
         }
         return ResponseMapper.INSTANCE.toAnswerResponseDto(response.get());
 //                AnswerResponseDto.builder()
@@ -94,7 +89,7 @@ public class ResponseService {
     public Boolean deleteResponseById(Long responseOid) {
         Optional<Response> response = responseRepository.findActiveById(responseOid);
         if (response.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
+            throw new ResponseNotFoundException("There's a error while finding response");
         } else {
             return responseRepository.softDeleteById(response.get().getOid());
         }
@@ -170,16 +165,16 @@ public class ResponseService {
 //        }
         List<Survey> surveyList = surveyRepository.findAllActive();
         if (surveyList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding survey list");
+            throw new SurveyNotFoundException("There's a error while finding survey list");
         }
         List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
         ).toList();
         if (questionList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding questions");
+            throw new QuestionNotFoundException("There's a error while finding questions");
         }
         List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
         if (responseList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
+            throw new ResponseNotFoundException("There's a error while finding response");
         }
         List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
         responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
@@ -199,11 +194,11 @@ public class ResponseService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
-        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("There's a error while finding survey"));
+        userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new SurveyNotFoundException("There's a error while finding survey"));
         List<Response> responseList = survey.getQuestions().stream().flatMap(q -> q.getResponses().stream()).toList();
         if (responseList.isEmpty()) {
-            throw new ResourceNotFoundException("There's a error while finding response");
+            throw new ResponseNotFoundException("There's a error while finding response");
         }
         responseList
                 .stream()

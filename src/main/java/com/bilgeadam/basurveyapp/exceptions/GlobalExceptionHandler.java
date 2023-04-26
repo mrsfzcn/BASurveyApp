@@ -278,4 +278,11 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(STUDENT_TAG_NOT_FOUND, exception, request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(ResponseNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleResponseNotFoundException(ResponseNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.RESPONSE_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(RESPONSE_NOT_FOUND, exception, request);
+    }
+
 }

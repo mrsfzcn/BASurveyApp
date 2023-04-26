@@ -11,7 +11,6 @@ import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
-import com.bilgeadam.basurveyapp.mapper.AuthMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,7 @@ public class AuthService {
         List<Role> roles = roleService.findRoles();
         Set<Role> userRoles = roles.stream().filter(role -> request.getRoles().contains(role.getRole())).collect(Collectors.toSet());
         if (userRoles.isEmpty()) {
-            throw new ResourceNotFoundException("Given roles not found.");
+            throw new RoleNotFoundException("Given roles not found.");
         }
 
 
