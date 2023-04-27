@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionTypeRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
@@ -44,8 +45,8 @@ public class QuestionTypeService {
         }
     }
 
-    public QuestionTypeFindByIdResponseDto findById(Long questionTypeId) {
-        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionTypeId);
+    public QuestionTypeFindByIdResponseDto findById(Long questionId) {
+        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionId);
         if (optionalQuestionType.isEmpty()) {
             // TODO exception
             throw new RuntimeException("QuestionType is not found");

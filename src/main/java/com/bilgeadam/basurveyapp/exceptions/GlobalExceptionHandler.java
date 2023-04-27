@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ExceptionResponse> handleAllExceptions(Exception exception, HttpServletRequest request) {
-        log.error(messageSource.getMessage("exception.UNEXPECTED_ERROR=", null, Locale.getDefault()), exception);
+        log.error(messageSource.getMessage("exception.UNEXPECTED_ERROR", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(UNEXPECTED_ERROR, exception, request);
     }
 
