@@ -5,7 +5,7 @@ import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
-import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TagMapper;
 import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class StudentTagService {
     public Boolean delete(Long studentTagOid) {
         Optional<StudentTag> deleteTag = studentTagRepository.findActiveById(studentTagOid);
         if (deleteTag.isEmpty()) {
-            throw new SurveyTagNotFoundException("Student Tag is not found");
+            throw new StudentTagNotFoundException("Student Tag is not found");
         } else {
             return studentTagRepository.softDeleteById(deleteTag.get().getOid());
         }
