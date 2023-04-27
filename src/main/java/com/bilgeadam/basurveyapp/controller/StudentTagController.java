@@ -28,11 +28,19 @@ public class StudentTagController {
         studentTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/getStudentsByStudentTag")
-    public ResponseEntity<List<Student>> getStudentsByStudentTag(@RequestBody @Valid StudentTag studentTag ){
-        return ResponseEntity.ok(studentTagService.getStudentsByStudentTag(studentTag));
-    }
+    /***
+     * Service içindeki getStudentsByStudentTag metodun dışarıya aktarılması gereksiz bu işlevi yapan controllerda metot var.
+     * */
+
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    @PostMapping("/getStudentsByStudentTag")
+//    public ResponseEntity<List<Student>> getStudentsByStudentTag(@RequestBody @Valid StudentTag studentTag ){
+//        return ResponseEntity.ok(studentTagService.getStudentsByStudentTag(studentTag));
+//    }
+
+
+
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findByStudentTagName")
     public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
