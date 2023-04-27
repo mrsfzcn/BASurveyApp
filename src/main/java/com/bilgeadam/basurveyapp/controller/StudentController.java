@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.services.StudentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class StudentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/students")
+    @Operation(summary = "Tüm student'ların listelenmesini sağlayan metot.")
     ResponseEntity<List<StudentResponseDto>> getStudentList() {
         return ResponseEntity.ok(studentService.getStudentList());
     }
@@ -40,6 +42,7 @@ public class StudentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/signtoclass")
+    @Operation(summary = "")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));
     }
