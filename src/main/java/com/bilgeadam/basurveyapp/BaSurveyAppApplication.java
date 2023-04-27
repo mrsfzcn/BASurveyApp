@@ -14,5 +14,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BaSurveyAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(BaSurveyAppApplication.class, args);
+        System.out.println("{\n" +
+                "  \"email\": \"admin@bilgeadam.com\",\n" +
+                "  \"password\": \"adminadmin\"\n" +
+                "}");
     }
 }

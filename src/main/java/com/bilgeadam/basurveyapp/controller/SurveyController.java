@@ -109,6 +109,7 @@ public class SurveyController {
     ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveyByClassroomOid(@RequestParam Long classroomOid) {
         return ResponseEntity.ok(surveyService.findByStudentTagOid(classroomOid));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
     @GetMapping("/findSurveyByStudentOid")
     @Operation(summary = "")
@@ -116,11 +117,25 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.findStudentSurveys());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
-    @GetMapping("/findSurveyAnswers")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findsurveyanswersunmasked")
     @Operation(summary = "")
-    ResponseEntity<SurveyOfClassroomMaskedResponseDto> findSurveyAnswers(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
-        return ResponseEntity.ok(surveyService.findSurveyAnswers(findSurveyAnswersRequestDto));
+    ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
+        return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findMaskedSurveyAnswersAsAdminOrManager")
+    @Operation(summary = "")
+    ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsAdminOrManager(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
+        return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsAdminOrManager(findSurveyAnswersRequestDto));
+    }
+
+    @PreAuthorize("hasAnyRole('MASTER_TRAINER', 'ASSISTANT_TRAINER')")
+    @GetMapping("/findMaskedSurveyAnswersAsTrainer")
+    @Operation(summary = "")
+    ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsTrainer(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
+        return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsTrainer(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
@@ -129,11 +144,6 @@ public class SurveyController {
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findsurveyanswersunmasked")
-    @Operation(summary = "")
-    ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto){
-        return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
-    }
+
 }
 
