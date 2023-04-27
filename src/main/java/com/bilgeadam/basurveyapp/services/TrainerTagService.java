@@ -10,7 +10,6 @@ import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TagMapper;
-import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainerTagService {
     private final TrainerTagRepository trainerTagRepository;
-    private final TrainerRepository trainerRepository;
+    private final TrainerService trainerService;
     public void createTag(CreateTagDto dto) {
         if(trainerTagRepository.findByTrainerTagName(dto.getTagString()).isPresent()){
             throw new TrainerTagExistException("Trainer Tag already exist!");
@@ -67,7 +66,8 @@ public class TrainerTagService {
     }
 
     public GetTrainerTagsByEmailResponse getTrainerTagsByEmail(String email) {
-        Optional<Trainer> trainer= trainerRepository.findActiveByEmail(email);
+        Optional<Trainer> trainer= trainerService.findActiveByEmail(email);
+
         if(trainer.isEmpty()){
             throw new TrainerNotFoundException("trainer not found");
         }
@@ -76,10 +76,21 @@ public class TrainerTagService {
             throw new TrainerTagNotFoundException("trainer has not have tag");
         }
         return GetTrainerTagsByEmailResponse.builder().trainerTags(tags).build();
-
     }
 
     public List<String> findTrainersByTrainerTagString(String tagString) {
         return trainerTagRepository.findByTagString(tagString);
+    }
+
+    public void save(TrainerTag trainerTag) {
+        trainerTagRepository.save(trainerTag);
+    }
+
+    public Optional<TrainerTag> findOptionalTrainerTagById(Long trainerTagOid) {
+        Optional<TrainerTag> trainerTag= trainerTagRepository.findActiveById(trainerTagOid);
+        if(trainerTag.isEmpty()){
+            throw new TrainerTagNotFoundException("Trainer tag not found");
+        }
+        return trainerTag;
     }
 }

@@ -59,4 +59,16 @@ public class StudentTagService {
     public List<StudentTagDetailResponseDto> getStudentTagList() {
         return TagMapper.INSTANCE.toStudentTagDetailResponseDtoList(studentTagRepository.findAllActive());
     }
+
+    public void save(StudentTag studentTag) {
+        studentTagRepository.save(studentTag);
+    }
+
+    public List<Long> findUserOidByStudentTagOid(Long studentTagOid) {
+        return studentTagRepository.findUserOidByStudentTagOid(studentTagOid);
+    }
+
+    public Optional<StudentTag> findById(Long studentTagOid) {
+        return studentTagRepository.findById(studentTagOid);
+    }
 }

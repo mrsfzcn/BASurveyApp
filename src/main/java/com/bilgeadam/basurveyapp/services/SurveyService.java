@@ -43,19 +43,17 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class SurveyService {
     private final SurveyRepository surveyRepository;
-    private final ResponseRepository responseRepository;
-    private final QuestionRepository questionRepository;
-    private final UserRepository userRepository;
+    private final ResponseService responseService;
+    private final QuestionService questionService;
+    private final UserService userService;
     private final EmailService emailService;
     private final JwtService jwtService;
-    private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
     private final RoleService roleService;
     private final StudentTagService studentTagService;
     private final StudentService studentService;
     private final TrainerService trainerService;
     private final TrainerTagService trainerTagService;
-    private final StudentTagRepository studentTagRepository;
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
@@ -81,7 +79,6 @@ public class SurveyService {
 
             Map<String, String> emailTokenMap = new HashMap<>();
 
-//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
             surveyRegistrations
                     .parallelStream()
                     .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
@@ -158,7 +155,7 @@ public class SurveyService {
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found."));
-        StudentTag studentTag = studentTagRepository.findActiveById(studentTagOid).orElseThrow(
+        StudentTag studentTag = studentTagService.findActiveById(studentTagOid).orElseThrow(
                 () -> new SurveyTagNotFoundException("StudentTag is not Found."));
 
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
@@ -183,7 +180,7 @@ public class SurveyService {
         }
 
         String userEmail = jwtService.extractEmail(token);
-        User currentUser = userRepository.findByEmail(userEmail)
+        User currentUser = userService.findByEmail(userEmail)
                 .orElseThrow(() -> new UserDoesNotExistsException("User is not found"));
 
         // authentication ******
@@ -198,28 +195,28 @@ public class SurveyService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
         List<Question> surveyQuestions = survey.getQuestions();
-        Set<Response> surveyResponses = responseRepository.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
+        Set<Response> surveyResponses = responseService.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
         List<Response> updatedResponses = new ArrayList<>();
         surveyQuestions.forEach(question -> {
-            SurveyResponseQuestionRequestDto srqrDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findAny().orElse(null);
-            if (srqrDto != null) {
+            SurveyResponseQuestionRequestDto surveyResponseQuestionRequestDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findAny().orElse(null);
+            if (surveyResponseQuestionRequestDto != null) {
                 List<Response> surveySingleResponse = surveyResponses.stream().filter(response -> response.getQuestion().getOid().equals(question.getOid())).toList();
                 if (surveySingleResponse.isEmpty()) {
                     updatedResponses.add(Response.builder()
-                            .responseString(srqrDto.getResponseString())
+                            .responseString(surveyResponseQuestionRequestDto.getResponseString())
                             .question(question)
                             .survey(survey)
                             .user(currentUser)
                             .build());
                 } else {
                     Response response = surveySingleResponse.get(0);
-                    response.setResponseString(srqrDto.getResponseString());
+                    response.setResponseString(surveyResponseQuestionRequestDto.getResponseString());
                     updatedResponses.add(response);
                 }
             }
         });
-        questionRepository.saveAll(surveyQuestions);
-        responseRepository.saveAll(updatedResponses);
+        questionService.saveAll(surveyQuestions);
+        responseService.saveAll(updatedResponses);
         surveyRepository.save(survey);
 
         return true;
@@ -245,13 +242,13 @@ public class SurveyService {
                 .parallelStream()
                 .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
                 .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
-        responseRepository.saveAll(currentUserResponses);
+        responseService.saveAll(currentUserResponses);
         return survey;
     }
 
     @Transactional
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
-//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
+
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found"));
 
@@ -299,9 +296,9 @@ public class SurveyService {
     private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
         Map<String, String> emailTokenMap = new HashMap<>();
         Long studentTagOid = surveyRegistrationRepository.findStudentTagOfSurveyRegistration(surveyRegistration.getOid());
-        List<Long> userOids = studentTagRepository.findUserOidByStudentTagOid(studentTagOid);
+        List<Long> userOids = studentTagService.findUserOidByStudentTagOid(studentTagOid);
         List<User> users = userOids.stream()
-                .map(oid -> userRepository.findActiveById(oid)
+                .map(oid -> userService.findActiveById(oid)
                         .orElseThrow(() -> new UserDoesNotExistsException("User not found!")))
                 .toList();
 
@@ -327,11 +324,10 @@ public class SurveyService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        User user = userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
         Student student = studentService.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Student does not exist"));
         if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) ||
                 roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
-            // Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
             List<Student> students = studentService.findByStudentTagOid(studentTagOid);
             if (!students.contains(student)) {
                 throw new AccessDeniedException("authentication failure.");
@@ -374,7 +370,7 @@ public class SurveyService {
     // Warning : studentTag ve trainerTag aynı sınıf için aynı olmalı!
 
     public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) { // 1 survey id ve 1 trainertag id
-        User user = userRepository.findActiveById((Long)
+        User user = userService.findActiveById((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
@@ -389,8 +385,6 @@ public class SurveyService {
 //                throw new AccessDeniedException("You dont have access to target class data.");
 //            }
         }
-//        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(()
-//        -> new ResourceNotFoundException("Classroom not found."));
 
         StudentTag studentTag = studentTagService.findActiveById(dto.getStudentTagOid()).orElseThrow(()
                 -> new TrainerTagNotFoundException("TrainerTag not found."));
@@ -432,12 +426,12 @@ public class SurveyService {
         Survey survey = surveyRepository.findById(dto.getSurveyOid())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found with id " + dto.getSurveyOid()));
 
-        StudentTag studentTag = studentTagRepository.findById(dto.getStudentTagOid())
+        StudentTag studentTag = studentTagService.findById(dto.getStudentTagOid())
                 .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found with id: " + dto.getStudentTagOid()));
 
         List<Response> responses = new ArrayList<>();
         for (Student student : studentTag.getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+            Set<Response> studentResponses = responseService.findBySurveyAndUser(survey, student.getUser());
             responses.addAll(studentResponses);
         }
 
@@ -486,7 +480,7 @@ public class SurveyService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+        User user = userService.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
 
         List<Survey> surveyList = surveyRepository.findAllActive();
 
@@ -498,7 +492,7 @@ public class SurveyService {
 
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
-        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
+        Question question = questionService.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
         if(survey.getQuestions().contains(question)){
             throw new QuestionAlreadyExistsException("Question already exists");
         }
@@ -512,7 +506,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         dto.getQuestionIds().forEach(qId -> {
-            Question question = questionRepository.findActiveById(qId).orElseThrow(() ->
+            Question question = questionService.findActiveById(qId).orElseThrow(() ->
                     new QuestionNotFoundException("Question not found."));
             question.getSurveys().add(survey);
             questions.add(question);
@@ -521,4 +515,15 @@ public class SurveyService {
         surveyRepository.save(survey);
     }
 
+    public Optional<Survey> findActiveById(Long extractSurveyOid) {
+        return surveyRepository.findActiveById(extractSurveyOid);
+    }
+
+    public void save(Survey survey) {
+        surveyRepository.save(survey);
+    }
+
+    public List<Survey> findAllActive() {
+        return surveyRepository.findAllActive();
+    }
 }

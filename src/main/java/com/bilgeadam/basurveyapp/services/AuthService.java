@@ -37,7 +37,6 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RoleService roleService;
-
     private final ManagerService managerService;
     private final StudentService studentService;
     private final TrainerService trainerService;

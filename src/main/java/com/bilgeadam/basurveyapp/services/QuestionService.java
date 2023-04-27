@@ -27,14 +27,11 @@ import static com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS.ROLE_MASTER_TRAI
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
-    private final QuestionTypeRepository questionTypeRepository;
-    private final SurveyRepository surveyRepository;
-
-    private final UserRepository userRepository;
-    private final TrainerRepository trainerRepository;
+    private final QuestionTypeService questionTypeService;
+    private final SurveyService surveyService;
+    private final TrainerService trainerService;
     private final JwtService jwtService;
-
-    private final QuestionTagRepository questionTagRepository;
+    private final QuestionTagService questionTagService;
 
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
@@ -43,14 +40,14 @@ public class QuestionService {
         }
 
 
-        Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
+        Set<QuestionTag> questionTagList = new HashSet<>();
 
         List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
-        tagOids.forEach(questTagOid -> questionTagRepository.findActiveById(questTagOid).ifPresent(questionTagList::add));
+        tagOids.forEach(questTagOid -> questionTagService.findActiveById(questTagOid).ifPresent(questionTagList::add));
 
         Question question = Question.builder()
                 .questionString(createQuestionDto.getQuestionString())
-                .questionType(questionTypeRepository.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                         () -> new QuestionTypeNotFoundException("Question type is not found")))
                 .order(createQuestionDto.getOrder())
                 .questionTag(questionTagList)
@@ -60,29 +57,27 @@ public class QuestionService {
         List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
         questionTagsToAdd.forEach(questionTag -> {
             questionTag.getTargetEntities().add(question);
-            questionTagRepository.save(questionTag);
+            questionTagService.save(questionTag);
         });
         return true;
     }
 
 // TODO questionTag ile target entitites
     public Boolean updateQuestion(UpdateQuestionDto updateQuestionDto) {
-        Set<QuestionTag> questionTagList = new HashSet<QuestionTag>();
+
         Optional<Question> updateQuestion = questionRepository.findActiveById(updateQuestionDto.getQuestionOid());
         if (updateQuestion.isEmpty()) {
             throw new QuestionNotFoundException("Question is not found to update");
         } else {
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
             updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(questionTagOid->
-                    questionTagRepository.findActiveById(questionTagOid).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet()));
+                    questionTagService.findActiveById(questionTagOid).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet()));
             Question question = updateQuestion.get();
             question.getQuestionTag().forEach(questionTag -> {
                 questionTag.getTargetEntities().add(question);
 
             });
             questionRepository.save(question);
-
-
             return true;
         }
     }
@@ -93,16 +88,14 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question is not found");
         } else {
 
-            QuestionFindByIdResponseDto questionFindByIdResponseDto = QuestionMapper.INSTANCE.toQuestionFindByIdResponseDto(optionalQuestion.get());
-            return questionFindByIdResponseDto;
+            return QuestionMapper.INSTANCE.toQuestionFindByIdResponseDto(optionalQuestion.get());
         }
     }
 
     public List<QuestionResponseDto> findAll() {
         List<Question> findAllList = questionRepository.findAllActive();
 
-        List<QuestionResponseDto> responseDtoList = QuestionMapper.INSTANCE.toQuestionResponseDtos(findAllList);
-        return responseDtoList;
+        return QuestionMapper.INSTANCE.toQuestionResponseDtos(findAllList);
     }
 
     public Boolean delete(Long questionId) {
@@ -122,7 +115,7 @@ public class QuestionService {
             throw new UndefinedTokenException("Invalid token.");
         }
         Long surveyOid = jwtService.extractSurveyOid(token);
-        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
+        Survey survey = surveyService.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         List<QuestionResponseDto> questionsDto = new ArrayList<>();
 
@@ -150,7 +143,7 @@ public class QuestionService {
 
     //TODO tag ler eklendiğinde test edilecektir.
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
+        Survey survey = surveyService.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<QuestionResponseDto> filteredList = allQuestions.stream()
@@ -176,7 +169,7 @@ public class QuestionService {
 
     //TODO birden fazla tag olduğunda nasıl çözülecek
     public List<QuestionResponseDto> filterSurveyQuestions(FilterSurveyQuestionsRequestDto dto) {
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid())
+        Survey survey = surveyService.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());
@@ -229,18 +222,18 @@ public class QuestionService {
      */
     public List<QuestionTag> findAllTags(List<Long> tagOids){
         return tagOids.stream()
-                .map(tag-> questionTagRepository.findById(tag).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
+                .map(tag-> questionTagService.findById(tag).orElseThrow(() -> new ResourceNotFoundException("Tag not found.")))
                 .collect(Collectors.toList());
     }
 
 
     public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(GetQuestionByRoleIdRequestDto dto) {
 
-        Optional<Trainer> trainer = trainerRepository.findActiveById(dto.getTrainerId());
+        Optional<Trainer> trainer = trainerService.findActiveById(dto.getTrainerId());
         if(trainer.isEmpty()){
             throw new ResourceNotFoundException("Trainer is not found");
         }
-        Optional<Survey> survey = surveyRepository.findActiveById(dto.getSurveyId());
+        Optional<Survey> survey = surveyService.findActiveById(dto.getSurveyId());
         if(survey.isEmpty()){
             throw new ResourceNotFoundException("Survey is not found");
         }
@@ -256,9 +249,23 @@ public class QuestionService {
        List<Question> trainerQuestions = questions.stream().filter(question -> question.getQuestionTag().contains(trainerQuestionTag)).toList();
 
 
-        List<QuestionsTrainerTypeResponseDto> questionsTrainerTypeResponseDto = QuestionMapper.INSTANCE.toQuestionsTrainerTypeResponseDto(trainerQuestions);
-        return questionsTrainerTypeResponseDto;
-
+        return QuestionMapper.INSTANCE.toQuestionsTrainerTypeResponseDto(trainerQuestions);
     }
 
+    public Optional<Question> findActiveById(Long questionOid) {
+
+        return questionRepository.findActiveById(questionOid);
+    }
+
+    public void save(Question question) {
+        questionRepository.save(question);
+    }
+
+    public List<Long> findSurveyQuestionOidList(Long oid) {
+        return questionRepository.findSurveyQuestionOidList(oid);
+    }
+
+    public void saveAll(List<Question> surveyQuestions) {
+        questionRepository.saveAll(surveyQuestions);
+    }
 }

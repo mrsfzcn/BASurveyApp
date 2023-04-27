@@ -9,7 +9,6 @@ import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
-import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -31,12 +30,12 @@ public class TrainerServiceTest {
     @Mock
     private TrainerRepository trainerRepository;
     @Mock
-    private TrainerTagRepository trainerTagRepository;
+    private TrainerTagService trainerTagService;
 
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-        trainerService = new TrainerService(trainerRepository,trainerTagRepository);
+        trainerService = new TrainerService(trainerRepository,trainerTagService);
     }
 
     @Test
@@ -165,7 +164,7 @@ public class TrainerServiceTest {
     @Test
     public void testUpdateTrainer_TrainerTagNotFoundException(){
         when(trainerRepository.findActiveById(1L)).thenReturn(Optional.empty());
-        when(trainerTagRepository.findActiveById(1L)).thenReturn(Optional.empty());
+        when(trainerTagService.findOptionalTrainerTagById(1L)).thenReturn(Optional.empty());
 
         try{
             trainerService.updateTrainer(TrainerUpdateDto.builder().trainerOid(1L).trainerTagOid(1L).build());
@@ -177,7 +176,7 @@ public class TrainerServiceTest {
     @Test
     public void testUpdateTrainer_TrainerNotFoundException(){
         when(trainerRepository.findActiveById(1L)).thenReturn(Optional.empty());
-        when(trainerTagRepository.findActiveById(1L)).thenReturn(Optional.of(TrainerTag.builder()
+        when(trainerTagService.findOptionalTrainerTagById(1L)).thenReturn(Optional.of(TrainerTag.builder()
                         .state(State.ACTIVE)
                         .tagString("test")
                 .build()));

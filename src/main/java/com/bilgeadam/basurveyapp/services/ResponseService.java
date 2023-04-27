@@ -24,12 +24,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ResponseService {
     private final ResponseRepository responseRepository;
-    private final QuestionRepository questionRepository;
-    private final UserRepository userRepository;
+    private final QuestionService questionService;
+    private final UserService userService;
     private final JwtService jwtService;
     private final StudentService studentService;
-    private final StudentRepository studentRepository;
-    private final SurveyRepository surveyRepository;
+    private final SurveyService surveyService;
 
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -40,11 +39,11 @@ public class ResponseService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+        userService.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
 
-        Response response = ResponseMapper.INSTANCE.toResponse(responseRequestDto, questionRepository
+        Response response = ResponseMapper.INSTANCE.toResponse(responseRequestDto, questionService
                 .findActiveById(responseRequestDto
-                        .getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("question not found")), userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")));
+                        .getQuestionOid()).orElseThrow(() -> new QuestionNotFoundException("question not found")), userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist")));
         responseRepository.save(response);
     }
 
@@ -74,16 +73,15 @@ public class ResponseService {
     public List<AnswerResponseDto> findAll() {
         ResponseMapper responseMapper = ResponseMapper.INSTANCE;
         List<Response> findAllList = responseRepository.findAllActive();
-        List<AnswerResponseDto> responseDtoList = findAllList.stream()
-                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
-//        List<AnswerResponseDto> responseDtoList = new ArrayList<>();
+        //        List<AnswerResponseDto> responseDtoList = new ArrayList<>();
 //        findAllList.forEach(response ->
 //                responseDtoList.add(AnswerResponseDto.builder()
 //                        .responseString(response.getResponseString())
 //                        .userOid(response.getUser().getOid())
 //                        .questionOid(response.getQuestion().getOid())
 //                        .build()));
-        return responseDtoList;
+        return findAllList.stream()
+                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
     }
 
     public Boolean deleteResponseById(Long responseOid) {
@@ -96,30 +94,30 @@ public class ResponseService {
     }
 
     public Boolean saveAll(String token, List<ResponseRequestSaveDto> responseRequestSaveDtoList) {
-        User user = userRepository.findByEmail(jwtService.extractEmail(token)).orElseThrow(() -> new ResourceNotFoundException("No such user."));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
-        Survey survey = surveyRepository.findActiveById(jwtService.extractSurveyOid(token)).orElseThrow(() -> new ResourceNotFoundException("No such survey."));
+        User user = userService.findByEmail(jwtService.extractEmail(token)).orElseThrow(() -> new ResourceNotFoundException("No such user."));// tokendan gelen id var gibi kabul edildi.Mail üzerinden yapıdı.
+        Survey survey = surveyService.findActiveById(jwtService.extractSurveyOid(token)).orElseThrow(() -> new ResourceNotFoundException("No such survey."));
         if (!responseRepository.isSurveyAnsweredByUser(user.getOid(), survey.getOid())) {
             Map<Long, Question> questionMap = new HashMap<>();
             responseRequestSaveDtoList.forEach(response -> {
                 Question question = questionMap.computeIfAbsent(response.getQuestionOid(),
-                        id -> questionRepository.findActiveById(id)
+                        id -> questionService.findActiveById(id)
                                 .orElseThrow(() -> new QuestionNotFoundException("Question not found")));
                 Response newResponse = Response.builder()
                         .responseString(response.getResponseString())
                         .question(question)
-                        .survey(surveyRepository.findActiveById(survey.getOid())
+                        .survey(surveyService.findActiveById(survey.getOid())
                                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found")))
                         .user(user)
                         .build();
                 Optional<Student> student = studentService.findByUser(user);
                 student.get().getSurveysAnswered().add(survey);
                 survey.getStudentsWhoAnswered().add(student.get());
-                studentRepository.save(student.get());
+                studentService.save(student.get());
                 responseRepository.save(newResponse);
                 question.getResponses().add(newResponse);
-                questionRepository.save(question);
+                questionService.save(question);
                 survey.getResponses().add(newResponse);
-                surveyRepository.save(survey);
+                surveyService.save(survey);
             });
             return true;
         } else {
@@ -129,10 +127,10 @@ public class ResponseService {
 
     public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         ResponseMapper responseMapper = ResponseMapper.INSTANCE;
-        userRepository.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
+        userService.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
+        Survey survey = surveyService.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
         return responseRepository
-                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionRepository.findSurveyQuestionOidList(survey.getOid()))
+                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionService.findSurveyQuestionOidList(survey.getOid()))
                 .stream()
                 .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
 //                        -> AnswerResponseDto.builder()
@@ -142,6 +140,7 @@ public class ResponseService {
 //                        .build()
     }
 
+    //TODO Gerekliliği kontrol edilmeli
     public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -151,7 +150,7 @@ public class ResponseService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        User user = userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
 //        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
 //            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
@@ -163,7 +162,7 @@ public class ResponseService {
 //        if (classroomOptional.isEmpty()) {
 //            throw new ResourceNotFoundException("Classroom is not found.");
 //        }
-        List<Survey> surveyList = surveyRepository.findAllActive();
+        List<Survey> surveyList = surveyService.findAllActive();
         if (surveyList.isEmpty()) {
             throw new SurveyNotFoundException("There's a error while finding survey list");
         }
@@ -194,8 +193,8 @@ public class ResponseService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
-        Survey survey = surveyRepository.findActiveById(surveyOid).orElseThrow(() -> new SurveyNotFoundException("There's a error while finding survey"));
+        userService.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+        Survey survey = surveyService.findActiveById(surveyOid).orElseThrow(() -> new SurveyNotFoundException("There's a error while finding survey"));
         List<Response> responseList = survey.getQuestions().stream().flatMap(q -> q.getResponses().stream()).toList();
         if (responseList.isEmpty()) {
             throw new ResponseNotFoundException("There's a error while finding response");
@@ -206,5 +205,17 @@ public class ResponseService {
                 .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
         responseRepository.saveAll(responseList);
         return true;
+    }
+
+    public Set<Response> findResponsesByUserOidAndSurveyOid(Long oid, Long surveyOid) {
+        return responseRepository.findResponsesByUserOidAndSurveyOid(oid,surveyOid);
+    }
+
+    public void saveAll(List<Response> updatedResponses) {
+        responseRepository.saveAll(updatedResponses);
+    }
+
+    public Set<Response> findBySurveyAndUser(Survey survey, User user) {
+        return responseRepository.findBySurveyAndUser(survey,user);
     }
 }
