@@ -10,7 +10,6 @@ import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TrainerMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
-import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TrainerService {
     private final TrainerRepository trainerRepository;
-    private final TrainerTagRepository trainerTagRepository;
+    private final TrainerTagService trainerTagService;
 
     public Boolean createTrainer(Trainer trainer) {
         trainerRepository.save(trainer);
@@ -29,7 +28,7 @@ public class TrainerService {
     }
     public TrainerResponseDto updateTrainer (TrainerUpdateDto dto){
         Optional<Trainer> trainer = trainerRepository.findActiveById(dto.getTrainerOid());
-        Optional<TrainerTag> trainerTag = trainerTagRepository.findActiveById(dto.getTrainerTagOid());
+        Optional<TrainerTag> trainerTag = trainerTagService.findOptionalTrainerTagById(dto.getTrainerTagOid());
 
         if (trainerTag.isEmpty()) {
             throw new TrainerTagNotFoundException("Trainer tag is not found");
@@ -40,7 +39,7 @@ public class TrainerService {
             trainer.get().getTrainerTags().add(trainerTag.get());
             trainerTag.get().getTargetEntities().add(trainer.get());
             trainerRepository.save(trainer.get());
-            trainerTagRepository.save(trainerTag.get());
+            trainerTagService.save(trainerTag.get());
         }
         return TrainerMapper.INSTANCE.toTrainerResponseDto(trainer.get());
     }
@@ -67,5 +66,9 @@ public class TrainerService {
         List<Trainer> assistantTrainers = trainerRepository.findAllAssistantTrainers();
 
         return TrainerMapper.INSTANCE.toAssistantTrainerResponseDtos(assistantTrainers);
+    }
+
+    public Optional<Trainer> findActiveByEmail(String email) {
+        return trainerRepository.findActiveByEmail(email);
     }
 }

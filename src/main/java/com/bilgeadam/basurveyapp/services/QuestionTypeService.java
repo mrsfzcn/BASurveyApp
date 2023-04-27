@@ -97,4 +97,7 @@ public class QuestionTypeService {
     }
 
 
+    public Optional<QuestionType> findActiveById(Long questionTypeOid) {
+        return questionTypeRepository.findActiveById(questionTypeOid);
+    }
 }

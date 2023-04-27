@@ -99,4 +99,14 @@ public class UserService {
 
         return true;
     }
+
+    public Optional<User> findActiveById(Long userOid) {
+
+        return userRepository.findActiveById(userOid);
+    }
+
+    public Optional<User> findByEmail(String extractEmail) {
+
+        return userRepository.findByEmail(extractEmail);
+    }
 }

@@ -5,7 +5,6 @@ import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.repositories.QuestionTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,5 +50,17 @@ public class QuestionTagService {
             return questionTagRepository.softDeleteById(deleteTag.get().getOid());
         }
 
+    }
+
+    public Optional<QuestionTag> findActiveById(Long questTagOid) {
+        return questionTagRepository.findActiveById(questTagOid);
+    }
+
+    public void save(QuestionTag questionTag) {
+        questionTagRepository.save(questionTag);
+    }
+
+    public Optional<QuestionTag> findById(Long tag) {
+        return questionTagRepository.findById(tag);
     }
 }
