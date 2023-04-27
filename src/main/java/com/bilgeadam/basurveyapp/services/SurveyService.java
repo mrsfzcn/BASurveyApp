@@ -3,11 +3,13 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
+import com.bilgeadam.basurveyapp.converter.SurveyServiceConverter;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
@@ -56,7 +58,6 @@ public class SurveyService {
     private final TrainerService trainerService;
     private final TrainerTagService trainerTagService;
     private final StudentTagRepository studentTagRepository;
-
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 
@@ -74,7 +75,6 @@ public class SurveyService {
     @Async
     @Scheduled(cron = "0 30 9 * * MON-FRI")
     public void initiateSurveys() throws MessagingException {
-
         List<SurveyRegistration> surveyRegistrations = surveyRegistrationRepository.findAllByEndDateAfter(LocalDateTime.now());
 
         if (surveyRegistrations.size() != 0) {
@@ -371,78 +371,88 @@ public class SurveyService {
         return surveyQuestionIdSet.containsAll(updateResponseQuestionIdSet);
     }
 
-    // Warning : studentTag ve trainerTag aynı sınıf için aynı olmalı!
+    public SurveyOfClassroomMaskedResponseDto findMaskedSurveyAnswersAsAdminOrManager(FindSurveyAnswersRequestDto dto) {
+        Survey survey = getSurveyById(dto.getSurveyOid());
+        StudentTag studentTag = getStudentTagById(dto.getStudentTagOid());
+        List<Response> responses = getResponsesForSurveyAndStudentTag(survey, studentTag);
+        Map<Question, List<Response>> responsesByQuestion = groupResponsesByQuestion(responses);
 
-    public SurveyOfClassroomMaskedResponseDto findSurveyAnswers(FindSurveyAnswersRequestDto dto) { // 1 survey id ve 1 trainertag id
+        List<QuestionWithAnswersMaskedResponseDto> questions = responsesByQuestion.entrySet().stream()
+                .map(entry -> {
+                    Question question = entry.getKey();
+                    List<Response> questionResponses = entry.getValue();
+                    List<SimpleResponseDto> responseDtos = questionResponses.stream()
+                            .map(response -> SimpleResponseDto.builder()
+                                    .oid(response.getOid())
+                                    .responseString(response.getResponseString())
+                                    .build())
+                            .collect(Collectors.toList());
+                    return SurveyServiceConverter.convertToQuestionWithAnswersMaskedResponseDto(question, responseDtos);
+                })
+                .collect(Collectors.toList());
+        return SurveyServiceConverter.convertToSurveyOfClassroomMaskedResponseDto(survey, questions);
+    }
+
+    public SurveyOfClassroomMaskedResponseDto findMaskedSurveyAnswersAsTrainer(FindSurveyAnswersRequestDto dto) {
         User user = userRepository.findActiveById((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
                         .getCredentials()
-        ).orElseThrow(() -> new UserDoesNotExistsException("No such user."));
-        if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) || roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
-            Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
-            if (trainerTagService.getTrainerTagsOids(trainer).contains(dto.getStudentTagOid())) {
-                throw new AccessDeniedException("You dont have access to target class data.");
+        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
+        Survey survey = getSurveyById(dto.getSurveyOid());
+        StudentTag studentTag = getStudentTagById(dto.getStudentTagOid());
+
+        Trainer trainer = trainerService.findTrainerByUserOid(user.getOid()).orElseThrow(() -> new ResourceNotFoundException("No such trainer."));
+        if (trainer.getTrainerTags().stream().anyMatch(tag -> tag.getTagString().equals(studentTag.getTagString()))) {
+            List<Response> responses = new ArrayList<>();
+            if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
+                for (Student student : studentTag.getTargetEntities()) {
+                    Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+                    for (Response response : studentResponses) {
+                        if (!response.getQuestion().getQuestionTag().stream().anyMatch(tag -> tag.getTagString().contains("ASSISTANT_TRAINER"))) {
+                            responses.add(response);
+                        }
+                    }
+                }
+            } else {
+                for (Student student : studentTag.getTargetEntities()) {
+                    Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+                    for (Response response : studentResponses) {
+                        if (!response.getQuestion().getQuestionTag().stream().anyMatch(tag -> tag.getTagString().contains("MASTER_TRAINER"))) {
+                            responses.add(response);
+                        }
+                    }
+                }
             }
-//            if (user.getClassrooms().stream().map(Classroom::getOid).noneMatch(oid -> dto.getClassroomOid().equals(oid))) {
-//                throw new AccessDeniedException("You dont have access to target class data.");
-//            }
+            Map<Question, List<Response>> responsesByQuestion = groupResponsesByQuestion(responses);
+            List<QuestionWithAnswersMaskedResponseDto> questions = responsesByQuestion.entrySet().stream()
+                    .map(entry -> {
+                        Question question = entry.getKey();
+                        List<Response> questionResponses = entry.getValue();
+                        List<SimpleResponseDto> responseDtos = questionResponses.stream()
+                                .map(response -> SimpleResponseDto.builder()
+                                        .oid(response.getOid())
+                                        .responseString(response.getResponseString())
+                                        .build())
+                                .collect(Collectors.toList());
+                        return SurveyServiceConverter.convertToQuestionWithAnswersMaskedResponseDto(question, responseDtos);
+                    })
+                    .collect(Collectors.toList());
+            return SurveyServiceConverter.convertToSurveyOfClassroomMaskedResponseDto(survey, questions);
+        } else {
+            throw new ResourceNotFoundException("Something went wrong");
+            //TODO Exception TrainerTag ve StudentTag eşleşmemesi sebebiyle yeni exception hazırlanmalı.
         }
-//        Classroom classroom = classroomRepository.findActiveById(dto.getClassroomOid()).orElseThrow(()
-//        -> new ResourceNotFoundException("Classroom not found."));
 
-        StudentTag studentTag = studentTagService.findActiveById(dto.getStudentTagOid()).orElseThrow(()
-                -> new TrainerTagNotFoundException("TrainerTag not found."));
-
-        Survey survey = surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
-//        List<Question> questions = survey.getQuestions();
-//        List<Long> usersInClassroom = classroom.getUsers().stream().map(User::getOid).toList();
-//        List<Student> studentInClassroom = studentService.findByStudentTagOid(studentTag.getOid());
-//
-//        List<Long> studentOidInClassroom = studentInClassroom.stream().map(studentOid->studentOid.getOid()).collect(toList());
-
-
-//        List<Long> studentOidInClassroom = studentTagRepository.findUserOidByStudentTagOid(studentTag.getOid());
-//
-//        List<QuestionWithAnswersMaskedResponseDto> questionsMaskedDto = questions.parallelStream()
-//                .map(question -> INSTANCE.toQuestionWithAnswersMaskedResponseDto(question, studentOidInClassroom))
-//                .collect(toList());
-
-// Assuming you have a SurveyOfClassroomMaskedResponseDto and corresponding mapper
-        return INSTANCE.toSurveyOfClassroomMaskedResponseDto(survey);
     }
-
-    // TODO surveyler trainerlara atandığında test edilecek
-    public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
-        Trainer trainer = trainerService.findTrainerByUserOid((Long)
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication()
-                        .getCredentials()
-        ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
-//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-//        User user = trainer.getUser();
-
-        return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
-    }
-
 
     public SurveyResponseWithAnswersDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
-        Survey survey = surveyRepository.findById(dto.getSurveyOid())
-                .orElseThrow(() -> new SurveyNotFoundException("Survey not found with id " + dto.getSurveyOid()));
+        Survey survey = getSurveyById(dto.getSurveyOid());
+        StudentTag studentTag = getStudentTagById(dto.getStudentTagOid());
+        List<Response> responses = getResponsesForSurveyAndStudentTag(survey, studentTag);
+        Map<Question, List<Response>> responsesByQuestion = groupResponsesByQuestion(responses);
 
-        StudentTag studentTag = studentTagRepository.findById(dto.getStudentTagOid())
-                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found with id: " + dto.getStudentTagOid()));
-
-        List<Response> responses = new ArrayList<>();
-        for (Student student : studentTag.getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
-            responses.addAll(studentResponses);
-        }
-
-        Map<Question, List<Response>> responsesByQuestion = responses.stream()
-                .collect(Collectors.groupingBy(Response::getQuestion));
 
         List<QuestionWithAnswersResponseDto> questions = responsesByQuestion.entrySet().stream()
                 .map(entry -> {
@@ -458,22 +468,26 @@ public class SurveyService {
                                     .response(response.getResponseString())
                                     .build())
                             .collect(Collectors.toList());
-                    return QuestionWithAnswersResponseDto.builder()
-                            .questionOid(question.getOid())
-                            .questionString(question.getQuestionString())
-                            .questionTypeOid(question.getQuestionType().getOid())
-                            .order(question.getOrder())
-                            .responses(responseDtos)
-                            .build();
+                    return SurveyServiceConverter.convertToQuestionWithAnswersResponseDto(question, responseDtos);
                 })
                 .collect(Collectors.toList());
 
-        return SurveyResponseWithAnswersDto.builder()
-                .surveyOid(survey.getOid())
-                .surveyTitle(survey.getSurveyTitle())
-                .courseTopic(survey.getCourseTopic())
-                .questions(questions)
-                .build();
+        return SurveyServiceConverter.convertToSurveyResponseWithAnswersDto(survey, questions);
+    }
+
+
+    // TODO surveyler trainerlara atandığında test edilecek
+    public TrainerClassroomSurveyResponseDto findTrainerSurveys() {
+        Trainer trainer = trainerService.findTrainerByUserOid((Long)
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getCredentials()
+        ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
+//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
+//        User user = trainer.getUser();
+
+        return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 
 
@@ -499,7 +513,7 @@ public class SurveyService {
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
-        if(survey.getQuestions().contains(question)){
+        if (survey.getQuestions().contains(question)) {
             throw new QuestionAlreadyExistsException("Question already exists");
         }
         question.getSurveys().add(survey);
@@ -521,4 +535,41 @@ public class SurveyService {
         surveyRepository.save(survey);
     }
 
+    // ###########  Simplifier methods to avoid repeating codes. ###########
+    private Survey getSurveyById(Long id) {
+        return surveyRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Survey not found with id " + id));
+    }
+
+    private StudentTag getStudentTagById(Long id) {
+        return studentTagRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + id));
+    }
+
+    private List<Response> getResponsesForSurveyAndStudentTag(Survey survey, StudentTag studentTag) {
+        List<Response> responses = new ArrayList<>();
+        for (Student student : studentTag.getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+            responses.addAll(studentResponses);
+        }
+        return responses;
+    }
+
+    private List<Response> getFilteredResponsesForSurveyAndStudentTagByTrainerTag(Survey survey, StudentTag studentTag, TrainerTag trainerTag) {
+        List<Response> responses = new ArrayList<>();
+        for (Student student : studentTag.getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+            responses.addAll(studentResponses);
+        }
+        return responses;
+    }
+
+    private Map<Question, List<Response>> groupResponsesByQuestion(List<Response> responses) {
+        Map<Question, List<Response>> responsesByQuestion = responses.stream()
+                .collect(Collectors.groupingBy(Response::getQuestion));
+        return responsesByQuestion;
+    }
+
 }
+
+
