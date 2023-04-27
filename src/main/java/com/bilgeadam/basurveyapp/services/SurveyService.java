@@ -430,10 +430,10 @@ public class SurveyService {
 
     public SurveyResponseWithAnswersDto findSurveyAnswersUnmasked(FindSurveyAnswersRequestDto dto) {
         Survey survey = surveyRepository.findById(dto.getSurveyOid())
-                .orElseThrow(() -> new ResourceNotFoundException("Survey not found with id " + dto.getSurveyOid()));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey not found with id " + dto.getSurveyOid()));
 
         StudentTag studentTag = studentTagRepository.findById(dto.getStudentTagOid())
-                .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + dto.getStudentTagOid()));
+                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found with id: " + dto.getStudentTagOid()));
 
         List<Response> responses = new ArrayList<>();
         for (Student student : studentTag.getTargetEntities()) {
