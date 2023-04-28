@@ -503,23 +503,61 @@ public class SurveyService {
     }
 
 
-    public List<SurveyByStudentTagResponseDto> findStudentSurveys() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("authentication failure.");
-        }
-        if ("anonymousUser".equals(authentication.getPrincipal())) {
-            throw new AccessDeniedException("authentication failure.");
-        }
-        Long userOid = (Long) authentication.getCredentials();
-        User user = userService.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+    public List<SurveyByStudentTagResponseDto> findSurveysByStudentOid(Long studentOid) {
+        User user = userService.findActiveById((Long)
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getCredentials()
+        ).orElseThrow(() -> new ResourceNotFoundException("No such user."));
 
-        List<Survey> surveyList = surveyRepository.findAllActive();
+        Student student = studentService.findByOid(studentOid)
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with id: " + studentOid));
 
-        return INSTANCE.toSurveyByStudentTagResponseDtoList(surveyList
-                .stream()
-                .filter(survey -> survey.getStudentsWhoAnswered().stream().map(Student::getUser)
-                        .map(BaseEntity::getOid).toList().contains(user.getOid())).toList());
+        if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_STUDENT)) {
+            if(student.getUser().getOid() != user.getOid()){
+                throw new AccessDeniedException("Access denied");
+            }
+        }
+
+        List<Response> responses = responseRepository.findListByUser(student.getUser());
+        Map<Survey, List<Response>> responsesBySurvey = responses.stream()
+                .collect(Collectors.groupingBy(Response::getSurvey));
+
+        return responsesBySurvey.entrySet().stream()
+                .map(entry -> {
+                    Survey survey = entry.getKey();
+                    List<Response> surveyResponses = entry.getValue();
+                    Map<Question, List<Response>> responsesByQuestion = surveyResponses.stream()
+                            .collect(Collectors.groupingBy(Response::getQuestion));
+
+                    List<SurveyByStudentTagQuestionsResponseDto> questions = responsesByQuestion.entrySet().stream()
+                            .map(questionEntry -> {
+                                Question question = questionEntry.getKey();
+                                List<Response> questionResponses = questionEntry.getValue();
+                                List<SurveyByStudentTagQuestionAnswersResponseDto> responseDtos = questionResponses.stream()
+                                        .map(response -> SurveyByStudentTagQuestionAnswersResponseDto.builder()
+                                                .responseOid(response.getOid())
+                                                .responseString(response.getResponseString())
+                                                .build())
+                                        .collect(Collectors.toList());
+
+                                return SurveyByStudentTagQuestionsResponseDto.builder()
+                                        .questionOid(question.getOid())
+                                        .questionString(question.getQuestionString())
+                                        .responses(responseDtos)
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+
+                    return SurveyByStudentTagResponseDto.builder()
+                            .surveyOid(survey.getOid())
+                            .surveyTitle(survey.getSurveyTitle())
+                            .courseTopic(survey.getCourseTopic())
+                            .questions(questions)
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
