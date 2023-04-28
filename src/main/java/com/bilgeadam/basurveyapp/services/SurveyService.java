@@ -47,17 +47,16 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ResponseRepository responseRepository;
     private final QuestionRepository questionRepository;
-    private final UserRepository userRepository;
+
+    private final UserService userService;
     private final EmailService emailService;
     private final JwtService jwtService;
-    private final SurveyMapper surveyMapper;
     private final SurveyRegistrationRepository surveyRegistrationRepository;
     private final RoleService roleService;
     private final StudentTagService studentTagService;
     private final StudentService studentService;
     private final TrainerService trainerService;
-    private final TrainerTagService trainerTagService;
-    private final StudentTagRepository studentTagRepository;
+
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
 
@@ -158,7 +157,7 @@ public class SurveyService {
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyRepository.findActiveById(surveyOid)
                 .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found."));
-        StudentTag studentTag = studentTagRepository.findActiveById(studentTagOid).orElseThrow(
+        StudentTag studentTag = studentTagService.findActiveById(studentTagOid).orElseThrow(
                 () -> new SurveyTagNotFoundException("StudentTag is not Found."));
 
         SurveyRegistration surveyRegistration = survey.getSurveyRegistrations()
@@ -183,7 +182,7 @@ public class SurveyService {
         }
 
         String userEmail = jwtService.extractEmail(token);
-        User currentUser = userRepository.findByEmail(userEmail)
+        User currentUser = userService.findByEmail(userEmail)
                 .orElseThrow(() -> new UserDoesNotExistsException("User is not found"));
 
         // authentication ******
@@ -299,9 +298,9 @@ public class SurveyService {
     private Map<String, String> generateMailTokenMap(SurveyRegistration surveyRegistration, int days) {
         Map<String, String> emailTokenMap = new HashMap<>();
         Long studentTagOid = surveyRegistrationRepository.findStudentTagOfSurveyRegistration(surveyRegistration.getOid());
-        List<Long> userOids = studentTagRepository.findUserOidByStudentTagOid(studentTagOid);
+        List<Long> userOids = studentTagService.findUserOidByStudentTagOid(studentTagOid);
         List<User> users = userOids.stream()
-                .map(oid -> userRepository.findActiveById(oid)
+                .map(oid -> userService.findActiveById(oid)
                         .orElseThrow(() -> new UserDoesNotExistsException("User not found!")))
                 .toList();
 
@@ -327,7 +326,7 @@ public class SurveyService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
+        User user = userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
         Student student = studentService.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Student does not exist"));
         if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) ||
                 roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
@@ -394,7 +393,7 @@ public class SurveyService {
     }
 
     public SurveyOfClassroomMaskedResponseDto findMaskedSurveyAnswersAsTrainer(FindSurveyAnswersRequestDto dto) {
-        User user = userRepository.findActiveById((Long)
+        User user = userService.findActiveById((Long)
                 SecurityContextHolder
                         .getContext()
                         .getAuthentication()
@@ -500,7 +499,7 @@ public class SurveyService {
             throw new AccessDeniedException("authentication failure.");
         }
         Long userOid = (Long) authentication.getCredentials();
-        User user = userRepository.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
+        User user = userService.findActiveById(userOid).orElseThrow(() -> new UserDoesNotExistsException("User does not exist"));
 
         List<Survey> surveyList = surveyRepository.findAllActive();
 
@@ -542,7 +541,7 @@ public class SurveyService {
     }
 
     private StudentTag getStudentTagById(Long id) {
-        return studentTagRepository.findById(id)
+        return studentTagService.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + id));
     }
 
