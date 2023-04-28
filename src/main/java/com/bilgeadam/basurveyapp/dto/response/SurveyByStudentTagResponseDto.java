@@ -15,6 +15,6 @@ public class SurveyByStudentTagResponseDto {
     private String surveyTitle;
     private String courseTopic;
 
-    private List<SurveyByClassroomQuestionsResponseDto> questionDtoList;
+    private List<SurveyByStudentTagQuestionsResponseDto> questions;
 
 }

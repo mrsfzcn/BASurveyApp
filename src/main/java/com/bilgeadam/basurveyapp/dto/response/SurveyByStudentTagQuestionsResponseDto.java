@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class SurveyByClassroomQuestionsResponseDto {
+public class SurveyByStudentTagQuestionsResponseDto {
     private Long questionOid;
     private String questionString;
-    private List<SurveyByClassroomQuestionAnswersResponseDto> responseDtoList;
+    private List<SurveyByStudentTagQuestionAnswersResponseDto> responses;
 }

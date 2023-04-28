@@ -284,5 +284,11 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.RESPONSE_NOT_FOUND", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(RESPONSE_NOT_FOUND, exception, request);
     }
+    @ResponseBody
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleStudentNotFoundException(StudentNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.STUDENT_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(STUDENT_NOT_FOUND, exception, request);
+    }
 
 }

@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class SurveyByClassroomQuestionAnswersResponseDto {
+public class SurveyByStudentTagQuestionAnswersResponseDto {
     private Long responseOid;
     private String responseString;
 }
