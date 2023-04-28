@@ -10,6 +10,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TagMapper;
+import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TrainerTagService {
     private final TrainerTagRepository trainerTagRepository;
-    private final TrainerService trainerService;
+    private final TrainerRepository trainerRepository;
     public void createTag(CreateTagDto dto) {
         if(trainerTagRepository.findByTrainerTagName(dto.getTagString()).isPresent()){
             throw new TrainerTagExistException("Trainer Tag already exist!");
@@ -66,7 +67,7 @@ public class TrainerTagService {
     }
 
     public GetTrainerTagsByEmailResponse getTrainerTagsByEmail(String email) {
-        Optional<Trainer> trainer= trainerService.findActiveByEmail(email);
+        Optional<Trainer> trainer= trainerRepository.findActiveByEmail(email);
 
         if(trainer.isEmpty()){
             throw new TrainerNotFoundException("trainer not found");

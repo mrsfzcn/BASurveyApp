@@ -570,6 +570,17 @@ public class SurveyService {
         return responsesByQuestion;
     }
 
+    public Optional<Survey> findActiveById(Long surveyOid) {
+        return surveyRepository.findActiveById(surveyOid);
+    }
+
+    public void save(Survey survey) {
+        surveyRepository.save(survey);
+    }
+
+    public List<Survey> findAllActive() {
+        return surveyRepository.findAllActive();
+    }
 }
 
 
