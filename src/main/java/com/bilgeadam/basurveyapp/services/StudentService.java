@@ -61,4 +61,8 @@ public class StudentService {
     public void save(Student student) {
         studentRepository.save(student);
     }
+
+    public Optional<Student> findByOid(Long studentOid) {
+        return studentRepository.findById(studentOid);
+    }
 }

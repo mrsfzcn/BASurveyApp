@@ -111,10 +111,9 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
-    @GetMapping("/findSurveyByStudentOid")
-    @Operation(summary = "")
-    ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveyByStudentOid() {
-        return ResponseEntity.ok(surveyService.findStudentSurveys());
+    @GetMapping("/findSurveysByStudentOid")
+    ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentOid(@RequestParam Long studentOid) {
+        return ResponseEntity.ok(surveyService.findSurveysByStudentOid(studentOid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
