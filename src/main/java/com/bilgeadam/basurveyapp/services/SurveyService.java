@@ -315,38 +315,51 @@ public class SurveyService {
 
         return emailTokenMap;
     }
+    public List<SurveyByStudentTagResponseDto> findSurveysByStudentTag(Long studentTagOid) {
+        StudentTag studentTag = studentTagService.findActiveById(studentTagOid)
+                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found with id: " + studentTagOid));
 
 
-    public List<SurveyByStudentTagResponseDto> findByStudentTagOid(Long studentTagOid) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("authentication failure.");
-        }
-        if ("anonymousUser".equals(authentication.getPrincipal())) {
-            throw new AccessDeniedException("authentication failure.");
-        }
-        Long userOid = (Long) authentication.getCredentials();
-        User user = userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
-        Student student = studentService.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Student does not exist"));
-        if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER) ||
-                roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
-            // Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
-            List<Student> students = studentService.findByStudentTagOid(studentTagOid);
-            if (!students.contains(student)) {
-                throw new AccessDeniedException("authentication failure.");
-            }
-        }
-        List<Survey> surveyList = surveyRepository.findAllActive();
-        List<Survey> surveysWithTheOidsOfTheClasses = surveyList
-                .stream()
-                .filter(survey -> survey.getSurveyRegistrations()
-                        .stream()
-                        .map(sR -> sR.getStudentTag().getOid())
-                        .toList().contains(studentTagOid))
-                .toList();
+        List<Response> responses = getResponsesForStudentTag(studentTag);
 
-        return INSTANCE.toSurveyByStudentTagResponseDtoList(surveysWithTheOidsOfTheClasses);
+        Map<Survey, List<Response>> responsesBySurvey = responses.stream()
+                .collect(Collectors.groupingBy(Response::getSurvey));
+
+        List<SurveyByStudentTagResponseDto> allSurveyResponses = responsesBySurvey.entrySet().stream()
+                .map(entry -> {
+                    Survey survey = entry.getKey();
+                    List<Response> surveyResponses = entry.getValue();
+                    Map<Question, List<Response>> responsesByQuestion = surveyResponses.stream()
+                            .collect(Collectors.groupingBy(Response::getQuestion));
+                    List<SurveyByStudentTagQuestionsResponseDto> questions = responsesByQuestion.entrySet().stream()
+                            .map(questionEntry -> {
+                                Question question = questionEntry.getKey();
+                                List<Response> questionResponses = questionEntry.getValue();
+                                List<SurveyByStudentTagQuestionAnswersResponseDto> responseDtos = questionResponses.stream()
+                                        .map(response -> SurveyByStudentTagQuestionAnswersResponseDto.builder()
+                                                .responseOid(response.getOid())
+                                                .responseString(response.getResponseString())
+                                                .build())
+                                        .collect(Collectors.toList());
+                                return SurveyByStudentTagQuestionsResponseDto.builder()
+                                        .questionOid(question.getOid())
+                                        .questionString(question.getQuestionString())
+                                        .responses(responseDtos)
+                                        .build();
+                            })
+                            .collect(Collectors.toList());
+                    return SurveyByStudentTagResponseDto.builder()
+                            .surveyOid(survey.getOid())
+                            .surveyTitle(survey.getSurveyTitle())
+                            .courseTopic(survey.getCourseTopic())
+                            .questions(questions)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return allSurveyResponses;
     }
+
 
     private Boolean crossCheckSurveyQuestionsAndCreateResponses(Survey survey, List<SurveyResponseQuestionRequestDto> getCreateResponses) {
 
@@ -543,6 +556,15 @@ public class SurveyService {
     private StudentTag getStudentTagById(Long id) {
         return studentTagService.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + id));
+    }
+
+    private List<Response> getResponsesForStudentTag(StudentTag studentTag){
+        List<Response> responses = new ArrayList<>();
+        for (Student student : studentTag.getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findSetByUser(student.getUser());
+            responses.addAll(studentResponses);
+        }
+        return responses;
     }
 
     private List<Response> getResponsesForSurveyAndStudentTag(Survey survey, StudentTag studentTag) {

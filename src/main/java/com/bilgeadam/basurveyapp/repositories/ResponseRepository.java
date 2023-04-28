@@ -26,4 +26,8 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
     Set<Response> findResponsesByUserOidAndSurveyOid(Long userOid, Long surveyOid);
 
     Set<Response> findBySurveyAndUser(Survey survey, User user);
+
+    Set<Response> findSetByUser(User user);
+
+    List<Response> findListByUser(User user);
 }
