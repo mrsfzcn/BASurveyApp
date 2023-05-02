@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
+import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,14 +33,14 @@ public class TrainerTagServiceTest {
     @Mock
     private TrainerTagRepository trainerTagRepository;
     @Mock
-    private TrainerService trainerService;
+    private TrainerRepository trainerRepository;
 
     private TrainerTagService trainerTagService;
 
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-       trainerTagService = new TrainerTagService(trainerTagRepository,trainerService);
+       trainerTagService = new TrainerTagService(trainerTagRepository,trainerRepository);
     }
 
     @Test
