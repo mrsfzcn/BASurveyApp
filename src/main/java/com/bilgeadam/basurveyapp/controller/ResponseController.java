@@ -18,13 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASSISTANT_TRAINER', 'STUDENT')")
-    @PostMapping("/create")
-    @Operation(summary = "String türünde girdi ile yeni bir response oluşmasını sağlar.")
-    public ResponseEntity<Void> createResponse(@RequestBody @Valid ResponseRequestSaveDto dto) {
-        responseService.createResponse(dto);
-        return ResponseEntity.ok().build();
-    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
