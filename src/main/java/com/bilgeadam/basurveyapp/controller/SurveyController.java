@@ -6,7 +6,6 @@ import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -34,7 +33,6 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/page")
-    @Operation(summary = "")
     ResponseEntity<Page<Survey>> getSurveyPage(Pageable pageable) {
         return ResponseEntity.ok(surveyService.getSurveyPage(pageable));
     }
@@ -82,27 +80,27 @@ public class SurveyController {
         surveyService.delete(surveyId);
         return ResponseEntity.ok().build();
     }
-
+/* /response/updateStudentResponses response controller a taşınmış
     @PutMapping("/update-survey-response/{surveyId}")
     @PreAuthorize("hasRole('STUDENT')")
     @Operation(summary = "Survey id girilerek response'ların değiştirilebilmesini sağlayan metot.")
     ResponseEntity<Survey> updateSurveyResponses(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(surveyService.updateSurveyResponses(surveyId, dto));
     }
+*/
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "")
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
-
+/* /savesurveyanswers/{token} response controller a taşınmış
     @PostMapping("/response/{token}")
     @Operation(summary = "")
     ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
         return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dtoList, request));
     }
-
+*/
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findSurveysByStudentTag")
     public ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentTag(
@@ -118,28 +116,24 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findsurveyanswersunmasked")
-    @Operation(summary = "")
     ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findMaskedSurveyAnswersAsAdminOrManager")
-    @Operation(summary = "")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsAdminOrManager(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsAdminOrManager(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/findMaskedSurveyAnswersAsTrainer")
-    @Operation(summary = "")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsTrainer(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsTrainer(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/trainersurveys")
-    @Operation(summary = "")
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
