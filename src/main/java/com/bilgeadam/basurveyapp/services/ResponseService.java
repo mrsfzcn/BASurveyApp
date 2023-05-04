@@ -140,7 +140,6 @@ public class ResponseService {
 //                        .build()
     }
 
-    //TODO tekrar eden veriler dönüyor.
     public List<AnswerResponseDto> findResponseByStudentTag(Long studentTagOid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -152,36 +151,25 @@ public class ResponseService {
         Long userOid = (Long) authentication.getCredentials();
         User user = userService.findActiveById(userOid).orElseThrow(() -> new ResourceNotFoundException("User does not exist"));
 
-//        if (roleService.userHasRole(user, "ASSISTANT_TRAINER") || roleService.userHasRole(user, "MASTER_TRAINER")) {
-//            Classroom classroom = classroomRepository.findActiveById(classroomOid).orElseThrow(() -> new ResourceNotFoundException("Classroom does not exist"));
-//            if (!classroom.getUsers().contains(user)) {
-//                throw new AccessDeniedException("authentication failure.");
-//            }
-//        }
-//        Optional<Classroom> classroomOptional = classroomRepository.findActiveById(classroomOid);
-//        if (classroomOptional.isEmpty()) {
-//            throw new ResourceNotFoundException("Classroom is not found.");
-//        }
         List<Survey> surveyList = surveyService.findAllActive();
         if (surveyList.isEmpty()) {
             throw new SurveyNotFoundException("There's a error while finding survey list");
         }
-        List<Question> questionList = surveyList.stream().flatMap(s -> s.getQuestions().stream()
-        ).toList();
-        if (questionList.isEmpty()) {
-            throw new QuestionNotFoundException("There's a error while finding questions");
-        }
-        List<Response> responseList = questionList.stream().flatMap(q -> q.getResponses().stream()).toList();
+        List<Response> responseList = new ArrayList<>();
+        surveyList.stream().flatMap(s -> s.getQuestions().stream())
+                .forEach(q -> responseList.addAll(q.getResponses()));
         if (responseList.isEmpty()) {
             throw new ResponseNotFoundException("There's a error while finding response");
         }
-        List<AnswerResponseDto> answerResponseDtoList = new ArrayList<>();
-        responseList.forEach(r -> answerResponseDtoList.add(AnswerResponseDto.builder()
-                .responseString(r.getResponseString())
-                .userOid(r.getUser().getOid())
-                .questionOid(r.getQuestion().getOid())
-                .surveyOid(r.getSurvey().getOid())
-                .build()));
+        List<AnswerResponseDto> answerResponseDtoList = responseList.stream()
+                .distinct()
+                .map(r -> AnswerResponseDto.builder()
+                        .responseString(r.getResponseString())
+                        .userOid(r.getUser().getOid())
+                        .questionOid(r.getQuestion().getOid())
+                        .surveyOid(r.getSurvey().getOid())
+                        .build())
+                .toList();
         return answerResponseDtoList;
     }
 
