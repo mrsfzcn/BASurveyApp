@@ -27,7 +27,7 @@ public class SurveyController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
     @Operation(summary = "Tüm survey'leri görüntülemeyi sağlayan metot.")
-    ResponseEntity<List<SurveyResponseDto>> getSurveyList() {
+    ResponseEntity<List<SurveySimpleResponseDto>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
     }
 
@@ -38,9 +38,9 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{surveyId}")
+    @GetMapping("/OfindSurveyByid/{surveyId}")
     @Operation(summary = "Survey id'si girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot.")
-    ResponseEntity<SurveySimpleResponseDto> findById(@PathVariable("surveyId") Long surveyId) {
+    ResponseEntity<SurveyResponseDto> findById(@PathVariable("surveyId") Long surveyId) {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
 

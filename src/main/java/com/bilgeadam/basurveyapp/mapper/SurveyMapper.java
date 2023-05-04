@@ -1,20 +1,14 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestAdapter;
-import com.bilgeadam.basurveyapp.dto.request.SurveyAssignRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
-import com.bilgeadam.basurveyapp.repositories.StudentTagRepository;
-import com.bilgeadam.basurveyapp.services.StudentTagService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +19,28 @@ public interface SurveyMapper {
     SurveyMapper INSTANCE = Mappers.getMapper(SurveyMapper.class);
 
     List<SurveyByStudentTagResponseDto> toSurveyByStudentTagResponseDtoList(final List<Survey> surveys);
+
     Survey toSurvey(final SurveyCreateRequestDto surveyCreateRequestDto);
+
     @Mapping(target = "surveyOid", source = "oid")
     SurveySimpleResponseDto toSurveySimpleResponseDto(final Survey survey);
-    List<SurveyResponseDto> toSurveyResponseDtoList(final List<Survey> surveys);
+
+    List<SurveySimpleResponseDto> toSurveySimpleResponseDto(final List<Survey> surveys);
+
+    SurveyResponseDto toSurveyResponseDto(final Survey survey);
+
+    List<SurveyResponseDto> toSurveyResponseDto(final List<Survey> surveys);
+
     @Mapping(source = "tagString", target = "name")
     SurveyClassroomResponseDto toSurveyClassroomResponseDto(final SurveyTag surveyTag);
+
     List<SurveyClassroomResponseDto> toSurveyClassroomResponseDto(final List<SurveyTag> surveyTags);
+
     @Mapping(target = "lastName", source = "user.lastName")
     @Mapping(target = "firstName", source = "user.lastName")
     @Mapping(target = "email", source = "user.email")
     SurveyStudentResponseDto toSurveyStudentResponseDto(final Student student);
+
     List<SurveyStudentResponseDto> toSurveyStudentResponseDto(final List<Student> studentsWhoAnswered);
 
 

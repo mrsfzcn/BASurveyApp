@@ -99,9 +99,9 @@ public class SurveyService {
 //        logger.info("Scheduled - " + Thread.currentThread().getId() + " - " + LocalDateTime.now());
     }
 
-    public List<SurveyResponseDto> getSurveyList() {
+    public List<SurveySimpleResponseDto> getSurveyList() {
         List<Survey> surveys = surveyRepository.findAllActive();
-        return INSTANCE.toSurveyResponseDtoList(surveys);
+        return INSTANCE.toSurveySimpleResponseDto(surveys);
     }
 
     public Page<Survey> getSurveyPage(Pageable pageable) {
@@ -139,13 +139,19 @@ public class SurveyService {
         return surveyRepository.softDeleteById(surveyToBeDeleted.get().getOid());
     }
 
-    public SurveySimpleResponseDto findByOid(Long surveyId) {
+    public SurveyResponseDto findByOid(Long surveyId) {
 
         Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
+        Set<Question> surveyQuestions = surveyById.get().getQuestions().stream().collect(Collectors.toSet());
+        surveyById.get().setQuestions(surveyQuestions.stream().collect(Collectors.toList()));
+
+//                Set<Question> trainerQuestions = questions.stream()
+//                .filter(question -> question.getQuestionTag().contains(trainerQuestionTag))
+//                .collect(Collectors.toSet());
         if (surveyById.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
-        return SurveyMapper.INSTANCE.toSurveySimpleResponseDto(surveyById.get());
+        return SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
     }
 
     //TODO Bakılması lazım. Gereksiz olabilir.
