@@ -3,12 +3,14 @@ package com.bilgeadam.basurveyapp.mapper;
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface QuestionMapper {
@@ -40,14 +42,23 @@ public interface QuestionMapper {
     @Mapping(target = "questionOid", source = "oid")
     @Mapping(target = "questionTags", source = "questionTag")
     QuestionResponseDto toQuestionResponseDto(Question question);
+
     List<QuestionResponseDto> toQuestionResponseDtos(List<Question> questions);
 
     @Mapping(target = "questionTypeOid", source = "questionType.oid")
     @Mapping(target = "questionOid", source = "oid")
     @Mapping(target = "questionTags", source = "questionTag")
     QuestionsTrainerTypeResponseDto toQuestionsTrainerTypeResponseDto(Question questions);
-    List<QuestionsTrainerTypeResponseDto> toQuestionsTrainerTypeResponseDto(List<Question> questions);
 
+    List<QuestionsTrainerTypeResponseDto> toQuestionsTrainerTypeResponseDto(Set<Question> questions);
+
+    @Mapping(target = "responseOid", source = "oid")
+    @Mapping(target = "questionOid", source = "response.question.oid")
+    @Mapping(target = "userOid", source = "response.user.oid")
+    @Mapping(target = "surveyOid", source = "response.survey.oid")
+    ResponseDto toResponseDto(final Response response);
+
+    List<ResponseDto> toResponseDto(final List<Response> responses);
 
     List<QuestionTagResponseDto> toQuestionTagResponseDto(List<QuestionTag> questionTags);
 
