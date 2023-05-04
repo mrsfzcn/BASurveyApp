@@ -116,28 +116,26 @@ public class QuestionService {
         Long surveyOid = jwtService.extractSurveyOid(token);
         Survey survey = surveyService.findActiveById(surveyOid).orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
+        Set<Long> uniqueQuestionIds = new HashSet<>();
         List<QuestionResponseDto> questionsDto = new ArrayList<>();
 
         //TODO mapper kullanılacak
         for (Question question : questions) {
-            questionsDto.add(QuestionResponseDto.builder()
-                    .questionOid(question.getOid())
-                    .questionString(question.getQuestionString())
-                    .order(question.getOrder())
-                    .questionTags(question.getQuestionTag().stream().map(
-                            questionTag -> QuestionTagResponseDto.builder()
-                                    .oid(questionTag.getOid())
-                                    .tagString(questionTag.getTagString())
-                                    .build()).collect(Collectors.toList()))
-                    .questionTypeOid(question.getQuestionType().getOid())
-                    .build());
+            if (uniqueQuestionIds.add(question.getOid())) {
+                questionsDto.add(QuestionResponseDto.builder()
+                        .questionOid(question.getOid())
+                        .questionString(question.getQuestionString())
+                        .order(question.getOrder())
+                        .questionTags(question.getQuestionTag().stream().map(
+                                questionTag -> QuestionTagResponseDto.builder()
+                                        .oid(questionTag.getOid())
+                                        .tagString(questionTag.getTagString())
+                                        .build()).collect(Collectors.toList()))
+                        .questionTypeOid(question.getQuestionType().getOid())
+                        .build());
+            }
         }
         return questionsDto;
-
-//        List<QuestionResponseDto> questionsDto = QuestionMapper.INSTANCE.toQuestionResponseDtos(questions);
-//        return questionsDto;
-
-
     }
 
     //TODO tag ler eklendiğinde test edilecektir.

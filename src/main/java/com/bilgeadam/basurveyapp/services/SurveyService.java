@@ -615,15 +615,6 @@ public class SurveyService {
         return responses;
     }
 
-    private List<Response> getFilteredResponsesForSurveyAndStudentTagByTrainerTag(Survey survey, StudentTag studentTag, TrainerTag trainerTag) {
-        List<Response> responses = new ArrayList<>();
-        for (Student student : studentTag.getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
-            responses.addAll(studentResponses);
-        }
-        return responses;
-    }
-
     private Map<Question, List<Response>> groupResponsesByQuestion(List<Response> responses) {
         Map<Question, List<Response>> responsesByQuestion = responses.stream()
                 .collect(Collectors.groupingBy(Response::getQuestion));
