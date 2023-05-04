@@ -34,7 +34,7 @@ public class TrainerController {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/signtoclass")
+    @PostMapping("/assignTrainerTag")
     @Operation(summary = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot.")
     public ResponseEntity<TrainerResponseDto> assignTrainerTag(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));

@@ -57,7 +57,7 @@ public class StudentTagController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findActiveById")
-    @Operation(summary = "student tag oid girilerek active durumdaki student'ların gösterilmesini sağlayan metot.")
+    @Operation(summary = "studentTagOid ile ilgili oid'ye ait StudentTag'i getiriyor. (ACTIVE ise)")
     public ResponseEntity<Optional<StudentTag>> findActiveById(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findActiveById(studentTagOid));
     }

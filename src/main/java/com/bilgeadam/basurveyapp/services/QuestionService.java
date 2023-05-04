@@ -2,14 +2,11 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
-import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
 import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
@@ -33,9 +30,11 @@ public class QuestionService {
     private final JwtService jwtService;
     private final QuestionTagService questionTagService;
 
+    private final ResponseRepository responseRepository;
+
 
     public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        if(questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()){
+        if (questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()) {
             throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
         }
 
@@ -109,7 +108,7 @@ public class QuestionService {
         }
     }
 
-    // TODO Metod doğru çalışmıyor düzenlenecek
+    // TODO Metot doğru çalışmıyor düzenlenecek
     public List<QuestionResponseDto> findAllSurveyQuestions(String token) {
         if (jwtService.isSurveyEmailTokenValid(token)) {
             throw new UndefinedTokenException("Invalid token.");
@@ -172,7 +171,7 @@ public class QuestionService {
         Survey survey = surveyService.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
-        List<Question> tempQuestions = filterByTags(allQuestions, dto.getTagOids());
+        List<Question> tempQuestions = filterByTags(allQuestions, dto.getQuestionTagOids());
 //        if(dto.getSubTagOids().size()!=0){
 //            tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
 //        }
@@ -226,30 +225,102 @@ public class QuestionService {
                 .collect(Collectors.toList());
     }
 
-
+    // Original Method.
+//    public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(GetQuestionByRoleIdRequestDto dto) {
+//
+//        Optional<Trainer> trainer = trainerService.findActiveById(dto.getTrainerId());
+//        if(trainer.isEmpty()){
+//            throw new ResourceNotFoundException("Trainer is not found");
+//        }
+//        Optional<Survey> survey = surveyService.findActiveById(dto.getSurveyId());
+//        if(survey.isEmpty()){
+//            throw new ResourceNotFoundException("Survey is not found");
+//        }
+//
+//        QuestionTag trainerQuestionTag;
+//        if(trainer.get().isMasterTrainer()){
+//            trainerQuestionTag=  questionRepository.findByTagString(ROLE_MASTER_TRAINER).orElseThrow(()->new ResourceNotFoundException("Tag not found"));
+//        }else {
+//            trainerQuestionTag= questionRepository.findByTagString(ROLE_ASSISTANT_TRAINER).orElseThrow(()->new ResourceNotFoundException("Tag not found"));
+//        }
+//
+//        List<Question> questions = survey.get().getQuestions();
+//        List<Question> trainerQuestions = questions.stream().filter(question -> question.getQuestionTag().contains(trainerQuestionTag)).toList();
+//
+//
+//        return QuestionMapper.INSTANCE.toQuestionsTrainerTypeResponseDto(trainerQuestions);
+//    }
     public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(GetQuestionByRoleIdRequestDto dto) {
 
         Optional<Trainer> trainer = trainerService.findActiveById(dto.getTrainerId());
-        if(trainer.isEmpty()){
+        if (trainer.isEmpty()) {
             throw new ResourceNotFoundException("Trainer is not found");
         }
         Optional<Survey> survey = surveyService.findActiveById(dto.getSurveyId());
-        if(survey.isEmpty()){
+        if (survey.isEmpty()) {
             throw new ResourceNotFoundException("Survey is not found");
         }
 
         QuestionTag trainerQuestionTag;
-        if(trainer.get().isMasterTrainer()){
-           trainerQuestionTag=  questionRepository.findByTagString(ROLE_MASTER_TRAINER).orElseThrow(()->new ResourceNotFoundException("Tag not found"));
-        }else {
-           trainerQuestionTag= questionRepository.findByTagString(ROLE_ASSISTANT_TRAINER).orElseThrow(()->new ResourceNotFoundException("Tag not found"));
+        if (trainer.get().isMasterTrainer()) {
+            trainerQuestionTag = questionRepository.findByTagString(ROLE_MASTER_TRAINER).orElseThrow(() -> new ResourceNotFoundException("Tag not found"));
+        } else {
+            trainerQuestionTag = questionRepository.findByTagString(ROLE_ASSISTANT_TRAINER).orElseThrow(() -> new ResourceNotFoundException("Tag not found"));
         }
 
         List<Question> questions = survey.get().getQuestions();
-       List<Question> trainerQuestions = questions.stream().filter(question -> question.getQuestionTag().contains(trainerQuestionTag)).toList();
+        List<Question> trainerQuestions = questions.stream().filter(question -> question.getQuestionTag().contains(trainerQuestionTag)).toList();
+        List<Response> responses = new ArrayList<>();
+        for (Question question : trainerQuestions) {
+            Set<Response> questionResponses = question.getResponses().stream().collect(Collectors.toSet());
+            responses.addAll(questionResponses);
+        }
+        Map<Question, List<Response>> responsesByQuestion = responses.stream()
+                .collect(Collectors.groupingBy(Response::getQuestion));
 
+//        List<QuestionTagResponseDto> questionsDtos = responsesByQuestion.entrySet().stream().map(entry ->{
+//            Question question = entry.getKey();
+//            List<Response> questionResponses = entry.getValue();
+//            QuestionTagResponseDto.builder()
+//                    .oid(entry.getKey().getOid())
+//                    .tagString(entry.getKey().getQuestionString())
+//                    .build();
+//            return questionTag
+//                }).collect(Collectors.toList());
+//        )
 
-        return QuestionMapper.INSTANCE.toQuestionsTrainerTypeResponseDto(trainerQuestions);
+        List<QuestionsTrainerTypeResponseDto> responseDtos = responsesByQuestion.entrySet().stream().map(entry -> {
+            Question question = entry.getKey();
+            List<Response> questionResponses = entry.getValue();
+            List<QuestionTagResponseDto> questionTagResponseDtos = questionResponses.stream().map(response -> QuestionTagResponseDto.builder()
+                    .oid(getQuestionTagOid(response, trainerQuestionTag.getTagString()))
+                    .tagString(response.getResponseString())
+                    .build()).collect(Collectors.toList());
+            List<ResponseDto> responseDtos1 = questionResponses.stream().map(response -> ResponseDto.builder()
+                    .responseOid(response.getOid())
+                    .responseString(response.getResponseString())
+                    .questionOid(response.getQuestion().getOid())
+                    .userOid(response.getUser().getOid())
+                    .surveyOid(response.getSurvey().getOid())
+                    .build()).collect(Collectors.toList());
+
+            return QuestionsTrainerTypeResponseDto.builder()
+                    .questionOid(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .questionTypeOid(question.getQuestionType().getOid())
+                    .order(question.getOrder())
+                    .questionTags(questionTagResponseDtos)
+                    .responses(responseDtos1)
+                    .build();
+        }).collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
+    private Long getQuestionTagOid(Response response, String trainerQuestionTag) {
+        List<QuestionTag> questionTags = response.getQuestion().getQuestionTag().stream().filter(tag -> tag.getTagString().equals(trainerQuestionTag)).collect(Collectors.toList());
+        QuestionTag questionTag = questionTags.get(0);
+        return questionTag.getOid();
     }
 
     public Optional<Question> findActiveById(Long questionOid) {
@@ -269,3 +340,4 @@ public class QuestionService {
         questionRepository.saveAll(surveyQuestions);
     }
 }
+

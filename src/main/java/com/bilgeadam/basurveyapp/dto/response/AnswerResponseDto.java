@@ -10,5 +10,6 @@ import lombok.*;
 public class AnswerResponseDto {
     private Long userOid;
     private Long questionOid;
+    private Long surveyOid;
     private String responseString;
 }

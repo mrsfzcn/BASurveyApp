@@ -26,7 +26,6 @@ public class ResponseController {
         return ResponseEntity.ok().build();
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
     @Operation(summary = "id ile response bulup string girdisi ile yeni bir response oluşmasını sağlayan metot.")
@@ -48,7 +47,7 @@ public class ResponseController {
         return ResponseEntity.ok(responseService.findAll());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping
+    @DeleteMapping("/delete")
     @Operation(summary = "id ile bulunan response'un silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
         return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
@@ -72,10 +71,10 @@ public class ResponseController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
-    @GetMapping("/findResponseByClassroomOid")
+    @GetMapping("/findResponseByStudentTag")
     @Operation(summary = "clasroom id'si girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot.")
-    public ResponseEntity<List<AnswerResponseDto>> findResponseByClassroomOid(@RequestParam Long classroomOid) {
-        return ResponseEntity.ok(responseService.findResponseByClassroomOid(classroomOid));
+    public ResponseEntity<List<AnswerResponseDto>> findResponseByStudentTag(@RequestParam Long studentTagOid) {
+        return ResponseEntity.ok(responseService.findResponseByStudentTag(studentTagOid));
     }
 
 
