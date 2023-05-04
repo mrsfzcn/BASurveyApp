@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.entity;
 
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +17,9 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "surveys")
+//TODO geçici yazıldı. Daha iyi bir çözüm üretilecek.
+@JsonIgnoreProperties({"surveyRegistrations", "studentsWhoAnswered", "questions", "surveyTags", "responses"})
+
 public class Survey extends BaseEntity {
 
     @Column(name = "survey_title", unique = true)

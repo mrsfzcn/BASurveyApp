@@ -20,6 +20,7 @@ public interface ResponseMapper {
     List<AnswerResponseDto> toAnswerResponseDto(final List<Response> responseDtoList);
     @Mapping(target = "userOid", source = "response.user.oid")
     @Mapping(target = "questionOid", source = "response.question.oid")
+    @Mapping(target = "surveyOid", source = "response.survey.oid")
     AnswerResponseDto toAnswerResponseDto(final Response response);
 
     Response toResponse(final ResponseRequestSaveDto responseRequestSaveDto, final Question question, final User user);

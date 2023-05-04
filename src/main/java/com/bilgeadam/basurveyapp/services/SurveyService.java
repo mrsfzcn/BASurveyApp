@@ -148,6 +148,7 @@ public class SurveyService {
         return SurveyMapper.INSTANCE.toSurveySimpleResponseDto(surveyById.get());
     }
 
+    //TODO Bakılması lazım. Gereksiz olabilir.
     public Boolean responseSurveyQuestions(String token, List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
 
         if (jwtService.isSurveyEmailTokenValid(token)) {

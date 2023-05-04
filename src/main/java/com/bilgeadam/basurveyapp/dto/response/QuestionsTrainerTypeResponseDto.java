@@ -19,5 +19,5 @@ public class QuestionsTrainerTypeResponseDto {
     Long questionTypeOid;
     Integer order;
     List<QuestionTagResponseDto> questionTags;
-    Set<Response> responses;
+    List<ResponseDto> responses;
 }

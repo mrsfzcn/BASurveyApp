@@ -41,7 +41,7 @@ public class StudentController {
      */
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/signtoclass")
+    @PutMapping("/assignStudentTag")
     @Operation(summary = "")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));

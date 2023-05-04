@@ -140,8 +140,8 @@ public class ResponseService {
 //                        .build()
     }
 
-    //TODO Gerekliliği kontrol edilmeli
-    public List<AnswerResponseDto> findResponseByClassroomOid(Long classroomOid) {
+    //TODO tekrar eden veriler dönüyor.
+    public List<AnswerResponseDto> findResponseByStudentTag(Long studentTagOid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new AccessDeniedException("authentication failure.");
@@ -180,6 +180,7 @@ public class ResponseService {
                 .responseString(r.getResponseString())
                 .userOid(r.getUser().getOid())
                 .questionOid(r.getQuestion().getOid())
+                .surveyOid(r.getSurvey().getOid())
                 .build()));
         return answerResponseDtoList;
     }
