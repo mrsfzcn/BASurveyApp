@@ -144,10 +144,6 @@ public class SurveyService {
         Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
         Set<Question> surveyQuestions = surveyById.get().getQuestions().stream().collect(Collectors.toSet());
         surveyById.get().setQuestions(surveyQuestions.stream().collect(Collectors.toList()));
-
-//                Set<Question> trainerQuestions = questions.stream()
-//                .filter(question -> question.getQuestionTag().contains(trainerQuestionTag))
-//                .collect(Collectors.toSet());
         if (surveyById.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }

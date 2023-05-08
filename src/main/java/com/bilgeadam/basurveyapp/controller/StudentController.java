@@ -42,7 +42,7 @@ public class StudentController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/assignStudentTag")
-    @Operation(summary = "")
+    @Operation(summary = "#6")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));
     }

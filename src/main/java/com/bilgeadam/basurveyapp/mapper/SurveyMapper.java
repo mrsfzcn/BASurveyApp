@@ -37,7 +37,7 @@ public interface SurveyMapper {
     List<SurveyClassroomResponseDto> toSurveyClassroomResponseDto(final List<SurveyTag> surveyTags);
 
     @Mapping(target = "lastName", source = "user.lastName")
-    @Mapping(target = "firstName", source = "user.lastName")
+    @Mapping(target = "firstName", source = "user.firstName")
     @Mapping(target = "email", source = "user.email")
     SurveyStudentResponseDto toSurveyStudentResponseDto(final Student student);
 

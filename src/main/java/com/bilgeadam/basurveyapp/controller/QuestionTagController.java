@@ -21,7 +21,7 @@ public class QuestionTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "String türünde tag ismi girilerek yeni question tag oluşturulmasını sağlayan metot.")
+    @Operation(summary = "String türünde tag ismi girilerek yeni question tag oluşturulmasını sağlayan metot. #9")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         questionTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());

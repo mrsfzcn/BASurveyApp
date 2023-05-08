@@ -25,7 +25,7 @@ public class QuestionTypeController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "String türünde questiontype ismi girilerek yeni bir tür oluşturan metot.")
+    @Operation(summary = "String türünde questiontype ismi girilerek yeni bir tür oluşturan metot. #8")
     public ResponseEntity<Boolean> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.createQuestionType(dto));
     }

@@ -25,7 +25,7 @@ public class StudentTagController {
     private final StudentTagService studentTagService;
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot.")
+    @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #03")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         studentTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
