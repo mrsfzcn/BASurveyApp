@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.services.SurveyTagService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class SurveyTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
+    @Operation(summary = "#04")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         surveyTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());

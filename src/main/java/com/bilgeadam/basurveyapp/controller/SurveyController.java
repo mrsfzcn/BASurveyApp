@@ -26,7 +26,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
-    @Operation(summary = "Tüm survey'leri görüntülemeyi sağlayan metot.")
+    @Operation(summary = "Tüm survey'leri görüntülemeyi sağlayan metot. #16")
     ResponseEntity<List<SurveySimpleResponseDto>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
     }
@@ -38,29 +38,29 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/OfindSurveyByid/{surveyId}")
-    @Operation(summary = "Survey id'si girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot.")
+    @GetMapping("/findSurveyByid/{surveyId}")
+    @Operation(summary = "Survey id'si girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot. #17")
     ResponseEntity<SurveyResponseDto> findById(@PathVariable("surveyId") Long surveyId) {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot.")
+    @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot. #11")
     ResponseEntity<Boolean> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/add-question-to-survey")
-    @Operation(summary = "survey ve question id'si girilere bir survey'e yeni bir soru eklemeyi sağlayan metot.")
+    @Operation(summary = "survey ve question id'si girilere bir survey'e yeni bir soru eklemeyi sağlayan metot. #12")
     ResponseEntity<Boolean> addQuestionToSurvey( @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
         return ResponseEntity.ok(surveyService.addQuestionToSurvey( dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/add-questions-to-survey")
-    @Operation(summary = "survey id'si ve eklenecek soruların id'leri eklenerek yeni soru eklemeyi sağlayan metot.")
+    @Operation(summary = "survey id'si ve eklenecek soruların id'leri eklenerek yeni soru eklemeyi sağlayan metot. #12")
     ResponseEntity<Boolean> addQuestionsToSurvey( @RequestBody @Valid SurveyAddQuestionsRequestDto dto) {
         surveyService.addQuestionsToSurvey( dto);
         return ResponseEntity.ok(true);
@@ -91,6 +91,7 @@ public class SurveyController {
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "#13")
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
@@ -103,6 +104,7 @@ public class SurveyController {
 */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findSurveysByStudentTag")
+    @Operation(summary = "#19")
     public ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentTag(
             @RequestParam Long studentTagOid) {
         return ResponseEntity.ok(surveyService.findSurveysByStudentTag(studentTagOid));
@@ -110,24 +112,28 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
     @GetMapping("/findSurveysByStudentOid")
+    @Operation(summary = "#18")
     ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentOid(@RequestParam Long studentOid) {
         return ResponseEntity.ok(surveyService.findSurveysByStudentOid(studentOid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findsurveyanswersunmasked")
+    @Operation(summary = "#20")
     ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findMaskedSurveyAnswersAsAdminOrManager")
+    @Operation(summary = "#21")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsAdminOrManager(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsAdminOrManager(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/findMaskedSurveyAnswersAsTrainer")
+    @Operation(summary = "#22")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsTrainer(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsTrainer(findSurveyAnswersRequestDto));
     }

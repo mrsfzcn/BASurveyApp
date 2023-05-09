@@ -24,7 +24,7 @@ public class TrainerTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot.(exception ı doğru çalışıyor.) ")
+    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot.(exception ı doğru çalışıyor. #02) ")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         trainerTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());

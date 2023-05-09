@@ -33,31 +33,32 @@ public class QuestionService {
     private final ResponseRepository responseRepository;
 
 
-    public Boolean createQuestion(CreateQuestionDto createQuestionDto) {
-        if (questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()) {
-            throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
+    public Boolean createQuestions(List<CreateQuestionDto> createQuestionDtoList) {
+        for (CreateQuestionDto createQuestionDto : createQuestionDtoList) {
+            if (questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()) {
+                throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
+            }
+
+            Set<QuestionTag> questionTagList = new HashSet<>();
+
+            List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
+            tagOids.forEach(questTagOid -> questionTagService.findActiveById(questTagOid).ifPresent(questionTagList::add));
+
+            Question question = Question.builder()
+                    .questionString(createQuestionDto.getQuestionString())
+                    .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                            () -> new QuestionTypeNotFoundException("Question type is not found")))
+                    .order(createQuestionDto.getOrder())
+                    .questionTag(questionTagList)
+                    .build();
+
+            questionRepository.save(question);
+            List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
+            questionTagsToAdd.forEach(questionTag -> {
+                questionTag.getTargetEntities().add(question);
+                questionTagService.save(questionTag);
+            });
         }
-
-
-        Set<QuestionTag> questionTagList = new HashSet<>();
-
-        List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
-        tagOids.forEach(questTagOid -> questionTagService.findActiveById(questTagOid).ifPresent(questionTagList::add));
-
-        Question question = Question.builder()
-                .questionString(createQuestionDto.getQuestionString())
-                .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
-                        () -> new QuestionTypeNotFoundException("Question type is not found")))
-                .order(createQuestionDto.getOrder())
-                .questionTag(questionTagList)
-                .build();
-
-        questionRepository.save(question);
-        List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
-        questionTagsToAdd.forEach(questionTag -> {
-            questionTag.getTargetEntities().add(question);
-            questionTagService.save(questionTag);
-        });
         return true;
     }
 

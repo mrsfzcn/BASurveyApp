@@ -45,7 +45,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/survey/response/**",
             "/question/getsurveyquestions/**",
-//           "/role/**"
+            "/role/**"
     };
 
     @Bean

@@ -24,10 +24,10 @@ public class QuestionController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot.")
-    public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid CreateQuestionDto createQuestionDto) {
+    @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot. #10")
+    public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
 
-        return ResponseEntity.ok(questionService.createQuestion(createQuestionDto));
+        return ResponseEntity.ok(questionService.createQuestions(createQuestionDtoList));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -61,7 +61,7 @@ public class QuestionController {
     }
 
     @GetMapping("/getsurveyquestions/{token}")
-    @Operation(summary = "Token kullanılarak anket sorularına ulaşılmasını sağlayan metot.")
+    @Operation(summary = "Token kullanılarak anket sorularına ulaşılmasını sağlayan metot. #14")
     public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token) {
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }

@@ -23,9 +23,9 @@ import java.util.List;
 public class RoleController {
     private final RoleService roleService;
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("/createrole")
-    @Operation(summary = "String girdisi ile yeni bir rol oluşturulmasını sağlayan metot.")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+@PostMapping("/createrole")
+@Operation(summary = "String girdisi ile yeni bir rol oluşturulmasını sağlayan metot. #01")
     public ResponseEntity<CreateRoleResponseDto> createRole(CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));
     }
