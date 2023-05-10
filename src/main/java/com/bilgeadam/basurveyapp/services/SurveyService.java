@@ -144,7 +144,7 @@ public class SurveyService {
         if (surveyById.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
-        List<SurveyStudentResponseDto> notAnsweredStudents = new ArrayList<>();
+        List<SurveyStudentResponseDto> studentsWhoNotAnswered = new ArrayList<>();
         Set<Student> woAnsweredStudents = surveyById.get().getStudentsWhoAnswered();
 
         Map<Student, Integer> hashMap = new HashMap<>();
@@ -157,14 +157,14 @@ public class SurveyService {
                 .stream()
                 .forEach(student -> {
                     if (!hashMap.containsKey(student)){
-                        notAnsweredStudents.add(SurveyStudentResponseDto.builder()
+                        studentsWhoNotAnswered.add(SurveyStudentResponseDto.builder()
                                         .email(student.getUser().getEmail())
                                         .firstName(student.getUser().getFirstName())
                                         .lastName(student.getUser().getLastName()).build());
                     }
                 }));
         SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
-        surveyResponseDto.setNotAnsweredStudents(notAnsweredStudents);
+        surveyResponseDto.setStudentsWhoNotAnswered(studentsWhoNotAnswered);
         return surveyResponseDto;
     }
 

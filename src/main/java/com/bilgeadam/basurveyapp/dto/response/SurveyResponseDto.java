@@ -18,5 +18,5 @@ public class SurveyResponseDto {
     private List<SurveyClassroomResponseDto> surveyTags;
     private List<SurveyQuestionResponseDto> questions;
     private List<SurveyStudentResponseDto> studentsWhoAnswered;
-    private List<SurveyStudentResponseDto> notAnsweredStudents;
+    private List<SurveyStudentResponseDto> studentsWhoNotAnswered;
 }
