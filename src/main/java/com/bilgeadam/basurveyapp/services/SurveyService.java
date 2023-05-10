@@ -145,22 +145,22 @@ public class SurveyService {
             throw new SurveyNotFoundException("Survey is not found");
         }
         List<SurveyStudentResponseDto> studentsWhoNotAnswered = new ArrayList<>();
-        Set<Student> woAnsweredStudents = surveyById.get().getStudentsWhoAnswered();
+        Set<Student> whoAnsweredStudents = surveyById.get().getStudentsWhoAnswered();
 
         Map<Student, Integer> hashMap = new HashMap<>();
-        for(Student key : woAnsweredStudents){
+        for(Student key : whoAnsweredStudents){
             hashMap.put(key,0);
         }
 
-        surveyById.get().getSurveyRegistrations().parallelStream().forEach(sR ->
-                studentTagService.getStudentsByStudentTag(sR.getStudentTag())
-                .stream()
-                .forEach(student -> {
-                    if (!hashMap.containsKey(student)){
-                        studentsWhoNotAnswered.add(SurveyStudentResponseDto.builder()
+        surveyById.get().getSurveyRegistrations().parallelStream()
+                .forEach(sR -> studentTagService.getStudentsByStudentTag(sR.getStudentTag()).stream()
+                        .forEach(student -> {
+                            if (!hashMap.containsKey(student)){
+                                studentsWhoNotAnswered.add(SurveyStudentResponseDto.builder()
                                         .email(student.getUser().getEmail())
                                         .firstName(student.getUser().getFirstName())
-                                        .lastName(student.getUser().getLastName()).build());
+                                        .lastName(student.getUser().getLastName()).build()
+                        );
                     }
                 }));
         SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
