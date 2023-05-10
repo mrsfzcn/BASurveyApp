@@ -634,6 +634,29 @@ public class SurveyService {
     public List<Survey> findAllActive() {
         return surveyRepository.findAllActive();
     }
+
+    //TODO SurveyTags kontrol edilecek.
+    public SurveyParticipantResponseDto findSurveyParticipants(SurveyParticipantRequestDto dto) {
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagOid()).orElseThrow(() -> new StudentTagNotFoundException("Student tag not found")));
+        Optional<SurveyRegistration> surveyRegistration = Optional.ofNullable(Optional.ofNullable(surveyRegistrationRepository
+                .findByStudentTagAndSurveyOid(studentTag.get(), dto.getSurveyOid())).orElseThrow(() -> new SurveyNotFoundException("Survey registration not found.")));
+        if (surveyRegistration.isPresent()) {
+            Survey survey = surveyRegistration.get().getSurvey();
+            List<Student> students = studentTagService.getStudentsByStudentTag(studentTag.get());
+            List<ParticipantResponseDto> participantResponseDtos = students.stream().map(student -> ParticipantResponseDto.builder()
+                    .firstName(student.getUser().getFirstName())
+                    .lastName(student.getUser().getLastName())
+                    .email(student.getUser().getEmail())
+                    .build()).collect(Collectors.toList());
+
+            return SurveyParticipantResponseDto.builder()
+                    .surveyTags(survey.getSurveyTags())
+                    .studentList(participantResponseDtos.stream().collect(Collectors.toSet()))
+                    .surveyTitle(survey.getSurveyTitle())
+                    .build();
+        }
+        return null;
+    }
 }
 
 

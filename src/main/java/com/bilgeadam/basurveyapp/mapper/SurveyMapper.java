@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.mapper;
 
 
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.SurveyParticipantRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
@@ -87,6 +88,18 @@ public interface SurveyMapper {
     @Mapping(source = "question.questionType.oid", target = "questionTypeOid")
     @Mapping(target = "question.responses", expression = "java(mapResponses(question, usersInClassroom))")
     QuestionWithAnswersMaskedResponseDto toQuestionWithAnswersMaskedResponseDto(Question question, List<Long> usersInClassroom);
+
+
+    @Mapping(target = "firstName", source = "user.firstName")
+    @Mapping(target = "lastName", source = "user.lastName")
+    @Mapping(target = "email", source = "user.email")
+    ParticipantResponseDto toParticipantResponseDto(final Student student);
+
+    List<ParticipantResponseDto> toParticipantResponseDtoList(List<Student> studentList);
+
+    //    @Mapping(target = "surveyTags", expression = "java(survey.getSurveyTags().stream().map(SurveyTag::getTagString).collect(java.util.stream.Collectors.toList()))")
+    SurveyParticipantResponseDto toSurveyParticipantResponseDto(Survey survey, List<Student> students);
+
 
     default List<ResponseUnmaskedDto> mapResponses(Question question, List<Long> usersInClassroom) {
         List<ResponseUnmaskedDto> responseUnmaskedDtos = new ArrayList<>();
