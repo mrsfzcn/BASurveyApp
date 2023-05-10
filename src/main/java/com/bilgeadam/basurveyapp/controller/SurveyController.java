@@ -144,5 +144,11 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
+    @GetMapping("/findSurveyParticipants")
+    ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
+        return ResponseEntity.ok(surveyService.findSurveyParticipants(dto));
+    }
+
 }
 
