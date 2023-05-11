@@ -7,9 +7,7 @@ import com.bilgeadam.basurveyapp.converter.SurveyServiceConverter;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
-import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
@@ -24,7 +22,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
@@ -147,7 +144,28 @@ public class SurveyService {
         if (surveyById.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
-        return SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
+        List<SurveyStudentResponseDto> studentsWhoNotAnswered = new ArrayList<>();
+        Set<Student> whoAnsweredStudents = surveyById.get().getStudentsWhoAnswered();
+
+        Map<Student, Integer> hashMap = new HashMap<>();
+        for(Student key : whoAnsweredStudents){
+            hashMap.put(key,0);
+        }
+
+        surveyById.get().getSurveyRegistrations().parallelStream()
+                .forEach(sR -> studentTagService.getStudentsByStudentTag(sR.getStudentTag()).stream()
+                        .forEach(student -> {
+                            if (!hashMap.containsKey(student)){
+                                studentsWhoNotAnswered.add(SurveyStudentResponseDto.builder()
+                                        .email(student.getUser().getEmail())
+                                        .firstName(student.getUser().getFirstName())
+                                        .lastName(student.getUser().getLastName()).build()
+                        );
+                    }
+                }));
+        SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
+        surveyResponseDto.setStudentsWhoNotAnswered(studentsWhoNotAnswered);
+        return surveyResponseDto;
     }
 
     //TODO Bakılması lazım. Gereksiz olabilir.
