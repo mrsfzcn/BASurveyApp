@@ -9,9 +9,9 @@ import com.bilgeadam.basurveyapp.repositories.QuestionTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,6 @@ public class QuestionTagService {
         if(questionTag1.isPresent()){
             throw new QuestionTagExistException("Question Tag already exist!");
         }
-
         QuestionTag questionTag = QuestionTag.builder()
                 .tagString(dto.getTagString())
                 .build();
@@ -33,34 +32,34 @@ public class QuestionTagService {
     }
 
     public List<TagResponseDto> findAll() {
-        List<QuestionTag> findAllList = questionTagRepository.findAllActive();
-        List<TagResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(questionTag ->
-                responseDtoList.add(TagResponseDto.builder()
+
+        List<QuestionTag> questionTags = questionTagRepository.findAllActive();
+        return questionTags.stream()
+                .map(questionTag -> TagResponseDto.builder()
                         .tagStringId(questionTag.getOid())
                         .tagString(questionTag.getTagString())
-                        .build()));
-        return responseDtoList;
+                        .build())
+                .collect(Collectors.toList());
     }
     public Boolean delete(Long tagStringId) {
-        Optional<QuestionTag> deleteTag = questionTagRepository.findActiveById(tagStringId);
-        if (deleteTag.isEmpty()) {
-            throw new QuestionTagNotFoundException("Question tag not found");
-        } else {
-            return questionTagRepository.softDeleteById(deleteTag.get().getOid());
-        }
 
+        QuestionTag questionTag = questionTagRepository.findActiveById(tagStringId)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+        return questionTagRepository.softDeleteById(questionTag.getOid());
     }
 
     public Optional<QuestionTag> findActiveById(Long questTagOid) {
+
         return questionTagRepository.findActiveById(questTagOid);
     }
 
     public void save(QuestionTag questionTag) {
+
         questionTagRepository.save(questionTag);
     }
 
     public Optional<QuestionTag> findById(Long tag) {
+
         return questionTagRepository.findById(tag);
     }
 }

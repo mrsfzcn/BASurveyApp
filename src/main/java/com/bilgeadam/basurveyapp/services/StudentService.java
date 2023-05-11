@@ -20,35 +20,34 @@ import java.util.Optional;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentTagService studentTagService;
-    public Boolean createStudent(Student student) {
+
+    public void createStudent(Student student) {
         studentRepository.save(student);
-        return true;
     }
 
     public StudentResponseDto updateStudent(StudentUpdateDto dto) {
+        Optional<Student> studentOptional = studentRepository.findActiveById(dto.getStudentOid());
+        Optional<StudentTag> studentTagOptional = studentTagService.findActiveById(dto.getStudentTagOid());
 
-        Optional<Student> student = studentRepository.findActiveById(dto.getStudentOid());
-        Optional<StudentTag> studentTag = studentTagService.findActiveById(dto.getStudentTagOid());
+        Student student = studentOptional.orElseThrow(() -> new ResourceNotFoundException("Student is not found"));
+        StudentTag studentTag = studentTagOptional.orElseThrow(() -> new ResourceNotFoundException("Student tag is not found"));
 
-        if (studentTag.isEmpty()) {
-            throw new ResourceNotFoundException("Student tag is not found");
-        }
-        if (student.isEmpty()) {
-            throw new ResourceNotFoundException("Student is not found");
-        } else {
-            student.get().getStudentTags().add(studentTag.get());
-            studentTag.get().getTargetEntities().add(student.get());
-            studentRepository.save(student.get());
-            studentTagService.save(studentTag.get());
-        }
-       return StudentMapper.INSTANCE.toStudentResponseDto(student.get());
+        student.getStudentTags().add(studentTag);
+        studentTag.getTargetEntities().add(student);
+
+        studentRepository.save(student);
+        studentTagService.save(studentTag);
+
+        return StudentMapper.INSTANCE.toStudentResponseDto(student);
     }
+
     public Optional<Student> findByUser(User currentUser) {
 
         return studentRepository.findByUser(currentUser.getOid());
     }
 
     public List<Student> findByStudentTagOid(Long studentTagOid) {
+
         return studentRepository.findByStudentTagOid(studentTagOid);
     }
 
@@ -59,10 +58,12 @@ public class StudentService {
     }
 
     public void save(Student student) {
+
         studentRepository.save(student);
     }
 
     public Optional<Student> findByOid(Long studentOid) {
+
         return studentRepository.findById(studentOid);
     }
 }
