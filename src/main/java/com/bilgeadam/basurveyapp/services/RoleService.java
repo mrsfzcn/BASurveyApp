@@ -20,30 +20,38 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     public boolean userHasRole(User user, String role) {
-        return user.getRoles().stream().map(Role::getRole).anyMatch(roleString -> roleString.equals(role));
+
+        return user.getRoles().stream().map(Role::getRole)
+                .anyMatch(roleString -> roleString.equals(role));
     }
 
     public boolean userHasAuthorizedRole(User user, String role) {
+
         return user.getAuthorizedRole().equals(role);
-//        user.getAuthorizedRole().stream().anyMatch(roleString -> roleString.equals(role));
     }
 
     public boolean hasRole(String role) {
+
         return findRoleStrings().stream().anyMatch(roleString -> roleString.equals(role));
     }
 
     public List<String> findRoleStrings() {
+
         return roleRepository.findAllActive().stream().map(Role::getRole).collect(Collectors.toList());
     }
 
     public List<Role> findRoles() {
+
         return roleRepository.findAllActive();
     }
 
     public CreateRoleResponseDto createRole(CreateRoleDto dto) {
-        Role role = roleRepository.save(Role.builder()
-                .role(dto.getRole().toUpperCase())
-                .build());
+        Role role = roleRepository.save(
+                Role.builder()
+                        .role(dto.getRole().toUpperCase())
+                        .build()
+        );
+
         return CreateRoleResponseDto.builder()
                 .roleOid(role.getOid())
                 .role(role.getRole())
@@ -51,14 +59,17 @@ public class RoleService {
     }
 
     public Role findActiveRole(String role) {
+
         return roleRepository.findActiveRole(role);
     }
 
     public List<User> findUsersInRole(String role) {
+
         return roleRepository.findUsersWithRole(role);
     }
 
     public Role save(Role role) {
+
         return roleRepository.save(role);
     }
 }

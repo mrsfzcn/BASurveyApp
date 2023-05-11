@@ -1,7 +1,6 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateQuestionTypeRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.FindByIdRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateQuestionTypeRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
@@ -12,9 +11,9 @@ import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,72 +29,46 @@ public class QuestionTypeService {
             questionTypeRepository.save(questionType);
             return true;
         }
-            return false;
+        return false;
     }
 
-    public Boolean updateQuestionType(UpdateQuestionTypeRequestDto dto) {
+    public void updateQuestionType(UpdateQuestionTypeRequestDto dto) {
         Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(dto.getQuestionTypeOid());
         if (updateQuestionType.isEmpty()) {
             throw new QuestionTypeNotFoundException("QuestionType is not found");
-        } else {
-            updateQuestionType.get().setQuestionType(dto.getQuestionType());
-            QuestionType questionType = updateQuestionType.get();
-            questionTypeRepository.save(questionType);
-            return true;
         }
+        updateQuestionType.get().setQuestionType(dto.getQuestionType());
+        QuestionType questionType = updateQuestionType.get();
+        questionTypeRepository.save(questionType);
     }
 
     public QuestionTypeFindByIdResponseDto findById(Long questionId) {
-        Optional<QuestionType> optionalQuestionType = questionTypeRepository.findActiveById(questionId);
-        if (optionalQuestionType.isEmpty()) {
-            throw new QuestionTypeNotFoundException("QuestionType is not found");
-        } else {
-            return QuestionTypeFindByIdResponseDto.builder()
-                    .questionType(optionalQuestionType.get().getQuestionType())
+        QuestionType questionType = questionTypeRepository.findActiveById(questionId)
+                .orElseThrow(() -> new QuestionTypeNotFoundException("QuestionType is not found"));
+        return QuestionTypeFindByIdResponseDto.builder()
+                    .questionType(questionType.getQuestionType())
                     .build();
-        }
+
     }
 
     public List<AllQuestionTypeResponseDto> findAll() {
-        List<QuestionType> findAllList = questionTypeRepository.findAllActive();
-        List<AllQuestionTypeResponseDto> responseDtoList = new ArrayList<>();
-        findAllList.forEach(questionType ->
-                responseDtoList.add(AllQuestionTypeResponseDto.builder()
+        List<QuestionType> questionTypes = questionTypeRepository.findAllActive();
+        return questionTypes.stream()
+                .map(questionType -> AllQuestionTypeResponseDto.builder()
                         .questionTypeId(questionType.getOid())
                         .questionType(questionType.getQuestionType())
-                        .build()));
-        return responseDtoList;
+                        .build())
+                .collect(Collectors.toList());
     }
-
-
-    /*
-    public Boolean delete(Long questionTypeId) {
-        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findActiveById(questionTypeId);
-        if (deleteQuestionType.isEmpty()) {
-            throw new RuntimeException("QuestionType is not found");
-        } else {
-//            questionTypeRepository.softDeleteById(questionTypeId,"questiontypes");
-            questionTypeRepository.deleteById(questionTypeId);
-            return true;
-        }
-
-    }
-
-     */
 
     public Boolean delete(Long questionTypeId) {
-        Optional<QuestionType> deleteQuestionType = questionTypeRepository.findByOidAndState(questionTypeId, State.ACTIVE);
-
-        if (deleteQuestionType.isEmpty()) {
-            throw new QuestionTypeNotFoundException("QuestionType is not found");
-        } else {
-            deleteQuestionType.get().setState(State.DELETED);
-            questionTypeRepository.save(deleteQuestionType.get());
-            return true;
-        }
-
+        QuestionType questionType = questionTypeRepository
+                .findByOidAndState(questionTypeId, State.ACTIVE)
+                .orElseThrow(() -> new QuestionTypeNotFoundException("QuestionType is not found"));
+        questionType.setState(State.DELETED);
+        questionTypeRepository.save(questionType);
+        return true;
     }
-
 
     public Optional<QuestionType> findActiveById(Long questionTypeOid) {
         return questionTypeRepository.findActiveById(questionTypeOid);
