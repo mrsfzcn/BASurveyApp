@@ -52,10 +52,18 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PostMapping("/assignSurveyTag")
+    @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot. #11")
+    ResponseEntity<SurveySimpleResponseDto> assignSurveyTag(@RequestBody @Valid SurveyTagAssignRequestDto dto) {
+        return ResponseEntity.ok(surveyService.assignSurveyTag(dto));
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/add-question-to-survey")
     @Operation(summary = "survey ve question id'si girilere bir survey'e yeni bir soru eklemeyi sağlayan metot. #12")
-    ResponseEntity<Boolean> addQuestionToSurvey( @RequestBody @Valid SurveyAddQuestionRequestDto dto) {
-        return ResponseEntity.ok(surveyService.addQuestionToSurvey( dto));
+    ResponseEntity<Boolean> addQuestionToSurvey(@RequestBody SurveyAddQuestionRequestDto dto) {
+        return ResponseEntity.ok(surveyService.addQuestionToSurvey(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

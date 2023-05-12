@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.SurveyMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
@@ -44,7 +45,7 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ResponseRepository responseRepository;
     private final QuestionRepository questionRepository;
-
+    private final SurveyTagRepository surveyTagRepository;
     private final UserService userService;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -674,6 +675,21 @@ public class SurveyService {
                     .build();
         }
         return null;
+    }
+
+    public SurveySimpleResponseDto assignSurveyTag(SurveyTagAssignRequestDto dto) {
+        Optional<Survey> survey = Optional.ofNullable(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
+        Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagRepository.findActiveById(dto.getSurveyTagOid()).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
+        if (!survey.get().getSurveyTags().contains(surveyTag.get())) {
+            survey.get().getSurveyTags().add(surveyTag.get());
+            surveyTag.get().getTargetEntities().add(survey.get());
+            surveyTagRepository.save(surveyTag.get());
+            surveyRepository.save(survey.get());
+            List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
+            return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);
+        } else {
+            throw new SurveyTagExistException("SurveyTag already exists in the survey");
+        }
     }
 }
 

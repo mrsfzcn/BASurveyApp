@@ -28,9 +28,16 @@ public interface SurveyMapper {
 
     List<SurveySimpleResponseDto> toSurveySimpleResponseDto(final List<Survey> surveys);
 
+    @Mapping(target = "surveyOid", source = "survey.oid")
+    SurveySimpleResponseDto toSurveySimpleResponseDto(final Survey survey, List<SurveyTagResponseDto> surveyTagResponseDtos);
+
     SurveyResponseDto toSurveyResponseDto(final Survey survey);
 
     List<SurveyResponseDto> toSurveyResponseDto(final List<Survey> surveys);
+
+    SurveyTagResponseDto toSurveyTagResponseDto(final SurveyTag surveyTag);
+
+    List<SurveyTagResponseDto> toSurveyTagResponseDto(final List<SurveyTag> surveyTags);
 
     @Mapping(source = "tagString", target = "name")
     SurveyClassroomResponseDto toSurveyClassroomResponseDto(final SurveyTag surveyTag);
