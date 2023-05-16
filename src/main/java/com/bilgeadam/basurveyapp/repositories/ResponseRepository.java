@@ -16,8 +16,8 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
     @Query("SELECT COUNT(r) > 0 FROM Response r WHERE r.user.oid = ?1 AND r.survey.oid = ?2")
     Boolean isSurveyAnsweredByUser(Long userOid, Long surveyOid);
 
-    @Query("SELECT r FROM Response r WHERE r.user.email = ?1 AND r.question.oid IN ?2")
-    List<Response> findAllResponsesOfUserFromSurvey(String userEmail, List<Long> surveyQuestionOidList);
+    @Query("SELECT r FROM Response r WHERE r.user.email = ?1 AND r.survey.oid = ?2 AND r.question.oid IN ?3")
+    List<Response> findAllResponsesOfUserFromSurvey(String userEmail, Long surveyOid, List<Long> surveyQuestionOidList);
 
     @Query("SELECT r FROM Response r WHERE r.user.oid = ?1 AND r.question.oid = ?2")
     Optional<Response> findByUserOidAndQuestionOid(Long userOid, Long questionOid);
