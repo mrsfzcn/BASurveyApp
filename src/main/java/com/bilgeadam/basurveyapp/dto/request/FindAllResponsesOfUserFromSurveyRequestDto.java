@@ -12,7 +12,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class FindAllResponsesOfUserRequestDto {
+public class FindAllResponsesOfUserFromSurveyRequestDto {
     @NotBlank
     @NotNull
     String userEmail;
