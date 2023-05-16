@@ -27,4 +27,7 @@ public interface TrainerTagRepository extends BaseRepository<TrainerTag, Long> {
     @Query(value ="SELECT first_name, last_name FROM users WHERE oid IN (SELECT user_oid FROM trainers WHERE oid IN (SELECT target_entities_oid  FROM trainertags_target_entities " +
             "WHERE  trainer_tags_oid= (SELECT oid FROM trainertags WHERE tag_string= ?1)))", nativeQuery = true)
     List<String> findByTagString(String tagString);
+
+    @Query(value ="SELECT target_entities_oid FROM trainertags_target_entities WHERE trainer_tags_oid=?1", nativeQuery = true)
+    List<Long> findTrainerOidByTrainerTagOid(Long Oid);
 }

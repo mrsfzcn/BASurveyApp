@@ -24,21 +24,21 @@ public class TrainerTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot.(exception ı doğru çalışıyor. #02) ")
+    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot. #02 ")
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         trainerTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findActiveById")
-    @Operation(summary = "girilen oid nin statusu aktifse bu tagin tagstringini(java4, .net2 gibi) dönen metot(exceptionı düzeltildi.))")
+    @Operation(summary = "girilen oid nin statusu aktifse bu tagin tagstringini(java4, .net2 gibi) dönen metot)")
     public ResponseEntity<FindActiveTrainerTagByIdResponseDto> findActiveById(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.findActiveById(trainerTagOid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping ("/delete")
-    @Operation(summary = "verilen trainer tag oid mevcutsa ve statusu aktifse statusunu deleted e çeken metot (exceptionı düzeltildi.)")
+    @Operation(summary = "verilen trainer tag oid mevcutsa ve statusu aktifse statusunu deleted e çeken metot ")
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.delete(trainerTagOid));
     }

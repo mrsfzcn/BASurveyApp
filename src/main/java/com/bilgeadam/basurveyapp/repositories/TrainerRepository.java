@@ -1,8 +1,6 @@
 package com.bilgeadam.basurveyapp.repositories;
 
-import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.Trainer;
-import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,5 +21,8 @@ public interface TrainerRepository extends BaseRepository<Trainer, Long> {
 
     @Query(value = "SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.user.email = ?1")
     Optional<Trainer> findActiveByEmail(String email);
+
+    @Query("SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.oid = ?1")
+    Optional<Trainer> findTrainerByTrainerOid(Long oid);
 
 }
