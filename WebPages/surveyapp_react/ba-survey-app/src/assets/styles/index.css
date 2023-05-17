@@ -1,0 +1,761 @@
+* {
+  box-sizing: border-box;
+  font-family: var(--ff-1);
+}
+
+body {
+  background-color: var(--clr-2);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+* button:hover{
+  cursor: pointer;
+}
+
+:root {
+  --clr-1: rgba(33, 42, 62, 1);
+  --clr-2: rgba(245, 245, 245, 1);
+  --clr-3: rgba(100, 233, 177, 1);
+  --clr-4: rgba(107, 254, 192, 1);
+  --clr-5: rgba(229, 229, 229, 1);
+  --clr-6: rgba(241, 241, 241, 1);
+  --ff-1: "Poppins", sans-serif;
+}
+
+/* ----- HEADER ------*/
+
+header {
+  height: 7.2rem;
+  background-color: var(--clr-1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid black;  
+  position: sticky;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
+.div-logo {
+  min-width: 260px;
+}
+
+.logo {
+  position: absolute;
+  left: 28px;
+  top: 3px;
+}
+
+.logo img {
+  width: 202px;
+  height: 115px;
+}
+
+.div-loginicon {
+  float: right;
+  background-color: aqua;
+}
+
+.div-mainheading {
+  color: var(--clr-2);
+  flex-grow: 1;
+  height: 5rem;
+  min-width: 20rem;
+  border-left: 1px solid var(--clr-2);
+  padding-left: 35px;
+  display: flex;
+  align-items: center;
+}
+
+.div-mainheading > h1 {
+  font-family: var(--ff-1);
+  font-size: 50px;
+  text-align: center;
+}
+
+.div-usericon {
+  min-width: 100px;
+  border: 1px solid white;
+}
+
+.userlogin{ 
+  position: relative;
+   height: 100%;
+   
+ }
+ .userlogin img {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+   right: 30px;
+   width: 36px;
+   height: 36px;
+ }
+ .usermenu {
+   
+   border: none ;
+   position: absolute;
+   top: 85px;
+   right: 36px;
+   background-color: var(--clr-3);
+   width: 152px;
+   height: 99px;
+   padding: 0 4px;
+  border-radius: 0px 0px 4px 4px;
+ }
+ @media (max-width: 45em) {
+   .header .usermenu {
+     display: none;
+   }
+ }
+ 
+ .menu-btn {
+   
+ 
+   display: flex;
+   align-items: center;
+   justify-content: flex-start;
+   height: 33px;
+   width: 140px;
+   background-color: var(--clr-3);
+   font-family: var(--ff-1);
+   font-size: 14px;
+  font-weight: 400;
+   line-height: 21px;
+   border:none;
+   border-bottom: 0.5px solid black;
+   padding-left: 8px;
+ 
+ }
+ .menu-btn:last-child{
+   border: none;
+ }
+ 
+ 
+ .user-icon {
+   height: 15px;
+   width: 15px;
+   margin-right: 16px;
+   
+   
+ }
+ .logout-icon{
+   height: 16px;
+   width: 14px;
+   margin-right: 16px;
+ }
+ .exchange-icon{
+   height: 16px;
+   width: 16px;
+   margin-right: 16px;
+
+ }
+
+/* ----- MAIN ----- */
+main {
+  height: 54rem;
+  display: flex;
+}
+
+/* ----- SIDEBAR ----- */
+.sidebar {
+  width: 16.25rem;
+  background-color: var(--clr-1);
+  height: 54rem;
+}
+
+.sb-btn-container {
+  width: 220px;
+  height: 700px;
+  margin-top: 4rem;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.sb-btn {
+  width: 218px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sb-btn > button {
+  height: 40px;
+  width: 218px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  border: 2px solid black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 23px;
+}
+
+.sb-btn > button > span {
+  margin: 10px 8px;
+  color: var(--clr-1);
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.sub-menu {
+  position: relative;
+  margin: -23px 12px 2px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--clr-4);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.sub-menu button {
+  height: 40px;
+  background-color: var(--clr-4);
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  margin: 0 7px;
+  border-bottom: 1px solid var(--clr-1);
+}
+
+.sub-menu button:last-child {
+  border-bottom: none;
+}
+
+.sub-menu button:hover {
+  background-color: var(--clr-3);
+  margin: 0;
+  cursor: pointer;
+  padding: 15px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.sub-menu button:hover span {
+  font-weight: 600;
+}
+
+.sub-menu > button > span {
+  color: var(--clr-1);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ----- CONTENT ----- */
+.content {
+  height: 54rem;
+  flex: 1;
+}
+
+.content-default-1 {
+  background-color: var(--clr-5);
+  padding-bottom: 5rem;
+  height: inherit;  
+}
+
+/* -----CONTENT COMPASS-----*/
+
+.content-compass{
+  display: flex;
+  margin-left: 2rem;  
+  font-family: var(--ff-1);
+  font-weight: 600;
+  color: var(--clr-1);
+  
+}
+
+.content-compass p{  
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-compass p:first-child{
+  font-size: 1.125rem;
+  margin-right: 1rem;  
+}
+
+.content-compass p:last-child{
+  font-size: 0.75rem;
+  border-left: 2px solid var(--clr-1);
+  padding-left: 0.9rem;
+}
+
+
+/* ----- TAG İŞLEMLERİ ----- */
+            /* ----- PAGING SELECTOR ----- */
+.paging-searching{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.paging-searching .paging-selector{  
+  margin-left: -8rem;
+  font-size: 0.75rem;
+}
+
+.paging-searching .paging-selector select{
+  border: none;
+  border-bottom: 2px solid var(--clr-3);
+}
+
+/* ----- SEARCH BAR ----- */
+.paging-searching .search-bar{
+  margin-right: -8rem;
+  border: none;
+  font-size: 12px;
+}
+
+.paging-searching .search-bar input{  
+  border: none;
+  border-radius: 5px;
+}
+
+/* ----- PAGINATION ----- */
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+  margin-right: -8rem;
+}
+
+.pagination-container button{
+  border: none;
+  font-weight: 500;
+}
+
+.pagination-container button:nth-child(2){
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--clr-2);
+  background-color: var(--clr-1);
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+}
+
+.pagination-container button:nth-child(3){
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.tag-container {
+  background-color: var(--clr-6);
+  margin-left: 2rem;
+  margin-right: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10rem;
+  padding-right: 10rem;
+  align-content: center;
+  border-radius: 7.5px;
+}
+
+.add-tag {
+  margin-top: 4rem;
+  margin-bottom: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  min-width: 30rem;
+}
+
+.add-tag button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+.add-tag button:hover {
+  cursor: pointer;
+}
+
+.add-tag input {
+  height: 3rem;
+  width: 18.75rem;
+  margin-right: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  background-color: var(--clr-6);
+  font-size: 24px;
+}
+
+.add-tag input::placeholder {
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.add-tag input:focus {
+  outline: none;
+  padding-left: 1rem;
+}
+
+/*----- TAG TABLOSU ------ */
+.table-div {
+  height: 100%;
+  min-width: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 10rem;
+  margin-right: 8rem;
+}
+
+.tag-table th,td{
+  border-bottom: 1px solid var(--clr-5);
+  font-family: var(--ff-1);
+  font-size: 12px;
+  height: 2.5rem;
+}
+
+.tag-table th:first-child,
+.tag-table td:first-child {
+  min-width: 2rem;
+  text-align: left;
+}
+
+.tag-table th:nth-child(2),
+.tag-table td:nth-child(2) {
+  min-width: 15rem;
+  text-align: left;
+}
+
+.tag-table th:last-child,
+.tag-table td:last-child {
+  min-width: 5rem;
+  text-align: left;  
+}
+
+.tag-table td:last-child button{
+  margin-left: -7px;
+  margin-right: 5px;
+  border: none;
+}
+
+/* -------CREATE SURVEY------- */
+
+.createSurvey-container {
+  background-color: gainsboro;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10rem;
+  padding-right: 10rem;
+  align-content: center;
+  border-radius: 7.5px;
+  
+}
+
+.createSurvey-inbox{
+  background-color: var(--clr-2);
+  margin-right: 60px;
+  margin-left: 60px;
+  display: flex;
+  height: 80%;
+  margin: auto;
+  padding-left: 50px;
+}
+
+.create-survey {
+  margin-top: 8rem;
+  margin-bottom: 3.6rem;
+  height: 3rem;
+  display: flex;
+  min-width: 700px;
+  flex-direction: column;
+  align-content: center;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.create-survey button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  margin-top: 6rem;
+}
+
+.create-survey button:hover {
+  cursor: pointer;
+}
+
+.create-survey input {
+  height: 3rem;
+  width: 18.75rem;
+  border: none;
+  border-bottom: 1px solid black;
+  background-color: var(--clr-2);
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.create-survey input::placeholder {
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.create-survey input:focus {
+  outline: none;
+  padding-left: 2rem;
+}
+
+.create-survey input:last-child {
+  display: block;
+}
+
+/* ------- ADDUSER --------- */
+.addUser-container {
+  background-color: gainsboro;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10rem;
+  padding-right: 10rem;
+  align-content: center;
+  border-radius: 7.5px;
+}
+.addUser-inbox{
+  background-color: var(--clr-2);
+  margin-right: 60px;
+  margin-left: 60px;
+  display: flex;
+  height: 80%;
+  margin: auto;
+  padding-left: 50px;
+  
+}
+.add-user {
+  margin-top: 4rem;
+  margin-bottom: 3.6rem;
+  height: 3rem;
+  display: flex;
+  justify-content: flex-start;
+  min-width: 460px;
+  flex-direction: column;
+  align-content: center;
+}
+
+.btn-addUser-section{
+  display: flex;
+}
+
+.add-user button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  vertical-align: middle;  
+  margin-top: 0.5rem;
+  display: inline-block;
+  justify-content:center;
+  margin-left: 50px;
+
+}
+
+.add-user button:hover {
+  cursor: pointer;
+}
+
+.add-user button:last-child {
+  background-color:var(--clr-3);
+  margin-left: 10px;
+}
+
+.add-user span{
+    font-family: var(--ff-1);
+    font-size: 12px;
+}
+
+.add-user input {
+  height: 3rem;
+  width: 18.75rem;
+  margin-right: 30px;
+  border: black 2px;
+  border-bottom: 1px solid black;
+  background-color: var(--clr-2);
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+.add-user input::placeholder {
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.add-user input:focus {
+  outline: none;
+  padding-left: 1rem;
+}
+
+
+.assignStudentPassive-container {
+  background-color: gainsboro;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10rem;
+  padding-right: 10rem;
+  align-content: center;
+  border-radius: 7.5px;
+}
+.assignStudentPassive-inbox{
+  background-color: var(--clr-2);
+  margin-right: 60px;
+  margin-left: 60px;
+  display: flex;
+  height: 80%;
+  margin: auto;
+  padding-left: 100px;
+}
+
+.assign-studentPassive {
+  margin-top: 4rem;
+  margin-bottom: 3.6rem;
+  height: 3rem;
+  display: flex;
+  min-width: 700px;
+  justify-content: center;
+}
+
+.assign-studentPassive button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+.assign-studentPassive button:hover {
+  cursor: pointer;
+}
+.assign-studentPassive input {
+  height: 3rem;
+  width: 18.75rem;
+  margin-right: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  background-color: var(--clr-2);
+  font-size: 24px;
+}
+
+.assign-studentPassive input::placeholder {
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.assign-studentPassive input:focus {
+  outline: none;
+  padding-left: 1rem;
+}
+
+/* ------ ASSIGN STUDENT ACTIVE ------ */
+
+.assignStudentActive-container {
+  background-color: gainsboro;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10rem;
+  padding-right: 10rem;
+  align-content: center;
+  border-radius: 7.5px;
+}
+.assignStudentActive-inbox{
+  background-color: var(--clr-2);
+  margin-right: 60px;
+  margin-left: 60px;
+  display: flex;
+  height: 80%;
+  margin: auto;
+  padding-left: 100px;
+}
+
+.assign-studentActive {
+  margin-top: 4rem;
+  margin-bottom: 3.6rem;
+  height: 3rem;
+  display: flex;
+  min-width: 700px;
+  justify-content: center;
+}
+
+.assign-studentActive button {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  background-color: var(--clr-3);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+.assign-studentActive button:hover {
+  cursor: pointer;
+}
+
+.assign-studentActive input {
+  height: 3rem;
+  width: 25rem;
+  margin-right: 30px;
+  border: none;
+  border-bottom: 1px solid black;
+  background-color: var(--clr-2);
+  font-size: 24px;
+}
+
+.assign-studentActive input::placeholder {
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.assign-studentActive input:focus {
+  outline: none;
+  padding-left: 1rem;
+}
+
+
+
