@@ -53,14 +53,18 @@ public class ResponseController {
     }
 
 
-
-
-
-    @GetMapping("/findallresponsesofuserfromsurvey")
+    @GetMapping("/findAllResponsesOfUserFromSurvey")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "survey id ve user email girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot. #24")
-    public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+    public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserFromSurveyRequestDto dto) {
         return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
+    }
+
+    @GetMapping("/findAllResponsesOfUser")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "survey id ve user email girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot. #24")
+    public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUser(String userEmail) {
+        return ResponseEntity.ok(responseService.findAllResponsesOfUser(userEmail));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")

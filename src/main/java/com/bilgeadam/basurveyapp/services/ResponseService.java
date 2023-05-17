@@ -1,7 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.FindAllResponsesOfUserFromSurveyRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
@@ -81,7 +81,7 @@ public class ResponseService {
         return true;
     }
 
-    public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
+    public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserFromSurveyRequestDto dto) {
         ResponseMapper responseMapper = ResponseMapper.INSTANCE;
         User user = userService.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exist or deleted."));
         Survey survey = surveyService.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exist or deleted."));
@@ -96,6 +96,19 @@ public class ResponseService {
 
         return answerResponseDtos;
     }
+
+    public List<AnswerResponseDto> findAllResponsesOfUser(String userEmail) {
+        ResponseMapper responseMapper = ResponseMapper.INSTANCE;
+        User user = userService.findByEmail(userEmail).orElseThrow(() -> new UserDoesNotExistsException("User does not exist or has been deleted."));
+
+        List<Response> responses = responseRepository.findAllResponsesOfUser(userEmail);
+        List<AnswerResponseDto> answerResponseDtos = responses.stream()
+                .map(responseMapper::toAnswerResponseDto)
+                .collect(Collectors.toList());
+
+        return answerResponseDtos;
+    }
+
     public List<AnswerResponseDto> findResponseByStudentTag(Long studentTagOid) {
         User user = getAuthenticatedUser();
 
