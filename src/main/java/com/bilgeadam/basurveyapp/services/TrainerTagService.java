@@ -94,4 +94,7 @@ public class TrainerTagService {
         }
         return trainerTag;
     }
+    public List<Long> findTrainerOidByTrainerTagOid(Long oid){
+        return trainerTagRepository.findTrainerOidByTrainerTagOid(oid);
+    }
 }
