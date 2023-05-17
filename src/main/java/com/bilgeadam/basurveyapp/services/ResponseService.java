@@ -83,14 +83,19 @@ public class ResponseService {
 
     public List<AnswerResponseDto> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         ResponseMapper responseMapper = ResponseMapper.INSTANCE;
-        userService.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exists or deleted."));
-        Survey survey = surveyService.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exists or deleted."));
-        return responseRepository
-                .findAllResponsesOfUserFromSurvey(dto.getUserEmail(), questionService.findSurveyQuestionOidList(survey.getOid()))
-                .stream()
-                .map(responseMapper::toAnswerResponseDto).collect(Collectors.toList());
-    }
+        User user = userService.findByEmail(dto.getUserEmail()).orElseThrow(() -> new UserDoesNotExistsException("User does not exist or deleted."));
+        Survey survey = surveyService.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new ResourceNotFoundException("Survey does not exist or deleted."));
 
+        List<Long> surveyQuestionOidList = questionService.findSurveyQuestionOidList(survey.getOid());
+        System.out.println(surveyQuestionOidList);
+
+        List<Response> responses = responseRepository.findAllResponsesOfUserFromSurvey(dto.getUserEmail(), dto.getSurveyOid(), surveyQuestionOidList);
+        List<AnswerResponseDto> answerResponseDtos = responses.stream()
+                .map(responseMapper::toAnswerResponseDto)
+                .collect(Collectors.toList());
+
+        return answerResponseDtos;
+    }
     public List<AnswerResponseDto> findResponseByStudentTag(Long studentTagOid) {
         User user = getAuthenticatedUser();
 

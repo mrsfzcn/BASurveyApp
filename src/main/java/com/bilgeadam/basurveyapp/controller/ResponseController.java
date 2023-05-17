@@ -58,7 +58,7 @@ public class ResponseController {
 
     @GetMapping("/findallresponsesofuserfromsurvey")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "survey id ve user email girilerek bluanan tüm response'ların görüntülenmesini sağlayan metot. #24")
+    @Operation(summary = "survey id ve user email girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot. #24")
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserRequestDto dto) {
         return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
     }
