@@ -29,14 +29,14 @@ public class Survey extends BaseEntity {
     private String courseTopic;
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SurveyRegistration> surveyRegistrations;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Student> studentsWhoAnswered;
 
     @JsonManagedReference
-    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Question> questions;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
