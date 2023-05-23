@@ -758,4 +758,97 @@ main {
 }
 
 
+/* ------- LIST SURVEYS --------- */
+
+.table-div {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-top: 4rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.survey-table th,td{
+  border-bottom: 1px solid var(--clr-5);
+  font-family: var(--ff-1);
+  font-size: 12px;
+  height: 2.5rem;
+}
+
+.survey-table th:first-child,
+.survey-table td:first-child {
+  width: 2rem;
+  text-align: left;
+}
+
+.survey-table th:nth-child(2),
+.survey-table td:nth-child(2) {
+  width: 15rem;
+  text-align: left;
+}
+
+.survey-table th:nth-child(3),
+.survey-table td:nth-child(3) {
+  width: 15rem;
+  text-align: center;
+}
+
+.survey-table th:nth-child(4),
+.survey-table td:nth-child(4) {
+  width: 8rem;
+  text-align: left;
+}
+.survey-table th:nth-child(5),
+.survey-table td:nth-child(5) {
+  width: 9rem;
+  text-align: left;
+}
+.survey-table th:last-child,
+.survey-table td:last-child {
+  width: 1rem;
+}
+
+
+#speech-bubble {
+  width: 110px;
+  height: 70px;
+  background: var(--clr-1);
+  position: relative;
+  left: -30px;
+  top: -35px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  display: none;
+
+
+}
+#speech-bubble:before {
+  content:"";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 33px solid transparent;
+  border-right: 36px solid  var(--clr-1);
+  border-bottom: 13px solid transparent;
+  margin: 20px 0 0 -25px;
+}
+#speech-bubble span{
+  width: 100%;
+  height:100%;
+  position: absolute;
+  padding: 0.5rem;
+  color: whitesmoke;
+  text-align: center;
+  padding-top: 1rem;
+
+
+}
+
+/* ------------------------------ */
+
+
 
