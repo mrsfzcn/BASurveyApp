@@ -1,11 +1,47 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './assets/styles/index.css'
+import React, { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import './assets/styles/index.css';
 import App from './app';
+import Login from './login';
 
+const rootEl = document.getElementById('root');
 
-const rootEl = document.getElementById("root");
+const Root = () => {
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [token, setToken] = useState(null);
 
-const root = ReactDOM.createRoot(rootEl);
+    const handleLogin = async (email, password) => {
+        try {
+            const requestData = {
+                email: email,
+                password: password
+            };
 
-root.render( <App/> );
+            const response = await fetch(
+                "http://localhost:8090/api/v1/auth/authenticate",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestData)
+                }
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+
+                setToken(data?.token);
+                setLoggedIn(true);
+            } else {
+                throw new Error("Login request failed");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    return loggedIn ? <App token={token} /> : <Login onLogin={handleLogin} />;
+};
+
+createRoot(rootEl).render(<Root />);
