@@ -5,6 +5,7 @@ import QuestionType from "./questionType";
 import SurveyTag from "./surveyTag";
 import CreateSurvey from "./createSurvey";
 import AddUser from "./addUser";
+import ListSurveys from "./listSurveys";
 
 export default function Content({ selectedSubMenu }) {
   let content = null;
@@ -30,12 +31,7 @@ export default function Content({ selectedSubMenu }) {
       );
       break;
     case "all-surveys":
-      content = (
-        <div>
-          <h2>Tüm Anketler</h2>
-          <p>Bu alanda tüm anketler listelenir.</p>
-        </div>
-      );
+        content = <ListSurveys />
       break;
     case "create-survey":
       content = <CreateSurvey/>
