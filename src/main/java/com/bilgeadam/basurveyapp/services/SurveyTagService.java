@@ -1,7 +1,9 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.request.UpdateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
@@ -19,16 +21,24 @@ public class SurveyTagService {
 
     private final SurveyTagRepository surveyTagRepository;
 
-    public void createTag(CreateTagDto dto) {
-        Optional<SurveyTag> surveyTag1 = surveyTagRepository.findOptionalByTagString(dto.getTagString());
-        if(surveyTag1.isPresent()){
-            throw new SurveyTagExistException("Survey Tag already exist!");
-        }
+    public SurveyTag createTag(CreateTagDto dto) {
+        Optional<SurveyTag> existingSurveyTag = surveyTagRepository.findOptionalByTagString(dto.getTagString());
 
+        if (existingSurveyTag.isPresent()) {
+            SurveyTag surveyTag = existingSurveyTag.get();
+
+            if (surveyTag.getState() == State.ACTIVE) {
+                throw new SurveyTagExistException("Survey Tag already exists!");
+            } else if (surveyTag.getState() == State.DELETED) {
+                surveyTag.setState(State.ACTIVE);
+                return surveyTagRepository.save(surveyTag);
+            }
+        }
         SurveyTag surveyTag = SurveyTag.builder()
                 .tagString(dto.getTagString())
+                .state(State.ACTIVE)
                 .build();
-        surveyTagRepository.save(surveyTag);
+        return surveyTagRepository.save(surveyTag);
     }
 
     public List<TagResponseDto> findAll() {
@@ -49,5 +59,18 @@ public class SurveyTagService {
         } else {
             return surveyTagRepository.softDeleteById(deleteTag.get().getOid());
         }
+    }
+    public SurveyTag updateTagByTagString(String tagString, UpdateTagDto dto) {
+        SurveyTag surveyTag = surveyTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new SurveyTagNotFoundException("Survey Tag not found"));
+
+        surveyTag.setTagString(dto.getTagString());
+
+        return surveyTagRepository.save(surveyTag);
+    }
+    public boolean deleteByTagString(String tagString) {
+        SurveyTag questionTag = surveyTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new SurveyTagNotFoundException("Survey tag not found"));
+        return surveyTagRepository.softDeleteById(questionTag.getOid());
     }
 }

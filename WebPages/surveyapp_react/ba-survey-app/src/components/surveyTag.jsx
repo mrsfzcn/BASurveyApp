@@ -4,6 +4,8 @@ import Pagination from "./pagination";
 
 import EditIcon from "../assets/styles/icons/EditIcon";
 import DeleteIcon from "../assets/styles/icons/DeleteIcon";
+import CancelIcon from "../assets/styles/icons/CancelIcon";
+import TickIcon from "../assets/styles/icons/TickIcon";
 
 import React, { useState, useEffect } from "react";
 
@@ -12,28 +14,32 @@ export default function SurveyTag(props) {
   const [tagList, setTagList] = useState([]);
 
   useEffect(() => {
-    const fetchQuestionTags = async () => {
+    const fetchSurveyTags = async () => {
       try {
-        const response = await fetch("http://localhost:8090/api/v1/surveytag/findall", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          }
-        });
+        const response = await fetch(
+            "http://localhost:8090/api/v1/surveytag/findall",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+        );
         if (response.ok) {
           const data = await response.json();
-          setTagList(data);
+          const sortedData = data.reverse();
+          setTagList(sortedData);
         } else {
-          throw new Error("Failed to fetch question tags");
+          throw new Error("Failed to fetch survey tags");
         }
       } catch (error) {
         console.error(error);
-        alert("Failed to fetch question tags");
+        alert("Failed to fetch survey tags");
       }
     };
 
-    fetchQuestionTags();
+    fetchSurveyTags();
   }, [token]);
 
   const [inputValue, setInputValue] = useState("");
@@ -41,6 +47,114 @@ export default function SurveyTag(props) {
   const handleInputChange = (e) => {
     const text = e.target.value.toUpperCase();
     setInputValue(text);
+  };
+
+  const handleAddTag = async () => {
+    try {
+      const response = await fetch(
+          "http://localhost:8090/api/v1/surveytag/create",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ tagString: inputValue }),
+          }
+      );
+      if (response.ok) {
+        const newTag = await response.json();
+        setTagList([...tagList, newTag]);
+        setInputValue("");
+      } else {
+        throw new Error("Failed to add survey tag");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to add survey tag");
+    }
+  };
+
+  const [editIndex, setEditIndex] = useState(-1); // Varsayılan olarak -1 (düzenleme yok)
+  const [editValue, setEditValue] = useState(""); // Düzenleme modunda bulunan tag değeri
+
+  const handleEditClick = (index, tagString) => {
+    setEditIndex(index);
+    setEditValue(tagString);
+  };
+
+  const handleSaveClick = async (tag) => {
+    try {
+      const index = tagList.findIndex((t) => t.tagStringId === tag.tagStringId);
+      if (index === -1) {
+        throw new Error("Tag not found in tagList");
+      }
+      const response = await fetch(
+          `http://localhost:8090/api/v1/surveytag/updatebytagstring/${tag.tagString}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ tagString: editValue }),
+          }
+      );
+      if (response.ok) {
+        const updatedTag = { ...tag, tagString: editValue };
+        const updatedTagList = [...tagList];
+        updatedTagList[index] = updatedTag;
+        setTagList(updatedTagList);
+        setEditIndex(-1); // Düzenleme modunu sonlandır
+      } else {
+        throw new Error("Failed to update question tag");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update question tag");
+    }
+  };
+
+  const handleCancelClick = () => {
+    // Düzenlemeyi iptal et ve edit modunu sonlandır
+    setEditIndex(-1);
+    setEditValue("");
+  };
+
+  const handleDeleteClick = (tag) => {
+    const confirmation = window.confirm(
+        `"${tag.tagString}" etiketini silmek istediğinizden emin misiniz?`
+    );
+
+    if (confirmation) {
+      deleteTag(tag);
+    }
+  };
+
+  const deleteTag = async (tag) => {
+    try {
+      const response = await fetch(
+          `http://localhost:8090/api/v1/surveytag/delete/${tag.tagString}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+      );
+      if (response.ok) {
+        const updatedTagList = tagList.filter(
+            (t) => t.tagString !== tag.tagString
+        );
+        setTagList(updatedTagList);
+      } else {
+        throw new Error("Failed to delete survey tag");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete survey tag");
+    }
   };
 
   return (
@@ -61,29 +175,55 @@ export default function SurveyTag(props) {
                 value={inputValue}
                 onChange={handleInputChange}
             />
-            <button>EKLE</button>
+            <button onClick={handleAddTag}>EKLE</button>
           </div>
           <div className="table-div">
             <table className="tag-table">
               <thead>
               <tr>
                 <th>No</th>
-                <th>Anket Etiketi Adı</th>
+                <th>Soru Etiketi Adı</th>
                 <th>İşlem</th>
               </tr>
               </thead>
               <tbody>
               {tagList.map((tag, index) => (
-                  <tr key={tag.tagStringId}>
+                  <tr key={`${tag.tagStringId}-${index}`}>
                     <td>{index + 1}</td>
-                    <td>{tag.tagString}</td>
                     <td>
-                      <button>
-                        <EditIcon />
-                      </button>
-                      <button>
-                        <DeleteIcon />
-                      </button>
+                      {editIndex === index ? (
+                          <input
+                              type="text"
+                              value={editValue}
+                              autoFocus
+                              onChange={(e) => setEditValue(e.target.value)}
+                          />
+                      ) : (
+                          tag.tagString
+                      )}
+                    </td>
+                    <td>
+                      {editIndex === index ? (
+                          <>
+                            <button onClick={() => handleSaveClick(tag)}>
+                              <TickIcon />
+                            </button>
+                            <button onClick={handleCancelClick}>
+                              <CancelIcon />
+                            </button>
+                          </>
+                      ) : (
+                          <button
+                              onClick={() => handleEditClick(index, tag.tagString)}
+                          >
+                            <EditIcon />
+                          </button>
+                      )}
+                      {editIndex !== index && (
+                          <button onClick={() => handleDeleteClick(tag)}>
+                            <DeleteIcon />
+                          </button>
+                      )}
                     </td>
                   </tr>
               ))}
