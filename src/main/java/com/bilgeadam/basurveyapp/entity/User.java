@@ -36,7 +36,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "authorized_role")
     private String authorizedRole;
     @JsonManagedReference
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Role> roles;
 
     @Override

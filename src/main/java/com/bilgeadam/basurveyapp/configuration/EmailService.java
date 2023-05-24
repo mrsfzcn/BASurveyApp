@@ -36,12 +36,16 @@ public class EmailService {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-        for(Map.Entry<String,String> entry: mailTokenMap.entrySet()){
+        for (Map.Entry<String, String> entry : mailTokenMap.entrySet()) {
             helper.setText(PASSWORD_RESET_HTML_BODY.replace("$tokenValue", entry.getValue()), true);
             helper.setTo(entry.getKey());
             helper.setSubject(SUBJECT);
             helper.setFrom(FROM);
             javaMailSender.send(helper.getMimeMessage());
+        }
+
+        for (Map.Entry<String, String> entry : mailTokenMap.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue().toString());
         }
     }
 

@@ -20,16 +20,16 @@ public class Question extends BaseEntity {
     private String questionString;
     @Column(name = "question_order")
     private Integer order;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private QuestionType questionType;
     @JsonBackReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Response> responses;
 
     @JsonBackReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Survey> surveys;
     @JsonBackReference
-    @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<QuestionTag> questionTag;
 }

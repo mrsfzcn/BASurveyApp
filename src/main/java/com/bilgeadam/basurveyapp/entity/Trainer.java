@@ -18,9 +18,9 @@ import java.util.Set;
 public class Trainer extends BaseEntity {
     @OneToOne
     User user;
-    @OneToMany(mappedBy = "whoCreatedSurvey", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "whoCreatedSurvey", fetch = FetchType.LAZY)
     Set<Survey> surveysCreatedByTrainer;
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy ="targetEntities"  ,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.LAZY)
     Set<TrainerTag> trainerTags;
     boolean isMasterTrainer;
 
