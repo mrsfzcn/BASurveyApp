@@ -1,7 +1,9 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.request.UpdateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
@@ -19,16 +21,24 @@ public class QuestionTagService {
 
     private final QuestionTagRepository questionTagRepository;
 
-    public void createTag(CreateTagDto dto) {
+    public QuestionTag createTag(CreateTagDto dto) {
+        Optional<QuestionTag> existingQuestionTag = questionTagRepository.findOptionalByTagString(dto.getTagString());
 
-        Optional<QuestionTag> questionTag1 = questionTagRepository.findOptionalByTagString(dto.getTagString());
-        if(questionTag1.isPresent()){
-            throw new QuestionTagExistException("Question Tag already exist!");
+        if (existingQuestionTag.isPresent()) {
+            QuestionTag questionTag = existingQuestionTag.get();
+
+            if (questionTag.getState() == State.ACTIVE) {
+                throw new QuestionTagExistException("Question Tag already exists!");
+            } else if (questionTag.getState() == State.DELETED) {
+                questionTag.setState(State.ACTIVE);
+                return questionTagRepository.save(questionTag);
+            }
         }
         QuestionTag questionTag = QuestionTag.builder()
                 .tagString(dto.getTagString())
+                .state(State.ACTIVE)
                 .build();
-        questionTagRepository.save(questionTag);
+        return questionTagRepository.save(questionTag);
     }
 
     public List<TagResponseDto> findAll() {
@@ -61,5 +71,20 @@ public class QuestionTagService {
     public Optional<QuestionTag> findById(Long tag) {
 
         return questionTagRepository.findById(tag);
+    }
+
+    public QuestionTag updateTagByTagString(String tagString, UpdateTagDto dto) {
+        QuestionTag questionTag = questionTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+
+        questionTag.setTagString(dto.getTagString());
+
+        return questionTagRepository.save(questionTag);
+    }
+
+    public boolean deleteByTagString(String tagString) {
+        QuestionTag questionTag = questionTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+        return questionTagRepository.softDeleteById(questionTag.getOid());
     }
 }
