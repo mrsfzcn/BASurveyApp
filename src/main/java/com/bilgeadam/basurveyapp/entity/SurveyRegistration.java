@@ -23,8 +23,8 @@ public class SurveyRegistration extends BaseEntity {
     private LocalDateTime endDate;
 
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private StudentTag studentTag;
 }
