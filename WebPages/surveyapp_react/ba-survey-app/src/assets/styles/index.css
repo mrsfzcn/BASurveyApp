@@ -817,6 +817,9 @@ main {
   width: 1rem;
 }
 
+button{
+  border: none;
+}
 
 #speech-bubble {
   width: 110px;
@@ -858,3 +861,47 @@ main {
 
 
 
+/* ------- ASSIGN SURVEYS --------- */
+
+
+.assignSurvey{
+  height: 25rem;
+  /*border: solid red 2px;*/
+  padding: 1rem;
+}
+
+.surveyDetails{
+  height: 75%;
+  /*border: solid green 1px;*/
+  padding: 1rem;
+  display: flex;
+  font-size: larger;
+
+}
+.left{
+  margin-top: 2rem;
+  width: 25%;
+  /*border: solid rgb(217, 106, 237) 1px;*/
+  margin-right: 0.2rem;
+}
+.right{
+  margin-top: 2rem;
+  width: 70%;
+  /*border: solid rgb(200, 110, 32) 1px;*/
+}
+.surveyButtons{
+  height: 25%;
+  /*border: solid purple 1px;*/
+  display: flex;
+  justify-content: center;
+}
+.btnAtamaYap{
+  background-color: var(--clr-3);
+  height: 3rem;
+  margin-right: 2rem;
+}
+.btnVazgec{
+  background-color: red;
+  height: 3rem;
+}
+/* -------------------------------- */
