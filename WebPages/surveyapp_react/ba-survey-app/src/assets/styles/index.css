@@ -947,7 +947,7 @@ main {
   display: flex;
   flex-direction: column;
   padding-left: 2rem;
-  padding-right: rem;
+  padding-right: 2rem;
   align-content: center;
   border-radius: 7.5px;
 }
