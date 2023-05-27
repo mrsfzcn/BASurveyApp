@@ -855,6 +855,136 @@ main {
 }
 
 /* ------------------------------ */
+/*  ------SORU EKLEME      */
 
+
+.question-text-area {
+  border: none;
+  width: 650px;
+  height: 120px;
+  margin: 0 69px 12px 57px;
+  margin-bottom: 12px;
+  text-align: left;
+  font-family: var(--ff-1);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 23px;
+  padding: 10px;
+  font-style: italic;
+  letter-spacing: 0em;
+
+
+}
+.content-com p:last-child {
+  padding-left: 57px;
+  margin-top: 88px;
+  font-family: var(--ff-1);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 24px;
+
+}
+
+.question-type {
+  height: 69px;
+  display: flex;
+  align-items: center;
+  margin-left: 57px;
+}
+
+
+
+.question-type label {
+  margin-right: 26px;
+}
+
+.question-tag label {
+  margin-right: 4px;
+
+}
+.question-tag {
+  margin-left: 57px;
+  margin-bottom: 12px;
+  position: relative;
+
+}
+
+.question-tag .addIcon {
+  width: 20px;
+  height: 20px;
+  margin-left: 14px;
+  transform: translateY(25%);
+
+}
+.addIcon-button {
+  border: none;
+
+
+}
+.button-container {
+  display: flex;
+  align-items: center;
+  border: none;
+  position: relative;
+}
+
+.button-container button {
+  position: absolute;
+  width: 120px;
+  height: 55px;
+  right: 200px;
+  border-radius: 5px;
+  background-color: var(--clr-5);
+  font-family: var(--ff-1);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+.tagIcon {
+  width: 12.5px;
+  height: 14.2px;
+  margin-right: 5px;
+}
+
+.removeIcon {
+  width: 15px;
+  height: 15px;
+
+}
+
+.remove-button {
+  border: none;
+  background-color: var(--clr-5);
+  align-self: flex-start;
+}
+
+
+
+.selected-tags {
+  margin-top: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  display: flex;
+}
+
+.selected-tags ul {
+  display: flex;
+  flex-wrap: wrap;
+
+  border-radius: 5px;
+
+}
+
+.selected-tags ul li {
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  background-color: var(--clr-5);
+  height: 30px;
+  border-radius: 5px;
+}
 
 
