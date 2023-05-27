@@ -5,6 +5,8 @@ import QuestionType from "./questionType";
 import SurveyTag from "./surveyTag";
 import CreateSurvey from "./createSurvey";
 import AddUser from "./addUser";
+import ListSurveys from "./listSurveys";
+import AssignSurvey from "./assignSurvey";
 
 export default function Content({ selectedSubMenu, token }) {
     let content = null;
@@ -30,12 +32,7 @@ export default function Content({ selectedSubMenu, token }) {
             );
             break;
         case "all-surveys":
-            content = (
-                <div>
-                    <h2>Tüm Anketler</h2>
-                    <p>Bu alanda tüm anketler listelenir.</p>
-                </div>
-            );
+            content = <ListSurveys />
             break;
         case "create-survey":
             content = <CreateSurvey/>
@@ -93,12 +90,7 @@ export default function Content({ selectedSubMenu, token }) {
             content = <ClassroomTag token={token}/>
             break;
         case "assign-classroom":
-            content = (
-                <div>
-                    <h2>Sınıfa Atama</h2>
-                    <p>Bu alanda sınıfa atama işlemi yapılır.</p>
-                </div>
-            );
+            content = <AssignSurvey />
             break;
         case "reporting-1":
             content = (
