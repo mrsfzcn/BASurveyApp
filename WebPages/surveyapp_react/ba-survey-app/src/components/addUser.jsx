@@ -1,6 +1,10 @@
 export default function AddUser(){
     return(
         <div className="content-default-1">
+            <section className="content-compass">
+                <p>Kullanıcı ekle</p>
+                <p>Anasayfa &gt; Kullanıcı İşlemleri &gt; Kullanıcı Ekle</p>
+            </section>
             <div className="addUser-container">
                 <div className="addUser-inbox">
                     <div className="add-user">
@@ -15,10 +19,10 @@ export default function AddUser(){
                         <div className="btn-addUser-section">
                             <button>KAYDET</button>
                             <button>VAZGEÇ</button>
-                        </div>   
-                    </div>   
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>   
+        </div>
     );
 }

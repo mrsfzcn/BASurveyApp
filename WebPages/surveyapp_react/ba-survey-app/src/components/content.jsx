@@ -5,20 +5,15 @@ import QuestionType from "./questionType";
 import SurveyTag from "./surveyTag";
 import CreateSurvey from "./createSurvey";
 import AddUser from "./addUser";
-import ListSurveys from "./listSurveys";
-import AssignSurvey from "./assignSurvey";
+import AllUser from "./allUser.jsx";
+
 
 export default function Content({ selectedSubMenu, token }) {
     let content = null;
 
     switch (selectedSubMenu) {
         case "all-users":
-            content = (
-                <div>
-                    <h2>Tüm Kullanıcılar</h2>
-                    <p>Bu alanda tüm kullanıcılar listelenir.</p>
-                </div>
-            );
+            content = <AllUser/>
             break;
         case "add-user":
             content = <AddUser />
@@ -38,12 +33,7 @@ export default function Content({ selectedSubMenu, token }) {
             content = <CreateSurvey/>
             break;
         case "send-survey":
-            content = (
-                <div>
-                    <h2>Anket Gönder</h2>
-                    <p>Bu alanda var olan anketler gönderilebilir.</p>
-                </div>
-            );
+            content = <SendSurveyPassive/>
             break;
         case "survey-tags":
             content = <SurveyTag token={token}/>
@@ -71,26 +61,17 @@ export default function Content({ selectedSubMenu, token }) {
             content = <QuestionType />
             break;
         case "all-students":
-            content = (
-                <div>
-                    <h2>Tüm Öğrenciler</h2>
-                    <p>Bu alanda tüm öğrenciler listelenir.</p>
-                </div>
-            );
+            content = <AllStudents/>
             break;
         case "all-trainers":
-            content = (
-                <div>
-                    <h2>Tüm Eğitmenler</h2>
-                    <p>Bu alanda tüm eğitmenler listelenir.</p>
-                </div>
-            );
+            content = <AllTrainers/>
             break;
         case "classroom-tags":
             content = <ClassroomTag token={token}/>
             break;
         case "assign-classroom":
-            content = <AssignSurvey />
+            content = <AssignStudentPassive/>
+            //content = <AssignSurvey />
             break;
         case "reporting-1":
             content = (
