@@ -24,9 +24,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
+
+    //deneme
 
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
