@@ -30,7 +30,7 @@ public class UserService {
     private final RoleService roleService;
 
     //deneme
-
+    //deneme2
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
 
