@@ -271,5 +271,9 @@ public class QuestionService {
     public void saveAll(List<Question> surveyQuestions) {
         questionRepository.saveAll(surveyQuestions);
     }
+
+    public List<String> findAllByQuestionType(String questionType){
+        return questionRepository.findQuestionTypeAsString(questionType);
+    }
 }
 
