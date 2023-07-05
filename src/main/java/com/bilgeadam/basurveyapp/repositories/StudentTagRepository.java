@@ -23,4 +23,7 @@ public interface StudentTagRepository extends BaseRepository<StudentTag, Long> {
     @Query(value = "SELECT user_oid FROM students WHERE state='ACTIVE' AND oid IN (SELECT target_entities_oid FROM studenttags_target_entities WHERE student_tags_oid = ?1)", nativeQuery = true)
     List<Long> findUserOidByStudentTagOid(Long studentTagOid);
 
+    @Query(value = "select survey_oid from survey_registration where student_tag_oid = ?1 ",nativeQuery = true)
+    List<Long> findSurveyCountByStudentTag(Long studentTagOid);
+
 }
