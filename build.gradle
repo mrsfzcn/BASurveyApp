@@ -45,7 +45,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
-
+    implementation 'org.apache.poi:poi:5.0.0'
+    implementation 'org.apache.poi:poi-ooxml:5.0.0'
 
 }
 

@@ -40,7 +40,7 @@ public enum ExceptionType {
     SURVEY_NOT_FOUND(9015, "Survey is not found", BAD_REQUEST),
     ROLE_ALREADY_EXISTS(9016, "Role is already exists", INTERNAL_SERVER_ERROR),
     ROLE_NOT_FOUND(9017, "Role is not found", BAD_REQUEST),
-    STUDENT_TAG_NOT_FOUND(9018, "Student Tag not found", INTERNAL_SERVER_ERROR),
+    STUDENT_TAG_NOT_FOUND(9018, "Student Tag not found", BAD_REQUEST),
     STUDENT_NOT_FOUND(9019, "Student not found", INTERNAL_SERVER_ERROR),
 
     STUDENT_TAG_ALREADY_EXISTS(9020, "Student Tag is already exists", INTERNAL_SERVER_ERROR),

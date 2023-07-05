@@ -7,17 +7,31 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.exceptions.ExceptionType;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.*;
 import lombok.RequiredArgsConstructor;
+
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.STUDENT_TAG_NOT_FOUND;
 
 
 @Service
@@ -30,12 +44,15 @@ public class ResponseService {
     private final StudentService studentService;
     private final SurveyService surveyService;
 
-    public void createResponse(ResponseRequestSaveDto responseRequestDto) {
+    private final StudentTagService studentTagService;
+
+    public void  createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
         Question question = getActiveQuestionById(responseRequestDto.getQuestionOid());
 
         Response response = buildResponse(responseRequestDto, question, user);
         responseRepository.save(response);
+
     }
 
     public void updateResponse(ResponseRequestDto responseRequestDto) {
@@ -229,5 +246,55 @@ public class ResponseService {
         survey.getResponses().add(response);
         surveyService.save(survey);
     }
+
+
+
+
+    // KULLANICIYA ATANAN ANKETLERİN CEVAPLARININ EXCELE EXPORT EDİLMESİNE YARAYAN METOD
+    public byte[] exportToExcel(Long studentTag) throws IOException {
+        Optional<StudentTag> studentTag1 = studentTagService.findById(studentTag);
+        List<Response> responses = responseRepository.findAll();
+        List<Long> studentTagCount = studentTagService.studentTagCount(studentTag);
+        if(studentTagCount.isEmpty()) throw new StudentTagNotFoundException(STUDENT_TAG_NOT_FOUND.getMessage());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Responses");
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("ID");
+        headerRow.createCell(1).setCellValue("SINIF");
+        headerRow.createCell(2).setCellValue("Anket sırası");
+        headerRow.createCell(3).setCellValue("ANKET");
+        headerRow.createCell(4).setCellValue("KULLANICI");
+        headerRow.createCell(5).setCellValue("SORU");
+        headerRow.createCell(6).setCellValue("CEVAP");
+        int count = 1;
+        int rowNum = 1;
+        Map<Long,Integer>map = new HashMap<>();
+        for(Long a : studentTagCount){
+            map.put(a,count++);
+        }
+        String surveyTitle = "";
+            for (Response response : responses) {
+                surveyTitle = response.getSurvey().getSurveyTitle();
+                if (!surveyTitle.equals("")){
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(rowNum-1);
+                    row.createCell(1).setCellValue(studentTag1.get().getTagString());
+                    // excelde integer değer kabul ediyor. Map'in get metodu obje döndüğünden dolayı objeyi önce stringe daha sonra integer'a parse ettik.
+                    row.createCell(2).setCellValue(Integer.parseInt(String.valueOf(map.get(response.getSurvey().getOid()))));
+                    row.createCell(3).setCellValue(response.getSurvey().getSurveyTitle());
+                    row.createCell(4).setCellValue(response.getUser().getEmail());
+                    row.createCell(5).setCellValue(response.getQuestion().getQuestionString());
+                    row.createCell(6).setCellValue(response.getResponseString());
+                    count++;
+                }
+            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+
+            return outputStream.toByteArray();
+
+
+    }
+
 
 }
