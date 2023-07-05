@@ -55,6 +55,7 @@ public enum ExceptionType {
     SURVEY_HAS_NOT_ASSIGNED_CLASSROOM(9029, "Survey has not assigned to the classroom", INTERNAL_SERVER_ERROR),
     SURVEY_EXPIRED(9030, "Survey is Expired", INTERNAL_SERVER_ERROR),
     SURVEY_NOT_INITIATED(9031, "Survey has not initiated", INTERNAL_SERVER_ERROR),
+    SURVEY_ALREADY_ASSIGN_TO_CLASS(9032,"Survey already assign to class",BAD_REQUEST),
     /*
         Validation errors.
      */

@@ -285,7 +285,7 @@ public class SurveyService {
                 .findAny();
 
         if (surveyRegistrationOptional.isPresent()) {
-            throw new EntityNotFoundException("Survey has been already assigned to Classroom.");
+            throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
