@@ -2,11 +2,9 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
-import com.bilgeadam.basurveyapp.dto.request.ChangeAuthorizedRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
@@ -40,9 +38,10 @@ public class AuthService {
     private final ManagerService managerService;
     private final StudentService studentService;
     private final TrainerService trainerService;
+    private final QrCodeService qrCodeService;
 
     @Transactional
-    public AuthenticationResponseDto register(RegisterRequestDto request) {
+    public RegisterResponseDto register(RegisterRequestDto request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered.");
         }
@@ -59,6 +58,8 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .roles(userRoles)
+                .twoFactory(false)
+                .twoFactorKey(qrCodeService.generateSecret())
                 .build();
         if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN))
             auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_ADMIN));
@@ -95,7 +96,7 @@ public class AuthService {
             trainer.setUser(auth);
             trainerService.createTrainer(trainer);
         }
-        return AuthenticationResponseDto.builder()
+        return RegisterResponseDto.builder()
                 .token(jwtService.generateToken(auth))
                 .build();
     }
@@ -125,6 +126,14 @@ public class AuthService {
                 )
         );
 
+        if (!user.get().isTwoFactory()) {
+            user.get().setTwoFactory(true);
+            userRepository.save(user.get());
+            return AuthenticationResponseDto.builder()
+                    .qrCode(qrCodeService.getUriForImage(user.get().getTwoFactorKey()))
+                    .token(jwtService.generateToken(user.get()))
+                    .build();
+        }
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
@@ -171,5 +180,14 @@ public class AuthService {
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
+    }
+
+    public Boolean verifyCode(VerifyCodeRequestDto verifyCodeRequestDto) {
+        Optional<User> user = userRepository.findById(verifyCodeRequestDto.getId());
+        if(qrCodeService.verifyCode(verifyCodeRequestDto.getTwoFactoryKey(), user.get().getTwoFactorKey())){
+            return true;
+        }
+        return false;
+
     }
 }

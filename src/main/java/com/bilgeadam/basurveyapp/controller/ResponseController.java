@@ -52,6 +52,7 @@ public class ResponseController {
     }
 
     @PutMapping("/savesurveyanswers/{token}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "id ile bulunan question'a verilen tüm response'ları kaydetmeye yarayan metot. #15")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
