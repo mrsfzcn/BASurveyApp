@@ -1,13 +1,11 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
