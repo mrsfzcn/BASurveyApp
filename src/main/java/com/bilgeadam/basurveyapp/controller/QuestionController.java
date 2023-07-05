@@ -89,4 +89,11 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.questionByTrainerType(dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findallbyquestiontype/{questionType}")
+    @Operation(summary = "belirli bir question type'a sahip tüm soruları görüntülemeyi sağlayan metot.")
+    public ResponseEntity<List<String>> findAllByQuestionType(@PathVariable @Valid String questionType){
+        return ResponseEntity.ok(questionService.findAllByQuestionType(questionType));
+    }
+
 }
