@@ -1,10 +1,8 @@
 package com.bilgeadam.basurveyapp.controller;
 
-import com.bilgeadam.basurveyapp.dto.request.ChangeAuthorizedRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -27,7 +25,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Mail, şifre, isim, soyisim ve rol girilerek yeni kullanıcı oluşturan metot. #5")
-    public ResponseEntity<AuthenticationResponseDto> register(@RequestBody @Valid RegisterRequestDto request) {
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
@@ -55,4 +53,10 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponseDto> changeAuthorized(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
         return ResponseEntity.ok(authService.changeAuthorized(request));
     }
+
+    @PostMapping("/verifycode")
+    public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto){
+        return ResponseEntity.ok(authService.verifyCode(verifyCodeRequestDto));
+    }
+
 }

@@ -33,7 +33,6 @@ public class ResponseService {
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
         Question question = getActiveQuestionById(responseRequestDto.getQuestionOid());
-
         Response response = buildResponse(responseRequestDto, question, user);
         responseRepository.save(response);
     }

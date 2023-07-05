@@ -45,6 +45,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    implementation 'dev.samstevens.totp:totp:1.7'
 
 
 }
