@@ -18,7 +18,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "surveys")
-//TODO geçici yazıldı. Daha iyi bir çözüm üretilecek.
+//TODO geçici yazıldı. Daha iyi bir çözüm üretilecek. --> (bug olarak board' a eklendi)
 @JsonIgnoreProperties({"surveyRegistrations", "studentsWhoAnswered", "questions", "surveyTags", "responses"})
 
 public class Survey extends BaseEntity {

@@ -113,7 +113,7 @@ public class QuestionService {
         }
     }
 
-    // TODO Metot doğru çalışmıyor düzenlenecek
+    // TODO Metot doğru çalışmıyor düzenlenecek --> (bug olarak board' a eklendi)
     public List<QuestionResponseDto> findAllSurveyQuestions(String token) {
         if (jwtService.isSurveyEmailTokenValid(token)) {
             throw new UndefinedTokenException("Invalid token.");
@@ -124,7 +124,7 @@ public class QuestionService {
         Set<Long> uniqueQuestionIds = new HashSet<>();
         List<QuestionResponseDto> questionsDto = new ArrayList<>();
 
-        //TODO mapper kullanılacak
+        //TODO mapper kullanılacak --> (bug olarak board' a eklendi)
         for (Question question : questions) {
             if (uniqueQuestionIds.add(question.getOid())) {
                 questionsDto.add(QuestionResponseDto.builder()
@@ -143,7 +143,6 @@ public class QuestionService {
         return questionsDto;
     }
 
-    //TODO tag ler eklendiğinde test edilecektir.
     public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
         Survey survey = surveyService.findActiveById(dto.getSurveyOid())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found."));

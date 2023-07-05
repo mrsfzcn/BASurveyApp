@@ -167,7 +167,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthenticationResponseDto changeAuthorized(ChangeAuthorizedRequestDto request) {
+    public AuthenticationResponseDto switchAuthorizationRoles(ChangeAuthorizedRequestDto request) {
         Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
 

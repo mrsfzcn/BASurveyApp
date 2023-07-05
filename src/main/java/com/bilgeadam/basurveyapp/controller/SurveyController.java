@@ -88,14 +88,6 @@ public class SurveyController {
         surveyService.delete(surveyId);
         return ResponseEntity.ok().build();
     }
-/* /response/updateStudentResponses response controller a taşınmış
-    @PutMapping("/update-survey-response/{surveyId}")
-    @PreAuthorize("hasRole('STUDENT')")
-    @Operation(summary = "Survey id girilerek response'ların değiştirilebilmesini sağlayan metot.")
-    ResponseEntity<Survey> updateSurveyResponses(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
-        return ResponseEntity.ok(surveyService.updateSurveyResponses(surveyId, dto));
-    }
-*/
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -103,13 +95,7 @@ public class SurveyController {
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
-/* /savesurveyanswers/{token} response controller a taşınmış
-    @PostMapping("/response/{token}")
-    @Operation(summary = "")
-    ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
-        return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dtoList, request));
-    }
-*/
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findSurveysByStudentTag")
     @Operation(summary = "#19")

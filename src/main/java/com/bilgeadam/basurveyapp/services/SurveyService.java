@@ -518,9 +518,6 @@ public class SurveyService {
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
-//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-//        User user = trainer.getUser();
-
         return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 

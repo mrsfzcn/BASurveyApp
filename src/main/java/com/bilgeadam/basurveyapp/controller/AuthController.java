@@ -41,17 +41,16 @@ public class AuthController {
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/updateLoginCredentials")
-    //TODO "changelogin" ismi değişecek
+    //TODO "changelogin" ismi değişecek --> (bug olarak board' a eklendi)
     @Operation(summary = "")
     public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.changeLogin(request));
     }
 
-    @PostMapping("/changeauthorized")
-    //TODO "changeauthorized" ismi "switchauthorizationroles" olarak değişecek
+    @PostMapping("/switch-authorization-roles")
     @Operation(summary = "Bir role ait token üzerinden o rolün değiştirilmesini sağlayan metot.")
-    public ResponseEntity<AuthenticationResponseDto> changeAuthorized(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
-        return ResponseEntity.ok(authService.changeAuthorized(request));
+    public ResponseEntity<AuthenticationResponseDto> switchAuthorizationRoles(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
+        return ResponseEntity.ok(authService.switchAuthorizationRoles(request));
     }
 
     @PostMapping("/verifycode")
