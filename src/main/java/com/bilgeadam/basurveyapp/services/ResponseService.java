@@ -8,10 +8,9 @@ import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.exceptions.ExceptionType;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
-import com.bilgeadam.basurveyapp.repositories.*;
+import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 
 
@@ -25,10 +24,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
-import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.STUDENT_TAG_NOT_FOUND;
@@ -49,9 +51,9 @@ public class ResponseService {
     public void  createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
         Question question = getActiveQuestionById(responseRequestDto.getQuestionOid());
+
         Response response = buildResponse(responseRequestDto, question, user);
         responseRepository.save(response);
-
     }
 
     public void updateResponse(ResponseRequestDto responseRequestDto) {

@@ -2,15 +2,19 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
-import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
+import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Survey;
+import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
 import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
-import com.bilgeadam.basurveyapp.repositories.*;
+import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
+import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

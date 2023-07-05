@@ -2,19 +2,14 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
-import com.bilgeadam.basurveyapp.entity.User;
-import com.bilgeadam.basurveyapp.entity.Student;
-import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

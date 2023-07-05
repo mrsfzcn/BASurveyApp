@@ -1,17 +1,17 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.dto.response.AdminResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ManagerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

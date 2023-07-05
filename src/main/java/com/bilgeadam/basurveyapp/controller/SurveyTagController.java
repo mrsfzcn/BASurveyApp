@@ -3,7 +3,6 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
