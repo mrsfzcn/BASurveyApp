@@ -704,7 +704,7 @@ public class SurveyService {
 
 
 
-        Map<Question, List<Response>> questionResponseListMap = new LinkedHashMap<>(); // buraya bakılacak
+        Map<Question, List<Response>> questionResponseListMap = new LinkedHashMap<>();
 
         for (Response response : responseList) {
             Question question = response.getQuestion();

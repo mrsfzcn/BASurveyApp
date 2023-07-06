@@ -26,7 +26,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/getallsurveyquestionresponsebystudent")
-    @Operation(summary = "Bir anketteki belirli bir student tag' e sahip olan ogrencilerin -her soru için ayrı şekilde- verdigi yanıtları donduren method #Oğuz")
+    @Operation(summary = "Bir anketteki belirli bir student tag' e sahip olan ogrencilerin -her soru için ayrı şekilde- verdigi yanıtları donduren methot #Oğuz")
     ResponseEntity<List<SurveyQuestionResponseByStudentResponseDto>> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto){
         return ResponseEntity.ok(surveyService.getAllSurveyQuestionResponseByStudent(dto));
     }

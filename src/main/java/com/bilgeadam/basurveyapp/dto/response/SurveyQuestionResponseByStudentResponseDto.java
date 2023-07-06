@@ -14,7 +14,7 @@ public class SurveyQuestionResponseByStudentResponseDto {
     /**QuestionSide
      */
     String questionString;
-    /** ResponseSide
+    /** ResponseSidee
      */
     List<String> responseString;
     /**StudentInfoSide

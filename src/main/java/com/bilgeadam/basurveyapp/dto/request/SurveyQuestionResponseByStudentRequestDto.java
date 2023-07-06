@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class SurveyQuestionResponseByStudentRequestDto {
+    //*sd
     String surveyTitle;
     String studentTagString;
 }
