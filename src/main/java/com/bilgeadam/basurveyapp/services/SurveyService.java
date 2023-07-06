@@ -691,6 +691,50 @@ public class SurveyService {
             throw new SurveyTagExistException("SurveyTag already exists in the survey");
         }
     }
+
+    public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
+        Optional<Survey> survey = Optional.ofNullable(surveyRepository.findOptionalBySurveyTitle(dto.getSurveyTitle()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findByStudentTagName(dto.getStudentTagString()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
+
+        List<Response> responseList = new ArrayList<>();
+        List<User> studentList = new ArrayList<>();
+
+        for (Student student : studentTag.get().getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey.get(), student.getUser());
+            responseList.addAll(studentResponses);
+            studentList.add(student.getUser());
+        }
+
+
+
+        Map<Question, List<Response>> questionResponseListMap = new LinkedHashMap<>(); // buraya bakılacak
+
+        for (Response response : responseList) {
+            Question question = response.getQuestion();
+            List<Response> specialResponseList = new ArrayList<>();
+
+            for (Response response1: responseList){
+                if (response1.getQuestion()== question){
+                    specialResponseList.add(response1);
+                }
+            }
+            questionResponseListMap.put(question,specialResponseList);
+        }
+
+        List<SurveyQuestionResponseByStudentResponseDto> surveyQuestionResponseByStudentResponseDtos = new ArrayList<>();
+
+        questionResponseListMap.forEach((question, responses) -> {
+            SurveyQuestionResponseByStudentResponseDto surveyQuestionResponseByStudentResponseDto = SurveyQuestionResponseByStudentResponseDto.builder()
+                    .questionString(question.getQuestionString())
+                    .responseString(responses.stream().map(response -> response.getResponseString()).toList())
+                    .studentNames(responses.stream().map(response -> response.getUser().getFirstName()).toList())
+                    .build();
+            surveyQuestionResponseByStudentResponseDtos.add(surveyQuestionResponseByStudentResponseDto);
+        });
+
+
+        return surveyQuestionResponseByStudentResponseDtos;
+    }
 }
 
 
