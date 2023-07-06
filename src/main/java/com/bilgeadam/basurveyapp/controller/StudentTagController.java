@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.services.StudentTagService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class StudentTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #03")
+    @Hidden
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         studentTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
