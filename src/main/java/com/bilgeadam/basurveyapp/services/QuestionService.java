@@ -14,8 +14,8 @@ import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
 import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
-import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import static com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS.ROLE_ASSISTANT_TRAINER;
 import static com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS.ROLE_MASTER_TRAINER;
 
+
 @Service
-@RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionTypeService questionTypeService;
@@ -34,8 +34,15 @@ public class QuestionService {
     private final JwtService jwtService;
     private final QuestionTagService questionTagService;
 
-    private final ResponseRepository responseRepository;
-
+    public QuestionService(QuestionRepository questionRepository, @Lazy QuestionTypeService questionTypeService
+            ,@Lazy SurveyService surveyService, @Lazy TrainerService trainerService, @Lazy JwtService jwtService, @Lazy QuestionTagService questionTagService) {
+        this.questionRepository = questionRepository;
+        this.questionTypeService = questionTypeService;
+        this.surveyService = surveyService;
+        this.trainerService = trainerService;
+        this.jwtService = jwtService;
+        this.questionTagService = questionTagService;
+    }
 
     public Boolean createQuestions(List<CreateQuestionDto> createQuestionDtoList) {
         for (CreateQuestionDto createQuestionDto : createQuestionDtoList) {

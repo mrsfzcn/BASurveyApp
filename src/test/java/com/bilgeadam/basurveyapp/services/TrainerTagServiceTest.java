@@ -36,12 +36,12 @@ public class TrainerTagServiceTest {
     private TrainerRepository trainerRepository;
 
     private TrainerTagService trainerTagService;
-
-    @BeforeEach
-    public void Init() {
-        MockitoAnnotations.openMocks(this);
-       trainerTagService = new TrainerTagService(trainerTagRepository,trainerRepository);
-    }
+    /* TODO    before each kapatlıldı MFT */
+//    @BeforeEach
+//    public void Init() {
+//        MockitoAnnotations.openMocks(this);
+//       trainerTagService = new TrainerTagService(trainerTagRepository,trainerRepository);
+//    }
 
     @Test
     public void testCreateTag() {

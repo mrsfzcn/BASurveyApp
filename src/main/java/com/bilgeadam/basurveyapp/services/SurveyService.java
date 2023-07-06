@@ -43,9 +43,9 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class SurveyService {
     private final SurveyRepository surveyRepository;
-    private final ResponseRepository responseRepository;
-    private final QuestionRepository questionRepository;
-    private final SurveyTagRepository surveyTagRepository;
+    private final ResponseService responseService;
+    private final QuestionService questionService;
+    private final SurveyTagService surveyTagService;
     private final UserService userService;
     private final EmailService emailService;
     private final JwtService jwtService;
@@ -219,7 +219,7 @@ public class SurveyService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         // authentication ******
         List<Question> surveyQuestions = survey.getQuestions();
-        Set<Response> surveyResponses = responseRepository.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
+        Set<Response> surveyResponses = responseService.findResponsesByUserOidAndSurveyOid(currentUser.getOid(), surveyOid);
         List<Response> updatedResponses = new ArrayList<>();
         surveyQuestions.forEach(question -> {
             SurveyResponseQuestionRequestDto srqrDto = dtoList.stream().filter((dto) -> dto.getQuestionOid().equals(question.getOid())).findAny().orElse(null);
@@ -239,8 +239,8 @@ public class SurveyService {
                 }
             }
         });
-        questionRepository.saveAll(surveyQuestions);
-        responseRepository.saveAll(updatedResponses);
+        questionService.saveAll(surveyQuestions);
+        responseService.saveAll(updatedResponses);
         surveyRepository.save(survey);
 
         return true;
@@ -266,7 +266,7 @@ public class SurveyService {
                 .parallelStream()
                 .filter(response -> dto.getUpdateResponseMap().containsKey(response.getOid()))
                 .forEach(response -> response.setResponseString(dto.getUpdateResponseMap().get(response.getOid())));
-        responseRepository.saveAll(currentUserResponses);
+        responseService.saveAll(currentUserResponses);
         return survey;
     }
 
@@ -442,7 +442,7 @@ public class SurveyService {
             List<Response> responses = new ArrayList<>();
             if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MASTER_TRAINER)) {
                 for (Student student : studentTag.getTargetEntities()) {
-                    Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+                    Set<Response> studentResponses = responseService.findBySurveyAndUser(survey, student.getUser());
                     for (Response response : studentResponses) {
                         if (!response.getQuestion().getQuestionTag().stream().anyMatch(tag -> tag.getTagString().contains("ASSISTANT_TRAINER"))) {
                             responses.add(response);
@@ -451,7 +451,7 @@ public class SurveyService {
                 }
             } else {
                 for (Student student : studentTag.getTargetEntities()) {
-                    Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+                    Set<Response> studentResponses = responseService.findBySurveyAndUser(survey, student.getUser());
                     for (Response response : studentResponses) {
                         if (!response.getQuestion().getQuestionTag().stream().anyMatch(tag -> tag.getTagString().contains("MASTER_TRAINER"))) {
                             responses.add(response);
@@ -542,7 +542,7 @@ public class SurveyService {
             }
         }
 
-        List<Response> responses = responseRepository.findListByUser(student.getUser());
+        List<Response> responses = responseService.findListByUser(student.getUser());
         Map<Survey, List<Response>> responsesBySurvey = responses.stream()
                 .collect(Collectors.groupingBy(Response::getSurvey));
 
@@ -584,7 +584,7 @@ public class SurveyService {
 
     public Boolean addQuestionToSurvey(SurveyAddQuestionRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
-        Question question = questionRepository.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
+        Question question = questionService.findActiveById(dto.getQuestionId()).orElseThrow(() -> new QuestionNotFoundException("Question not found."));
         if (survey.getQuestions().contains(question)) {
             throw new QuestionAlreadyExistsException("Question already exists");
         }
@@ -598,7 +598,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
         dto.getQuestionIds().forEach(qId -> {
-            Question question = questionRepository.findActiveById(qId).orElseThrow(() ->
+            Question question = questionService.findActiveById(qId).orElseThrow(() ->
                     new QuestionNotFoundException("Question not found."));
             question.getSurveys().add(survey);
             questions.add(question);
@@ -621,7 +621,7 @@ public class SurveyService {
     private List<Response> getResponsesForStudentTag(StudentTag studentTag){
         List<Response> responses = new ArrayList<>();
         for (Student student : studentTag.getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findSetByUser(student.getUser());
+            Set<Response> studentResponses = responseService.findSetByUser(student.getUser());
             responses.addAll(studentResponses);
         }
         return responses;
@@ -630,7 +630,7 @@ public class SurveyService {
     private List<Response> getResponsesForSurveyAndStudentTag(Survey survey, StudentTag studentTag) {
         List<Response> responses = new ArrayList<>();
         for (Student student : studentTag.getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey, student.getUser());
+            Set<Response> studentResponses = responseService.findBySurveyAndUser(survey, student.getUser());
             responses.addAll(studentResponses);
         }
         return responses;
@@ -679,11 +679,11 @@ public class SurveyService {
 
     public SurveySimpleResponseDto assignSurveyTag(SurveyTagAssignRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagRepository.findActiveById(dto.getSurveyTagOid()).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
+        Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid()).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
         if (!survey.get().getSurveyTags().contains(surveyTag.get())) {
             survey.get().getSurveyTags().add(surveyTag.get());
             surveyTag.get().getTargetEntities().add(survey.get());
-            surveyTagRepository.save(surveyTag.get());
+            surveyTagService.save(surveyTag.get());
             surveyRepository.save(survey.get());
             List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
             return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);

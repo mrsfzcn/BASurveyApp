@@ -11,20 +11,17 @@ import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
-@RequiredArgsConstructor
 public class ResponseService {
     private final ResponseRepository responseRepository;
     private final QuestionService questionService;
@@ -32,6 +29,16 @@ public class ResponseService {
     private final JwtService jwtService;
     private final StudentService studentService;
     private final SurveyService surveyService;
+
+    public ResponseService(@Lazy ResponseRepository responseRepository, @Lazy QuestionService questionService
+            , @Lazy UserService userService, @Lazy JwtService jwtService, @Lazy StudentService studentService, @Lazy SurveyService surveyService) {
+        this.responseRepository = responseRepository;
+        this.questionService = questionService;
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.studentService = studentService;
+        this.surveyService = surveyService;
+    }
 
     public void createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
@@ -233,4 +240,24 @@ public class ResponseService {
         surveyService.save(survey);
     }
 
+    public Set<Response> findResponsesByUserOidAndSurveyOid(Long oid, Long surveyOid) {
+        return responseRepository.findResponsesByUserOidAndSurveyOid(oid,surveyOid);
+
+    }
+
+    public void saveAll(List<Response> updatedResponses) {
+        responseRepository.saveAll(updatedResponses);
+    }
+
+    public Set<Response> findBySurveyAndUser(Survey survey, User user) {
+        return responseRepository.findBySurveyAndUser(survey,user);
+    }
+
+    public List<Response> findListByUser(User user) {
+        return responseRepository.findListByUser(user);
+    }
+
+    public Set<Response> findSetByUser(User user) {
+        return responseRepository.findSetByUser(user);
+    }
 }

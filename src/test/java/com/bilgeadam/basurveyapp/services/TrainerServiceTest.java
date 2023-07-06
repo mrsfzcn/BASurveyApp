@@ -32,11 +32,11 @@ public class TrainerServiceTest {
     @Mock
     private TrainerTagService trainerTagService;
 
-    @BeforeEach
-    public void Init() {
-        MockitoAnnotations.openMocks(this);
-        trainerService = new TrainerService(trainerRepository,trainerTagService);
-    }
+//    @BeforeEach
+//    public void Init() {
+//        MockitoAnnotations.openMocks(this);
+//        trainerService = new TrainerService(trainerRepository,trainerTagService);
+//    }
 
     @Test
     public void testCreateTrainer(){
