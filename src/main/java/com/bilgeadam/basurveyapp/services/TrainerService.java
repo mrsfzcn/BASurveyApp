@@ -12,6 +12,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TrainerMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,11 +20,17 @@ import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
+
 public class TrainerService {
     private final TrainerRepository trainerRepository;
     private final TrainerTagService trainerTagService;
     private final TrainerExTagsService trainerExTagsService;
+
+    public TrainerService(TrainerRepository trainerRepository, @Lazy TrainerTagService trainerTagService, @Lazy TrainerExTagsService trainerExTagsService) {
+        this.trainerRepository = trainerRepository;
+        this.trainerTagService = trainerTagService;
+        this.trainerExTagsService = trainerExTagsService;
+    }
 
     public Boolean createTrainer(Trainer trainer) {
         trainerRepository.save(trainer);
@@ -103,5 +110,9 @@ public class TrainerService {
         List<Trainer> assistantTrainers = trainerRepository.findAllAssistantTrainers();
 
         return TrainerMapper.INSTANCE.toAssistantTrainerResponseDtos(assistantTrainers);
+    }
+
+    public Optional<Trainer> findActiveByEmail(String email) {
+        return trainerRepository.findActiveByEmail(email);
     }
 }

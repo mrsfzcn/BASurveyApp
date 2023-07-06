@@ -26,7 +26,10 @@ public class ResponseController {
     @PostMapping("createresponse")
     @Operation(summary = "Response Create etmek için kullanilan methot")
     public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
-        return ResponseEntity.ok(responseService.createResponse(responseRequestSaveDto));
+        //  return ResponseEntity.ok(responseService.createResponse(responseRequestSaveDto));
+        // yukarıda ki hata düzeltildi. MFT
+        responseService.createResponse(responseRequestSaveDto);
+        return ResponseEntity.ok(true);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

@@ -31,11 +31,13 @@ public class TrainerServiceTest {
     private TrainerRepository trainerRepository;
     @Mock
     private TrainerTagService trainerTagService;
+    @Mock
+    private TrainerExTagsService trainerExTagsService;
 
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-        trainerService = new TrainerService(trainerRepository,trainerTagService);
+        trainerService = new TrainerService(trainerRepository,trainerTagService,trainerExTagsService);
     }
 
     @Test

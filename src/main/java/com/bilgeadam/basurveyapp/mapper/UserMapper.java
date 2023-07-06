@@ -17,6 +17,7 @@ import java.util.Set;
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
+
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     List<StudentResponseDto> toStudentResponseDto(final List<User> users);
