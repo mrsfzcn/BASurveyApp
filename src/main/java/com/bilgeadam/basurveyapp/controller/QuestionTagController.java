@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.QuestionTagService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class QuestionTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "String türünde tag ismi girilerek yeni question tag oluşturulmasını sağlayan metot. #9")
+    @Hidden
     public ResponseEntity<QuestionTag> createTag(@RequestBody @Valid CreateTagDto dto) {
         QuestionTag createdTag = questionTagService.createTag(dto);
         return ResponseEntity.ok(createdTag);

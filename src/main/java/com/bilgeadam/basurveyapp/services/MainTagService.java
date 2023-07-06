@@ -8,6 +8,9 @@ import com.bilgeadam.basurveyapp.repositories.MainTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author Muhammed Furkan Türkmen
+ */
 @Service
 @RequiredArgsConstructor
 public class MainTagService {
@@ -20,9 +23,8 @@ public class MainTagService {
 
     /**
      * düzeltilmesi gerekenler:
-     * 1_ diger servislerde dto almaya gerek yok
-     * 2_ builerları mapperlar ile yapmak lazım.
-     * 3_ controller de kisi tek bir yerden tag olusturacak artık.
+     * 1_ buildırları mapperlar ile yapmak lazım.
+     * 2_ controller de kisi tek bir yerden tag olusturacak artık.
      * her biri icin ayrı ayrı kayıt islemine gerek yok
      */
     public void createTag (CreateMainTagRequestDto dto){

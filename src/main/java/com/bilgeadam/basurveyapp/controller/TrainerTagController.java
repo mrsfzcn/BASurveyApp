@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDt
 import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.services.TrainerTagService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class TrainerTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot. #02 ")
+    @Hidden
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         trainerTagService.createTag(dto);
         return ResponseEntity.ok(dto.getTagString());
