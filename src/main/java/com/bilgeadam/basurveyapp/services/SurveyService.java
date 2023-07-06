@@ -688,6 +688,15 @@ public class SurveyService {
             throw new SurveyTagExistException("SurveyTag already exists in the survey");
         }
     }
+
+
+    public List<Long> findTotalStudentBySurveyOid(Long surveyid,Long studentTagOid) {
+       return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+    }
+
+    public List<String> findStudentNameBySurveyOid(Long surveyid,Long studentTagOid) {
+        return surveyRegistrationRepository.findStudentNameBySurveyOid(surveyid,studentTagOid);
+    }
 }
 
 
