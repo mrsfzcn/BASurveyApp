@@ -295,6 +295,10 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
+        if(startDate.compareTo(LocalDateTime.now())<0){
+            throw new SurveyAssignInvalidDateException("Date field can't containt past date");
+        }
+
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
                 .studentTag(studentTag)
