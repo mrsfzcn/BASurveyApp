@@ -2,15 +2,20 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,6 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
+    @PostMapping("createresponse")
+    @Operation(summary = "Response Create etmek için kullanilan methot")
+    public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
+        return ResponseEntity.ok(responseService.createResponse(responseRequestSaveDto));
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
@@ -47,6 +57,7 @@ public class ResponseController {
     }
 
     @PutMapping("/savesurveyanswers/{token}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "id ile bulunan question'a verilen tüm response'ları kaydetmeye yarayan metot. #15")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
@@ -80,5 +91,27 @@ public class ResponseController {
     @Operation(summary = "id ile bulunan response için string türünde girdi ile yeni değer atanmasını sağlayan metot.  #23")
     public ResponseEntity<Boolean> updateStudentResponses(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/excel/{id}")
+    public ResponseEntity<byte[]> exportToExcel(@PathVariable Long id) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment","result.xlsx");
+        return new ResponseEntity<>(responseService.exportToExcel(id),headers, HttpStatus.OK);
+
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/survey-response-rate/{surveyid}/{studentTagOid}")
+    public ResponseEntity<Double>responseRate(@PathVariable Long surveyid,Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRate(surveyid,studentTagOid));
+    }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/survey-response-rates/{surveyid}/{studentTagOid}")
+    public ResponseEntity<List<String >>responseRateNamed(@PathVariable Long surveyid,Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRateName(surveyid,studentTagOid));
     }
 }

@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,7 +23,7 @@ public class RoleController {
 //    @PreAuthorize("hasAnyRole('ADMIN')")
 @PostMapping("/createrole")
 @Operation(summary = "String girdisi ile yeni bir rol oluşturulmasını sağlayan metot. #01")
-    public ResponseEntity<CreateRoleResponseDto> createRole(CreateRoleDto dto) {
+    public ResponseEntity<CreateRoleResponseDto> createRole(@RequestBody CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));
     }
 

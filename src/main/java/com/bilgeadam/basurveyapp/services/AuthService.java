@@ -2,18 +2,16 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
-import com.bilgeadam.basurveyapp.dto.request.ChangeAuthorizedRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.ChangeLoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.LoginRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.RegisterRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,12 +25,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author Muhammed Furkan Türkmen
+ * @author Eralp Nitelik
  */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -40,10 +38,11 @@ public class AuthService {
     private final ManagerService managerService;
     private final StudentService studentService;
     private final TrainerService trainerService;
+    private final QrCodeService qrCodeService;
 
     @Transactional
-    public AuthenticationResponseDto register(RegisterRequestDto request) {
-        if (userService.findByEmail(request.getEmail()).isPresent()) {
+    public RegisterResponseDto register(RegisterRequestDto request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered.");
         }
         List<Role> roles = roleService.findRoles();
@@ -59,6 +58,8 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .roles(userRoles)
+                .twoFactory(false)
+                .twoFactorKey(qrCodeService.generateSecret())
                 .build();
         if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN))
             auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_ADMIN));
@@ -71,10 +72,10 @@ public class AuthService {
         else if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_STUDENT))
             auth.setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
         else throw new RoleNotFoundException("Role is not found");
-        userService.save(auth);
+        userRepository.save(auth);
 
 //        User auth = AuthMapper.INSTANCE.ToUser(request);
-//        userService.save(auth);
+//        userRepository.save(auth);
 
 
         if (roleService.userHasRole(auth, ROLE_CONSTANTS.ROLE_ADMIN)
@@ -95,13 +96,13 @@ public class AuthService {
             trainer.setUser(auth);
             trainerService.createTrainer(trainer);
         }
-        return AuthenticationResponseDto.builder()
+        return RegisterResponseDto.builder()
                 .token(jwtService.generateToken(auth))
                 .build();
     }
 
     public AuthenticationResponseDto authenticate(LoginRequestDto request) {
-        Optional<User> user = userService.findByEmail(request.getEmail());
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
@@ -116,7 +117,7 @@ public class AuthService {
         else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT))
             user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
         else throw new RoleNotFoundException("Role is not found");
-        userService.save(user.get());
+        userRepository.save(user.get());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -125,17 +126,25 @@ public class AuthService {
                 )
         );
 
+        if (!user.get().isTwoFactory()) {
+            user.get().setTwoFactory(true);
+            userRepository.save(user.get());
+            return AuthenticationResponseDto.builder()
+                    .qrCode(qrCodeService.getUriForImage(user.get().getTwoFactorKey()))
+                    .token(jwtService.generateToken(user.get()))
+                    .build();
+        }
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
     }
 
     public AuthenticationResponseDto changeLogin(ChangeLoginRequestDto request) {
-        Optional<User> authorizedUser = userService.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
+        Optional<User> authorizedUser = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (authorizedUser.isEmpty()) throw new ResourceNotFoundException("User is not found");
 //        if (!roleService.userHasAuthorizedRole(authorizedUser.get(), ROLE_CONSTANTS.ROLE_MANAGER))
 //            throw new AccessDeniedException("Unauthorized account");
-        Optional<User> user = userService.findByEmail(request.getUserEmail());
+        Optional<User> user = userRepository.findByEmail(request.getUserEmail());
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Username does not exist.");
         }
@@ -151,25 +160,34 @@ public class AuthService {
         else if (roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_STUDENT))
             user.get().setAuthorizedRole((ROLE_CONSTANTS.ROLE_STUDENT));
         else throw new RoleNotFoundException("Role is not found");
-        userService.save(user.get());
+        userRepository.save(user.get());
 
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
     }
 
-    public AuthenticationResponseDto changeAuthorized(ChangeAuthorizedRequestDto request) {
-        Optional<User> user = userService.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
+    public AuthenticationResponseDto switchAuthorizationRoles(ChangeAuthorizedRequestDto request) {
+        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (user.isEmpty()) throw new ResourceNotFoundException("User is not found");
 
         if (roleService.userHasRole(user.get(), request.getAuthorizedRole()))
             user.get().setAuthorizedRole((request.getAuthorizedRole()));
         else throw new RoleNotFoundException("Role is not found");
 
-        userService.save(user.get());
+        userRepository.save(user.get());
 
         return AuthenticationResponseDto.builder()
                 .token(jwtService.generateToken(user.get()))
                 .build();
+    }
+
+    public Boolean verifyCode(VerifyCodeRequestDto verifyCodeRequestDto) {
+        Optional<User> user = userRepository.findById(verifyCodeRequestDto.getId());
+        if(qrCodeService.verifyCode(verifyCodeRequestDto.getTwoFactoryKey(), user.get().getTwoFactorKey())){
+            return true;
+        }
+        return false;
+
     }
 }

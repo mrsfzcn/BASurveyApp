@@ -277,6 +277,12 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.STUDENT_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(STUDENT_TAG_NOT_FOUND, exception, request);
     }
+    @ResponseBody
+    @ExceptionHandler(SurveryAlreadyAssignToClassException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyAlreadyAssingToClassException(SurveryAlreadyAssignToClassException exception,HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.SURVEY_ALREADY_ASSIGN_TO_CLASS", null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(SURVEY_ALREADY_ASSIGN_TO_CLASS,exception,request);
+    }
 
     @ResponseBody
     @ExceptionHandler(ResponseNotFoundException.class)
@@ -289,6 +295,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleStudentNotFoundException(StudentNotFoundException exception, HttpServletRequest request) {
         log.warn(messageSource.getMessage("exception.STUDENT_NOT_FOUND", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(STUDENT_NOT_FOUND, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(SurveyAssignInvalidDateException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyAssignInvalidDateException(SurveyAssignInvalidDateException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.SURVEY_ASSIGN_INVALID_DATE",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(SURVEY_ASSIGN_INVALID_DATE,exception,request);
     }
 
 }

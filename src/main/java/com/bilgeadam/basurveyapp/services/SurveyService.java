@@ -285,7 +285,7 @@ public class SurveyService {
                 .findAny();
 
         if (surveyRegistrationOptional.isPresent()) {
-            throw new EntityNotFoundException("Survey has been already assigned to Classroom.");
+            throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -295,6 +295,10 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
+        if(startDate.compareTo(LocalDateTime.now())<0){
+            throw new SurveyAssignInvalidDateException("Date field can't containt past date");
+        }
+
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
                 .studentTag(studentTag)
@@ -518,9 +522,6 @@ public class SurveyService {
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
-//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-//        User user = trainer.getUser();
-
         return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 
@@ -690,6 +691,59 @@ public class SurveyService {
         } else {
             throw new SurveyTagExistException("SurveyTag already exists in the survey");
         }
+    }
+
+
+    public List<Long> findTotalStudentBySurveyOid(Long surveyid,Long studentTagOid) {
+       return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+    }
+
+    public List<String> findStudentNameBySurveyOid(Long surveyid,Long studentTagOid) {
+        return surveyRegistrationRepository.findStudentNameBySurveyOid(surveyid,studentTagOid);
+    }
+
+    public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
+        Optional<Survey> survey = Optional.ofNullable(surveyRepository.findOptionalBySurveyTitle(dto.getSurveyTitle()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findByStudentTagName(dto.getStudentTagString()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
+
+        List<Response> responseList = new ArrayList<>();
+        List<User> studentList = new ArrayList<>();
+
+        for (Student student : studentTag.get().getTargetEntities()) {
+            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey.get(), student.getUser());
+            responseList.addAll(studentResponses);
+            studentList.add(student.getUser());
+        }
+
+
+
+        Map<Question, List<Response>> questionResponseListMap = new LinkedHashMap<>();
+
+        for (Response response : responseList) {
+            Question question = response.getQuestion();
+            List<Response> specialResponseList = new ArrayList<>();
+
+            for (Response response1: responseList){
+                if (response1.getQuestion()== question){
+                    specialResponseList.add(response1);
+                }
+            }
+            questionResponseListMap.put(question,specialResponseList);
+        }
+
+        List<SurveyQuestionResponseByStudentResponseDto> surveyQuestionResponseByStudentResponseDtos = new ArrayList<>();
+
+        questionResponseListMap.forEach((question, responses) -> {
+            SurveyQuestionResponseByStudentResponseDto surveyQuestionResponseByStudentResponseDto = SurveyQuestionResponseByStudentResponseDto.builder()
+                    .questionString(question.getQuestionString())
+                    .responseString(responses.stream().map(response -> response.getResponseString()).toList())
+                    .studentNames(responses.stream().map(response -> response.getUser().getFirstName()).toList())
+                    .build();
+            surveyQuestionResponseByStudentResponseDtos.add(surveyQuestionResponseByStudentResponseDto);
+        });
+
+
+        return surveyQuestionResponseByStudentResponseDtos;
     }
 }
 

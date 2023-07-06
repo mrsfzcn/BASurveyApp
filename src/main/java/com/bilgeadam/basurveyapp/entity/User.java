@@ -35,6 +35,8 @@ public class User extends BaseEntity implements UserDetails {
     @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Role> roles;
+    private boolean twoFactory;
+    private String twoFactorKey;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

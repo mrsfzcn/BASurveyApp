@@ -25,6 +25,13 @@ public class SurveyController {
     private final SurveyService surveyService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/getallsurveyquestionresponsebystudent")
+    @Operation(summary = "Bir anketteki belirli bir student tag' e sahip olan ogrencilerin -her soru için ayrı şekilde- verdigi yanıtları donduren methot #Oğuz")
+    ResponseEntity<List<SurveyQuestionResponseByStudentResponseDto>> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto){
+        return ResponseEntity.ok(surveyService.getAllSurveyQuestionResponseByStudent(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/list")
     @Operation(summary = "Tüm survey'leri görüntülemeyi sağlayan metot. #16")
     ResponseEntity<List<SurveySimpleResponseDto>> getSurveyList() {
@@ -88,14 +95,6 @@ public class SurveyController {
         surveyService.delete(surveyId);
         return ResponseEntity.ok().build();
     }
-/* /response/updateStudentResponses response controller a taşınmış
-    @PutMapping("/update-survey-response/{surveyId}")
-    @PreAuthorize("hasRole('STUDENT')")
-    @Operation(summary = "Survey id girilerek response'ların değiştirilebilmesini sağlayan metot.")
-    ResponseEntity<Survey> updateSurveyResponses(@PathVariable Long surveyId, @RequestBody @Valid SurveyUpdateResponseRequestDto dto) {
-        return ResponseEntity.ok(surveyService.updateSurveyResponses(surveyId, dto));
-    }
-*/
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -103,13 +102,7 @@ public class SurveyController {
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
-/* /savesurveyanswers/{token} response controller a taşınmış
-    @PostMapping("/response/{token}")
-    @Operation(summary = "")
-    ResponseEntity<Boolean> responseSurveyQuestions(@PathVariable("token") String token, @RequestBody @Valid List<SurveyResponseQuestionRequestDto> dtoList, HttpServletRequest request) {
-        return ResponseEntity.ok(surveyService.responseSurveyQuestions(token, dtoList, request));
-    }
-*/
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findSurveysByStudentTag")
     @Operation(summary = "#19")

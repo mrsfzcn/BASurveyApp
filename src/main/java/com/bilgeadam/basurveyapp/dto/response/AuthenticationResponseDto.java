@@ -12,4 +12,6 @@ import lombok.*;
 @Builder
 public class AuthenticationResponseDto {
     private String token;
+
+    private String qrCode;
 }

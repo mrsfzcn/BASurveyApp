@@ -83,4 +83,9 @@ public class StudentTagService {
 
         return studentTagRepository.findById(studentTagOid);
     }
+
+    public List<Long> studentTagCount(Long studentTagOid){
+        List<Long> count = studentTagRepository.findSurveyCountByStudentTag(studentTagOid);
+        return count;
+    }
 }
