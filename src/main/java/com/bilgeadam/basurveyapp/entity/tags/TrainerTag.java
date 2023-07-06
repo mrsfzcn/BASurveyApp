@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.entity.tags;
 
-import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.base.BaseTag;
 import jakarta.persistence.Entity;

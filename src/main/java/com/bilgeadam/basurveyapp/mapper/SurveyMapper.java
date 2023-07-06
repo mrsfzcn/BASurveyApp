@@ -2,7 +2,6 @@ package com.bilgeadam.basurveyapp.mapper;
 
 
 import com.bilgeadam.basurveyapp.dto.request.SurveyCreateRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.SurveyParticipantRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;

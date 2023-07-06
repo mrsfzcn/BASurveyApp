@@ -4,7 +4,10 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.*;
+import com.bilgeadam.basurveyapp.dto.response.AdminResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.ManagerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
@@ -24,10 +27,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
 
+    //deneme
+    //deneme2
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
 

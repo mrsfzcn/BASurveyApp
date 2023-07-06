@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

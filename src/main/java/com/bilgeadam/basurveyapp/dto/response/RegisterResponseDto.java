@@ -1,4 +1,4 @@
-package com.bilgeadam.basurveyapp.dto.request;
+package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class CreateStudentTagRequestDto {
+public class RegisterResponseDto {
 
-    String tagString;
+    private String token;
 }

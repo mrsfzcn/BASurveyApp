@@ -1,6 +1,5 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Role;
 import lombok.*;
 
 import java.util.Set;

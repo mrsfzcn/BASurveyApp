@@ -1,9 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
-import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.StudentTagResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.services.StudentTagService;

@@ -15,6 +15,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @SuperBuilder
 @Table(name = "questiontags")
-public class QuestionTag extends BaseTag<Question> {
+public class QuestionTag extends BaseTag<Question>  {
 
 }

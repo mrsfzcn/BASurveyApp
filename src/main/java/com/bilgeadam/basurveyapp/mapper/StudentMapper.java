@@ -4,12 +4,9 @@ import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
-
-import com.bilgeadam.basurveyapp.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
 
 import java.util.List;
 import java.util.Set;

@@ -285,7 +285,7 @@ public class SurveyService {
                 .findAny();
 
         if (surveyRegistrationOptional.isPresent()) {
-            throw new EntityNotFoundException("Survey has been already assigned to Classroom.");
+            throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -518,9 +518,6 @@ public class SurveyService {
                         .getAuthentication()
                         .getCredentials()
         ).orElseThrow(() -> new TrainerNotFoundException("No such trainer."));
-//        Set<TrainerTag> trainerTags = trainerTagService.getTrainerTags(trainer);
-//        User user = trainer.getUser();
-
         return INSTANCE.toTrainerClassroomSurveyResponseDto(trainer);
     }
 

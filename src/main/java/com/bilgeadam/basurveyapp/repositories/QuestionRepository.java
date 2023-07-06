@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface QuestionRepository extends BaseRepository<Question, Long> {
@@ -28,4 +27,7 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
     Optional<QuestionTag> findByTagString(String trainerTagString);
 
     Optional<Question> findByQuestionString(String questionString);
+
+    @Query(value = "select q.question_string from questions as q join questiontypes as qtype on q.question_type_oid = qtype.oid where qtype.question_type = ?1", nativeQuery = true)
+    List<String> findQuestionTypeAsString(String questionType);
 }

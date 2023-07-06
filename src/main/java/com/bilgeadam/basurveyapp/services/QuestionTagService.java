@@ -22,6 +22,8 @@ public class QuestionTagService {
     private final QuestionTagRepository questionTagRepository;
 
     public QuestionTag createTag(CreateTagDto dto) {
+        System.out.println("question tag service");
+
         Optional<QuestionTag> existingQuestionTag = questionTagRepository.findOptionalByTagString(dto.getTagString());
 
         if (existingQuestionTag.isPresent()) {

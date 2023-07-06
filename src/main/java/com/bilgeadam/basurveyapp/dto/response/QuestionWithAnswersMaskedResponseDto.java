@@ -1,10 +1,8 @@
 package com.bilgeadam.basurveyapp.dto.response;
 
-import com.bilgeadam.basurveyapp.entity.Response;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Eralp Nitelik

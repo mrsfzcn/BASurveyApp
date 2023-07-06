@@ -5,7 +5,6 @@ import com.bilgeadam.basurveyapp.dto.request.UpdateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
-import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import com.bilgeadam.basurveyapp.services.QuestionTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

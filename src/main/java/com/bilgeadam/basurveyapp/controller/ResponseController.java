@@ -2,15 +2,20 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -52,6 +57,7 @@ public class ResponseController {
     }
 
     @PutMapping("/savesurveyanswers/{token}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "id ile bulunan question'a verilen tüm response'ları kaydetmeye yarayan metot. #15")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
@@ -86,4 +92,16 @@ public class ResponseController {
     public ResponseEntity<Boolean> updateStudentResponses(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
     }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/excel/{id}")
+    public ResponseEntity<byte[]> exportToExcel(@PathVariable Long id) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment","result.xlsx");
+        return new ResponseEntity<>(responseService.exportToExcel(id),headers, HttpStatus.OK);
+
+    }
+
+
 }

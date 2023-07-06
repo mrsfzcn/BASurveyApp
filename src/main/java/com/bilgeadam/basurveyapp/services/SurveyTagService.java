@@ -22,6 +22,8 @@ public class SurveyTagService {
     private final SurveyTagRepository surveyTagRepository;
 
     public SurveyTag createTag(CreateTagDto dto) {
+        System.out.println("survey service create tag");
+
         Optional<SurveyTag> existingSurveyTag = surveyTagRepository.findOptionalByTagString(dto.getTagString());
 
         if (existingSurveyTag.isPresent()) {

@@ -1,0 +1,33 @@
+spring:
+  datasource:
+      url: jdbc:postgresql://localhost:5432/BASurveyApp
+      driver-class-name: org.postgresql.Driver
+      username: postgres
+      password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    show-sql: true
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hrmsapplicationteam1@gmail.com #Şifre hrms1234**
+    password: mwwkmlzfpbfaweoq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enabled: true
+  messages:
+    basename: i18n/messages
+    fallback-to-system-locale: false
+jwt:
+  secret: 546A576E5A7234753778214125442A472D4B6150645367566B58703273357638
