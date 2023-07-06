@@ -19,15 +19,13 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
@@ -37,7 +35,6 @@ import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.STUDENT_TAG_NOT
 
 
 @Service
-@RequiredArgsConstructor
 public class ResponseService {
     private final ResponseRepository responseRepository;
     private final QuestionService questionService;
@@ -45,8 +42,18 @@ public class ResponseService {
     private final JwtService jwtService;
     private final StudentService studentService;
     private final SurveyService surveyService;
-
     private final StudentTagService studentTagService;
+
+    public ResponseService(ResponseRepository responseRepository, QuestionService questionService, UserService userService
+            , JwtService jwtService, StudentService studentService, @Lazy SurveyService surveyService, StudentTagService studentTagService) {
+        this.responseRepository = responseRepository;
+        this.questionService = questionService;
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.studentService = studentService;
+        this.surveyService = surveyService;
+        this.studentTagService = studentTagService;
+    }
 
     public void  createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
@@ -314,5 +321,25 @@ public class ResponseService {
         List<String> studentName = surveyService.findStudentNameBySurveyOid(surveyid,studentTagOid);
 
         return studentName;
+    }
+
+    public void saveAll(List<Response> updatedResponses) {
+        responseRepository.saveAll(updatedResponses);
+    }
+
+    public Set<Response> findResponsesByUserOidAndSurveyOid(Long oid, Long surveyOid) {
+        return responseRepository.findResponsesByUserOidAndSurveyOid(oid,surveyOid);
+    }
+
+    public Set<Response> findBySurveyAndUser(Survey survey, User user) {
+        return responseRepository.findBySurveyAndUser(survey,user);
+    }
+
+    public List<Response> findListByUser(User user) {
+        return responseRepository.findListByUser(user);
+    }
+
+    public Set<Response> findSetByUser(User user) {
+        return responseRepository.findSetByUser(user);
     }
 }

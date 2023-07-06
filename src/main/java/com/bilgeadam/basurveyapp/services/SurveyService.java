@@ -16,7 +16,10 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -40,7 +43,7 @@ import static com.bilgeadam.basurveyapp.mapper.SurveyMapper.INSTANCE;
 import static java.util.stream.Collectors.toList;
 
 @Service
-@RequiredArgsConstructor
+
 public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final ResponseService responseService;
@@ -57,6 +60,23 @@ public class SurveyService {
 
     private Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
+    public SurveyService(SurveyRepository surveyRepository, @Lazy ResponseService responseService, QuestionService questionService
+            , SurveyTagService surveyTagService, UserService userService, EmailService emailService, JwtService jwtService
+            , SurveyRegistrationRepository surveyRegistrationRepository, RoleService roleService, StudentTagService studentTagService
+            , StudentService studentService, TrainerService trainerService) {
+        this.surveyRepository = surveyRepository;
+        this.responseService = responseService;
+        this.questionService = questionService;
+        this.surveyTagService = surveyTagService;
+        this.userService = userService;
+        this.emailService = emailService;
+        this.jwtService = jwtService;
+        this.surveyRegistrationRepository = surveyRegistrationRepository;
+        this.roleService = roleService;
+        this.studentTagService = studentTagService;
+        this.studentService = studentService;
+        this.trainerService = trainerService;
+    }
 
     /**
      * cron = "0 30 9 * * MON-FRI"
@@ -710,7 +730,7 @@ public class SurveyService {
         List<User> studentList = new ArrayList<>();
 
         for (Student student : studentTag.get().getTargetEntities()) {
-            Set<Response> studentResponses = responseRepository.findBySurveyAndUser(survey.get(), student.getUser());
+            Set<Response> studentResponses = responseService.findBySurveyAndUser(survey.get(), student.getUser());
             responseList.addAll(studentResponses);
             studentList.add(student.getUser());
         }

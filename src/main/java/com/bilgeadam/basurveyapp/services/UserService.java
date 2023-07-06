@@ -124,4 +124,8 @@ public class UserService {
     public void save(User auth) {
         userRepository.save(auth);
     }
+
+    public Optional<User> findById(Long id) {
+        return findById(id);
+    }
 }
