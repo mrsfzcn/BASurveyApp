@@ -98,5 +98,15 @@ public class ResponseController {
 
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/survey-response-rate/{surveyid}/{studentTagOid}")
+    public ResponseEntity<Double>responseRate(@PathVariable Long surveyid,Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRate(surveyid,studentTagOid));
+    }
 
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/survey-response-rates/{surveyid}/{studentTagOid}")
+    public ResponseEntity<List<String >>responseRateNamed(@PathVariable Long surveyid,Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRateName(surveyid,studentTagOid));
+    }
 }

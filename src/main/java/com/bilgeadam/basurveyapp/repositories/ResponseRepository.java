@@ -33,4 +33,15 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
     Set<Response> findSetByUser(User user);
 
     List<Response> findListByUser(User user);
+
+    // anket id si üzerinden bir studentTag'e ait öğrencilerin anketi cevaplamış olanların sayısını bulan sorgu
+    @Query(value = "select count(*) from surveys_students_who_answered as sswa\n" +
+            "inner join students as s \n" +
+            "on sswa.students_who_answered_oid = s.oid\n" +
+            "inner join studenttags_target_entities as ste\n" +
+            "on ste.target_entities_oid = s.oid\n" +
+            "where sswa.surveys_answered_oid = ?1\n" +
+            "and ste.student_tags_oid = ?2",nativeQuery = true)
+    Integer findByStudentAnsweredSurvey(Long surveyOid,Long studentTagOid);
+
 }

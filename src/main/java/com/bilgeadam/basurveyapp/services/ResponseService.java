@@ -298,4 +298,21 @@ public class ResponseService {
     }
 
 
+    // studenTag'e atanan anketlerin öğrenciler tarafından cevaplanma oranını gösteren metod
+    public Double  surveyResponseRate(Long surveyid,Long studentTagOid) {
+        List<Long> studentTags= surveyService.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+        if (studentTags.isEmpty()) throw new StudentTagNotFoundException(STUDENT_TAG_NOT_FOUND.getMessage());
+        Integer students = responseRepository.findByStudentAnsweredSurvey(surveyid,studentTagOid);
+
+        System.out.println(studentTags.size());
+        System.out.println(studentTags+ " " + students);
+        Double result = (double) (students*100)/studentTags.size();
+        return result;
+    }
+
+    public List<String>surveyResponseRateName(Long surveyid,Long studentTagOid){
+        List<String> studentName = surveyService.findStudentNameBySurveyOid(surveyid,studentTagOid);
+
+        return studentName;
+    }
 }
