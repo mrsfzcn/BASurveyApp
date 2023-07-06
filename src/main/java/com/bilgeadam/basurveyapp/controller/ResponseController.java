@@ -23,6 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
+    @PostMapping("createresponse")
+    @Operation(summary = "Response Create etmek için kullanilan methot")
+    public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
+        return ResponseEntity.ok(responseService.createResponse(responseRequestSaveDto));
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
