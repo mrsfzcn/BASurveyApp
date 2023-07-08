@@ -10,6 +10,5 @@ import lombok.*;
 public class VerifyCodeRequestDto {
 
     private String twoFactoryKey;
-
-    private Long id;
+    private String token;
 }

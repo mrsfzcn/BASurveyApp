@@ -21,7 +21,7 @@ public class MainTagController {
     private final MainTagService mainTagService;
     @PostMapping("/createmaintag")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur.")
+    @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createTag(dto);
         return ResponseEntity.ok(true);
