@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.response.StudentTagCreateResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class StudentTagService {
     private final StudentTagRepository studentTagRepository;
 
-    public void createTag(CreateTagDto dto) {
+    public StudentTagCreateResponseDto createTag(CreateTagDto dto) {
 
         String tagString = dto.getTagString();
 
@@ -31,6 +32,11 @@ public class StudentTagService {
                 .build();
 
         studentTagRepository.save(studentTag);
+        Optional<StudentTag> studentTagFinder = studentTagRepository.findByTagName(tagString);
+        return StudentTagCreateResponseDto.builder()
+                .studentTagId(studentTagFinder.get().getOid())
+                .tagString(studentTagFinder.get().getTagString())
+                .build();
     }
 
     public List<Student> getStudentsByStudentTag(StudentTag studentTag) {
