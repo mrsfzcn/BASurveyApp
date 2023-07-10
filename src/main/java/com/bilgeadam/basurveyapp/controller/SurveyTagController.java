@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.SurveyTagService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class SurveyTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "#04")
+    @Hidden
     public ResponseEntity<SurveyTag> createTag(@RequestBody @Valid CreateTagDto dto ){
         SurveyTag createdTag = surveyTagService.createTag(dto);
         return ResponseEntity.ok(createdTag);

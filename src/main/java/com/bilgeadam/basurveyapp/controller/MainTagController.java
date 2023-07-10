@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author Muhammed Furkan Türkmen
+ */
 @RestController
 @RequestMapping("/maintag")
 @RequiredArgsConstructor
@@ -18,7 +21,7 @@ public class MainTagController {
     private final MainTagService mainTagService;
     @PostMapping("/createmaintag")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur.")
+    @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createTag(dto);
         return ResponseEntity.ok(true);

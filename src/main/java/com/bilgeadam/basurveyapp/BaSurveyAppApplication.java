@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @EnableAsync
 @OpenAPIDefinition(info = @Info(title = "BASurveyApp API"))
+
 public class BaSurveyAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(BaSurveyAppApplication.class, args);

@@ -75,4 +75,12 @@ public class SurveyTagService {
                 .orElseThrow(() -> new SurveyTagNotFoundException("Survey tag not found"));
         return surveyTagRepository.softDeleteById(questionTag.getOid());
     }
+
+    public Optional<SurveyTag> findActiveById(Long surveyTagOid) {
+        return surveyTagRepository.findActiveById(surveyTagOid);
+    }
+
+    public void save(SurveyTag surveyTag) {
+        surveyTagRepository.save(surveyTag);
+    }
 }

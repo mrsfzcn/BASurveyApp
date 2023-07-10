@@ -46,7 +46,10 @@ public class EmailService {
 
         for (Map.Entry<String, String> entry : mailTokenMap.entrySet()) {
             System.out.println(entry.getKey() + ":" + entry.getValue().toString());
+
+
         }
+
     }
 
     public void sendSurveyMail(String email, String jwtToken) throws MessagingException {

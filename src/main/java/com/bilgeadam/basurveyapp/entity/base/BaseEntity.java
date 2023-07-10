@@ -62,4 +62,5 @@ public abstract class BaseEntity {
     public void preUpdate() {
         setUpdatedAt(new Date());
     }
+
 }

@@ -16,6 +16,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -25,15 +26,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RoleService roleService;
 
-    //deneme
-    //deneme2
+    public UserService(UserRepository userRepository, @Lazy JwtService jwtService, @Lazy RoleService roleService) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.roleService = roleService;
+    }
+
     public List<ManagerResponseDto> getManagerList() {
         List<User> managers = userRepository.findManagers();
 
@@ -114,5 +118,14 @@ public class UserService {
     public Optional<User> findByEmail(String extractEmail) {
 
         return userRepository.findByEmail(extractEmail);
+    }
+
+
+    public void save(User auth) {
+        userRepository.save(auth);
+    }
+
+    public Optional<User> findById(Long id) {
+        return findById(id);
     }
 }
