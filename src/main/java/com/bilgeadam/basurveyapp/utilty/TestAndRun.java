@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * @author Muhammed Furkan Türkmen
+ */
 @Component
 @RequiredArgsConstructor
 public class TestAndRun {
