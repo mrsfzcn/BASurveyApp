@@ -1,0 +1,104 @@
+
+
+body, html {
+	height: 100%;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	background: url('../../assets/images/Login/loginbacground.png') no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+  }
+  
+  .content {
+	display: flex;
+
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 688px;
+	height: 662px;
+	flex-shrink: 0;
+
+	border-radius: 30px;
+	background: rgba(229, 224, 224, 0.90);
+
+	padding: 20px;
+
+  }
+  
+  .placeholder-input {
+	margin-bottom: 10px;
+	padding: 20px;
+	border: none;
+	border-bottom: 2px solid #000; 
+	background: transparent; 
+	width: 500px;
+	outline: none;
+	box-shadow: none; 
+	font-size: 20px;
+	
+}
+
+  
+  .cbottom {
+	display: flex;
+	justify-content: center;
+  }
+  
+
+  .button {
+	padding: 10px 20px;
+	width: 366px;
+	height: 61px;
+	flex-shrink: 0;
+	border: none;	
+	cursor: pointer;
+	border-radius: 10px;
+	background: linear-gradient(135deg, rgba(33, 42, 62, 0.90) 0%, rgba(33, 42, 62, 0.90) 39.47%, rgba(152, 151, 154, 0.90) 100%);
+	
+	color: white;
+	font-family: 'Poppins';font-size: 22px;
+  }
+
+  .user-menu {
+    display: flex;
+    flex-direction: column;
+ 
+}
+
+
+	.password, .username {
+    width: 296px;
+    height: 30px; /* Önceki değer 78px idi, şimdi daha küçük bir değere sahip */
+    color: #212A3E;
+    font-family: 'Poppins';font-size: 22px;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-align: left;
+}
+
+.vektor5{
+	position: absolute; 
+	top: 0;
+	left: 0;
+}
+.vektor6{
+	position: absolute; 
+	top: 207px;
+	right: 0;
+}
+.vektor7{
+	position: absolute; 
+	
+	left: 118px;
+	right: 712.5px;
+	bottom: 0;
+}
+  
