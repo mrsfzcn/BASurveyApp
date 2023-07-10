@@ -18,8 +18,8 @@ public class EmailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername("hrmsapplicationteam1@gmail.com");
-        mailSender.setPassword("mwwkmlzfpbfaweoq");
+        mailSender.setUsername("bilgeadamjavaboost@gmail.com");
+        mailSender.setPassword("tqecbycleevahlbs");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", JavaMailSenderImpl.DEFAULT_PROTOCOL);
@@ -33,7 +33,7 @@ public class EmailConfig {
     public SimpleMailMessage emailTemplate()
     {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("hrmsapplicationteam1@gmail.com");
+        message.setFrom("bilgeadamjavaboost@gmail.com");
         return message;
     }
 }
