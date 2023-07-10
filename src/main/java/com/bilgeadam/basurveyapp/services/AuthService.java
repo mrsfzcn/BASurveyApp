@@ -6,9 +6,11 @@ import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.exceptions.ExceptionType;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -182,8 +184,10 @@ public class AuthService {
     }
 
     public Boolean verifyCode(VerifyCodeRequestDto verifyCodeRequestDto) {
-        Optional<User> user = userService.findById(verifyCodeRequestDto.getId());
-        if(qrCodeService.verifyCode(verifyCodeRequestDto.getTwoFactoryKey(), user.get().getTwoFactorKey())){
+        String email = jwtService.extractEmail(verifyCodeRequestDto.getToken());
+        Optional<User> user = userService.findByEmail(email);
+        if (user.isEmpty()) throw new UserDoesNotExistsException(ExceptionType.USER_DOES_NOT_EXIST.getMessage());
+        if (qrCodeService.verifyCode(verifyCodeRequestDto.getTwoFactoryKey(), user.get().getTwoFactorKey())) {
             return true;
         }
         return false;

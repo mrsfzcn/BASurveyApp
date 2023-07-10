@@ -18,7 +18,7 @@ import java.util.Set;
 @Builder
 public class RegisterRequestDto {
     @Size(min = 3, message = "Email must be valid.")
-    @Email(message = "Email must be valid.", regexp = "^[a-z0-9]((\\.|\\+)?[a-z0-9]){1,}@gmail(boost)?(akademi)?\\.com$")
+    @Email(message = "Email must be valid.", regexp = "^[a-z0-9]((\\.|\\+)?[a-z0-9]){1,}@bilgeadam(boost)?(akademi)?\\.com$")
     @NotBlank(message = "Email must be valid.")
     @NotNull(message = "Email must be valid.")
     private String email;
