@@ -48,12 +48,13 @@ public class ResponseService {
 
     private final StudentTagService studentTagService;
 
-    public void  createResponse(ResponseRequestSaveDto responseRequestDto) {
+    public Boolean  createResponse(ResponseRequestSaveDto responseRequestDto) {
         User user = getAuthenticatedUser();
         Question question = getActiveQuestionById(responseRequestDto.getQuestionOid());
 
         Response response = buildResponse(responseRequestDto, question, user);
         responseRepository.save(response);
+        return true;
     }
 
     public void updateResponse(ResponseRequestDto responseRequestDto) {

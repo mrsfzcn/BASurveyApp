@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
+import com.bilgeadam.basurveyapp.dto.response.StudentTagCreateResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
@@ -24,9 +25,9 @@ public class StudentTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #03")
-    public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
-        studentTagService.createTag(dto);
-        return ResponseEntity.ok(dto.getTagString());
+    public ResponseEntity<StudentTagCreateResponseDto> createTag(@RequestBody @Valid CreateTagDto dto ){
+        return ResponseEntity.ok(studentTagService.createTag(dto));
+
     }
     /***
      * Service içindeki getStudentsByStudentTag metodun dışarıya aktarılması gereksiz bu işlevi yapan controllerda metot var.
