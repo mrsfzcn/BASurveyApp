@@ -60,7 +60,7 @@ public class SurveyController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/assignSurveyTag")
-    @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot. #11")
+    @Operation(summary = "Long olarak surveyTag0id ve survey0id girilir. Birden fazla tag için ',' ile ayrılmalıdır.")
     ResponseEntity<SurveySimpleResponseDto> assignSurveyTag(@RequestBody @Valid SurveyTagAssignRequestDto dto) {
         return ResponseEntity.ok(surveyService.assignSurveyTag(dto));
     }
