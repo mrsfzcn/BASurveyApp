@@ -317,6 +317,12 @@ public class ResponseService {
         return result;
     }
 
+    public List<String> hoNeedToComplete(Long surveyid,Long studentTagOid){
+        List<String> firstnameAndSurname = responseRepository.findByStudentsWhoNeedToComplete(surveyid,studentTagOid);
+
+        return firstnameAndSurname;
+    }
+
     public List<String>surveyResponseRateName(Long surveyid,Long studentTagOid){
         List<String> studentName = surveyService.findStudentNameBySurveyOid(surveyid,studentTagOid);
 
@@ -342,4 +348,7 @@ public class ResponseService {
     public Set<Response> findSetByUser(User user) {
         return responseRepository.findSetByUser(user);
     }
+
+
+
 }
