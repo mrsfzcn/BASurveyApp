@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.WhoDidntAnswerSurveyStudentDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
@@ -244,7 +245,9 @@ public class ResponseService {
         Optional<Student> student = studentService.findByUser(user);
         student.get().getSurveysAnswered().add(survey);
         survey.getStudentsWhoAnswered().add(student.get());
+        survey.getStudentsWhoDidntAnswered().remove(student.get());
         studentService.save(student.get());
+        surveyService.save(survey);
     }
 
     private void saveResponse(Response response, Question question, Survey survey) {
@@ -317,6 +320,19 @@ public class ResponseService {
         return result;
     }
 
+    public List<WhoDidntAnswerSurveyStudentDto> whoNeedToComplete(Long surveyid){
+        Optional<Survey>surveyOptional = surveyService.findActiveById(surveyid);
+        List<WhoDidntAnswerSurveyStudentDto>whoDidntAnswerSurveyStudentDtos = new ArrayList<>();
+        surveyOptional.get().getStudentsWhoDidntAnswered().forEach(x->{
+            whoDidntAnswerSurveyStudentDtos.add(WhoDidntAnswerSurveyStudentDto.builder()
+                            .firstname(x.getUser().getFirstName())
+                            .lastname(x.getUser().getLastName())
+                    .build());
+        });
+        return whoDidntAnswerSurveyStudentDtos;
+
+    }
+
     public List<String>surveyResponseRateName(Long surveyid,Long studentTagOid){
         List<String> studentName = surveyService.findStudentNameBySurveyOid(surveyid,studentTagOid);
 
@@ -342,4 +358,7 @@ public class ResponseService {
     public Set<Response> findSetByUser(User user) {
         return responseRepository.findSetByUser(user);
     }
+
+
+
 }

@@ -11,8 +11,11 @@ import java.util.List;
 @Setter
 @Builder
 public class SurveyTagAssignRequestDto {
+
+
     @NotNull
     private List<Long> surveyTagOid;
+
     @NotNull
     private Long surveyOid;
 }

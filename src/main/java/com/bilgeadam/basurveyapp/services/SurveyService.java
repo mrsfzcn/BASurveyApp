@@ -290,6 +290,17 @@ public class SurveyService {
         return survey;
     }
 
+    public Survey studentList(Long id, Long surveyid) {
+        List<Student> students = studentService.findByStudentTagOid(id);
+        Optional<Survey> surveyOptional = surveyRepository.findById(surveyid);
+
+        surveyOptional.get().getStudentsWhoDidntAnswered().addAll(students);
+
+        System.out.println(students);
+        surveyRepository.save(surveyOptional.get());
+        return surveyOptional.get();
+    }
+
     @Transactional
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
@@ -303,6 +314,10 @@ public class SurveyService {
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
                 .findAny();
+
+
+        studentList(studentTag.get().getOid(),survey.getOid());
+
 
         if (surveyRegistrationOptional.isPresent()) {
             throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
@@ -730,7 +745,6 @@ public class SurveyService {
     public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findOptionalBySurveyTitle(dto.getSurveyTitle()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
         Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagOId()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
-
         List<Response> responseList = new ArrayList<>();
         List<User> studentList = new ArrayList<>();
 

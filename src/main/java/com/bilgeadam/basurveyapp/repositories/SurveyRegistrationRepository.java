@@ -36,4 +36,6 @@ public interface SurveyRegistrationRepository extends BaseRepository<SurveyRegis
             "on s.user_oid = u.oid\n" +
             "where sr.survey_oid = ?1 and ste.student_tags_oid = ?2",nativeQuery = true)
     List<String> findStudentNameBySurveyOid(Long surveyOid,Long studentTagOid);
+
+
 }
