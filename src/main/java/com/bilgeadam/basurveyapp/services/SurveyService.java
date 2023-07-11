@@ -715,19 +715,22 @@ public class SurveyService {
         return null;
     }
 
+    @Transactional
     public SurveySimpleResponseDto assignSurveyTag(SurveyTagAssignRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid()).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
-        if (!survey.get().getSurveyTags().contains(surveyTag.get())) {
-            survey.get().getSurveyTags().add(surveyTag.get());
-            surveyTag.get().getTargetEntities().add(survey.get());
-            surveyTagService.save(surveyTag.get());
-            surveyRepository.save(survey.get());
-            List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
-            return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);
-        } else {
-            throw new SurveyTagExistException("SurveyTag already exists in the survey");
+        for(int i =0;i<dto.getSurveyTagOid().size();i++){
+            Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid().get(i)).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
+            if(!survey.get().getSurveyTags().contains(surveyTag.get())){
+                survey.get().getSurveyTags().add(surveyTag.get());
+                surveyTag.get().getTargetEntities().add(survey.get());
+                surveyTagService.save(surveyTag.get());
+                surveyRepository.save(survey.get());
+            } else {
+                throw new SurveyTagExistException("SurveyTag already exists in the survey");
+            }
         }
+        List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
+        return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);
     }
 
 

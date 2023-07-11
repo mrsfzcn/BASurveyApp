@@ -3,6 +3,8 @@ package com.bilgeadam.basurveyapp.dto.request;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -12,7 +14,7 @@ public class SurveyTagAssignRequestDto {
 
 
     @NotNull
-    private Long surveyTagOid;
+    private List<Long> surveyTagOid;
 
     @NotNull
     private Long surveyOid;
