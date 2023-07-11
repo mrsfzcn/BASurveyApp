@@ -202,6 +202,9 @@ public class GlobalExceptionHandler {
         String acceptLanguage = request.getHeader("Accept-Language");
         if (acceptLanguage != null && acceptLanguage.toLowerCase().startsWith("tr")) {
             locale = Locale.getDefault();
+        } else if (acceptLanguage != null && acceptLanguage.toLowerCase().startsWith("nl")){
+            Locale nlLocale = new Locale("nl");
+            locale = nlLocale;
         } else {
             locale = Locale.US;
         }
