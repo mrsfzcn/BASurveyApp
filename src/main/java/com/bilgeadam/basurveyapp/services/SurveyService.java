@@ -307,15 +307,16 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found"));
 
-        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
-                .orElseThrow(() -> new StudentTagNotFoundException("Student Tag is not Found"));
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagId())
+                .orElseThrow(() -> new StudentTagNotFoundException("Student Tag is not Found")));
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
                 .parallelStream()
-                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.getOid()))
+                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
                 .findAny();
 
-       studentList(studentTag.getOid(),survey.getOid());
+
+        studentList(studentTag.get().getOid(),survey.getOid());
 
 
         if (surveyRegistrationOptional.isPresent()) {
@@ -335,7 +336,7 @@ public class SurveyService {
 
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
-                .studentTag(studentTag)
+                .studentTag(studentTag.get())
                 .startDate(startDate)
                 .endDate(startDate.plusDays(dto.getDays()))
                 .build());
@@ -740,8 +741,7 @@ public class SurveyService {
 
     public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findOptionalBySurveyTitle(dto.getSurveyTitle()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findByStudentTagName(dto.getStudentTagString()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
-
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagOId()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
         List<Response> responseList = new ArrayList<>();
         List<User> studentList = new ArrayList<>();
 
