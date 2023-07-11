@@ -44,4 +44,8 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
             "and ste.student_tags_oid = ?2",nativeQuery = true)
     Integer findByStudentAnsweredSurvey(Long surveyOid,Long studentTagOid);
 
+
+
+
+
 }

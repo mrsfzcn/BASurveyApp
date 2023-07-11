@@ -290,19 +290,33 @@ public class SurveyService {
         return survey;
     }
 
+    public Survey studentList(Long id, Long surveyid) {
+        List<Student> students = studentService.findByStudentTagOid(id);
+        Optional<Survey> surveyOptional = surveyRepository.findById(surveyid);
+
+        surveyOptional.get().getStudentsWhoDidntAnswered().addAll(students);
+
+        System.out.println(students);
+        surveyRepository.save(surveyOptional.get());
+        return surveyOptional.get();
+    }
+
     @Transactional
     public Boolean assignSurveyToClassroom(SurveyAssignRequestDto dto) throws MessagingException {
 //TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId())
                 .orElseThrow(() -> new SurveyNotFoundException("Survey is not Found"));
 
-        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagId())
-                .orElseThrow(() -> new StudentTagNotFoundException("Student Tag is not Found")));
+        StudentTag studentTag = studentTagService.findByStudentTagName(dto.getStudentTag())
+                .orElseThrow(() -> new StudentTagNotFoundException("Student Tag is not Found"));
 
         Optional<SurveyRegistration> surveyRegistrationOptional = survey.getSurveyRegistrations()
                 .parallelStream()
-                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
+                .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.getOid()))
                 .findAny();
+
+       studentList(studentTag.getOid(),survey.getOid());
+
 
         if (surveyRegistrationOptional.isPresent()) {
             throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
@@ -321,7 +335,7 @@ public class SurveyService {
 
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
-                .studentTag(studentTag.get())
+                .studentTag(studentTag)
                 .startDate(startDate)
                 .endDate(startDate.plusDays(dto.getDays()))
                 .build());
@@ -700,22 +714,19 @@ public class SurveyService {
         return null;
     }
 
-    @Transactional
     public SurveySimpleResponseDto assignSurveyTag(SurveyTagAssignRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        for(int i =0;i<dto.getSurveyTagOid().size();i++){
-            Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid().get(i)).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
-            if(!survey.get().getSurveyTags().contains(surveyTag.get())){
-                survey.get().getSurveyTags().add(surveyTag.get());
-                surveyTag.get().getTargetEntities().add(survey.get());
-                surveyTagService.save(surveyTag.get());
-                surveyRepository.save(survey.get());
-            } else {
-                throw new SurveyTagExistException("SurveyTag already exists in the survey");
-            }
+        Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid()).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
+        if (!survey.get().getSurveyTags().contains(surveyTag.get())) {
+            survey.get().getSurveyTags().add(surveyTag.get());
+            surveyTag.get().getTargetEntities().add(survey.get());
+            surveyTagService.save(surveyTag.get());
+            surveyRepository.save(survey.get());
+            List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
+            return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);
+        } else {
+            throw new SurveyTagExistException("SurveyTag already exists in the survey");
         }
-        List<SurveyTagResponseDto> surveyTagResponseDtos = INSTANCE.toSurveyTagResponseDto(survey.get().getSurveyTags().stream().collect(Collectors.toList()));
-        return INSTANCE.toSurveySimpleResponseDto(survey.get(), surveyTagResponseDtos);
     }
 
 
@@ -729,7 +740,7 @@ public class SurveyService {
 
     public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findOptionalBySurveyTitle(dto.getSurveyTitle()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findById(dto.getStudentTagOId()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
+        Optional<StudentTag> studentTag = Optional.ofNullable(studentTagService.findByStudentTagName(dto.getStudentTagString()).orElseThrow(() -> new SurveyNotFoundException("StudentTag not found.")));
 
         List<Response> responseList = new ArrayList<>();
         List<User> studentList = new ArrayList<>();

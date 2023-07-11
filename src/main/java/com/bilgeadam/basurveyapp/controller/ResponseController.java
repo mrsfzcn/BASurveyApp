@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.WhoDidntAnswerSurveyStudentDto;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +99,7 @@ public class ResponseController {
 
     @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping("/excel/{id}")
+    @Operation(summary = "anket cevaplarını excele export eden metod")
     public ResponseEntity<byte[]> exportToExcel(@PathVariable Long id) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -108,13 +110,23 @@ public class ResponseController {
 
     @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping("/survey-response-rate/{surveyid}/{studentTagOid}")
+    @Operation(summary = "anketin doldurulma oranını döndüren metod")
     public ResponseEntity<Double>responseRate(@PathVariable Long surveyid,Long studentTagOid){
         return ResponseEntity.ok(responseService.surveyResponseRate(surveyid,studentTagOid));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER')")
     @GetMapping("/survey-response-rates/{surveyid}/{studentTagOid}")
+    @Operation(summary = "anketin atandığı sınıftaki öğrencilerin ad soyadını döndüren metod")
     public ResponseEntity<List<String >>responseRateNamed(@PathVariable Long surveyid,Long studentTagOid){
         return ResponseEntity.ok(responseService.surveyResponseRateName(surveyid,studentTagOid));
     }
+
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @GetMapping("/who-need-to-complete/{surveyid}")
+    @Operation(summary = "anketi cevaplaması gereken öğrencileri bulan metod ")
+    public ResponseEntity<List<WhoDidntAnswerSurveyStudentDto>> whoNeedToComplete(@PathVariable Long surveyid){
+        return ResponseEntity.ok(responseService.whoNeedToComplete(surveyid));
+    }
+
 }
