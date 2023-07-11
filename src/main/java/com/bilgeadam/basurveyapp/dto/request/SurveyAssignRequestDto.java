@@ -17,7 +17,7 @@ public class SurveyAssignRequestDto {
     Long surveyId;
     @NotBlank
     @NotNull
-    String studentTag;
+    Long studentTagId;
 
     @NotNull
     Integer days;

@@ -10,5 +10,5 @@ import lombok.*;
 public class SurveyQuestionResponseByStudentRequestDto {
     //*sd
     String surveyTitle;
-    String studentTagString;
+    Long studentTagOId;
 }
