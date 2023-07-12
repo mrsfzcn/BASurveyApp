@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import "./code.css";
 import AuthService from "../../services/AuthService";
+import TokenService from '../../services/TokenService';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+
 const Code = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -32,7 +34,10 @@ const Code = () => {
     AuthService.verifyCode(code)
       .then((response) => {
         if (response.data === true) {
-          navigate("/");
+          const decodedToken = TokenService.decodeToken(code.token);
+          if (decodedToken && decodedToken.role === 'ADMIN') {
+            navigate("/adminhome");
+          } 
         } else {
           alert("hata var");
         }

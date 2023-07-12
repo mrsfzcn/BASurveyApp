@@ -20,9 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -97,8 +95,10 @@ public class AuthService {
             trainer.setUser(auth);
             trainerService.createTrainer(trainer);
         }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", auth.getAuthorizedRole());
         return RegisterResponseDto.builder()
-                .token(jwtService.generateToken(auth))
+                .token(jwtService.generateToken(claims,auth))
                 .build();
     }
 
@@ -126,17 +126,19 @@ public class AuthService {
                         request.getPassword()
                 )
         );
-
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.get().getAuthorizedRole());
         if (!user.get().isTwoFactory()) {
             user.get().setTwoFactory(true);
             userService.save(user.get());
             return AuthenticationResponseDto.builder()
                     .qrCode(qrCodeService.getUriForImage(user.get().getTwoFactorKey()))
-                    .token(jwtService.generateToken(user.get()))
+                    .token(jwtService.generateToken(claims,user.get()))
                     .build();
         }
+
         return AuthenticationResponseDto.builder()
-                .token(jwtService.generateToken(user.get()))
+                .token(jwtService.generateToken(claims, user.get()))
                 .build();
     }
 
@@ -184,8 +186,13 @@ public class AuthService {
     }
 
     public Boolean verifyCode(VerifyCodeRequestDto verifyCodeRequestDto) {
+
+
         String email = jwtService.extractEmail(verifyCodeRequestDto.getToken());
+        System.out.println(verifyCodeRequestDto.getToken());
         Optional<User> user = userService.findByEmail(email);
+
+
         if (user.isEmpty()) throw new UserDoesNotExistsException(ExceptionType.USER_DOES_NOT_EXIST.getMessage());
         if (qrCodeService.verifyCode(verifyCodeRequestDto.getTwoFactoryKey(), user.get().getTwoFactorKey())) {
             return true;

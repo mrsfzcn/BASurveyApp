@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import AuthService from "../../services/AuthService";
+import TokenService from '../../services/TokenService';
 import { useNavigate } from "react-router-dom";
 
 const QrCode = () => {
@@ -34,7 +35,11 @@ const QrCode = () => {
     AuthService.verifyCode(code)
       .then((response) => {
         if (response.data === true) {
-          navigate("/");
+          const decodedToken = TokenService.decodeToken(code.token);
+          if (decodedToken && decodedToken.role === 'ADMIN') {
+            navigate("/adminhome");
+          } 
+         
         } else {
           alert("hata var");
         }
