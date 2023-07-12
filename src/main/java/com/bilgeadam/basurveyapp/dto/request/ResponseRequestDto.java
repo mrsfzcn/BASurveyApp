@@ -13,7 +13,4 @@ public class ResponseRequestDto {
     @NotBlank
     @NotNull
     String responseString;
-
-    @NotNull
-    Long responseOid;
 }

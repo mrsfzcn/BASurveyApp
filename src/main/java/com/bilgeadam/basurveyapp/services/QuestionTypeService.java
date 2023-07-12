@@ -32,8 +32,8 @@ public class QuestionTypeService {
         return false;
     }
 
-    public void updateQuestionType(UpdateQuestionTypeRequestDto dto) {
-        Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(dto.getQuestionTypeOid());
+    public void updateQuestionType(UpdateQuestionTypeRequestDto dto,Long id) {
+        Optional<QuestionType> updateQuestionType = questionTypeRepository.findActiveById(id);
         if (updateQuestionType.isEmpty()) {
             throw new QuestionTypeNotFoundException("QuestionType is not found");
         }

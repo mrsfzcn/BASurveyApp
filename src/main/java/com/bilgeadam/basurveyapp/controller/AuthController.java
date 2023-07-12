@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Eralp Nitelik
@@ -41,7 +38,7 @@ public class AuthController {
      * authorizedToken must kept in front-end for change between accounts
      */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/updateLoginCredentials")
+    @PutMapping("/update-login-credentials")
     //TODO "changelogin" ismi değişecek --> (bug olarak board' a eklendi)
     @Operation(summary = "")
     public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {

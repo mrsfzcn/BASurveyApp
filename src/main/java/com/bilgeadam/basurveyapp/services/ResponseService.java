@@ -64,8 +64,8 @@ public class ResponseService {
         responseRepository.save(response);
     }
 
-    public void updateResponse(ResponseRequestDto responseRequestDto) {
-        Response response = responseRepository.findActiveById(responseRequestDto.getResponseOid())
+    public void updateResponse(ResponseRequestDto responseRequestDto,Long id) {
+        Response response = responseRepository.findActiveById(id)
                 .orElseThrow(() -> new ResponseNotFoundException("There's an error while finding response"));
 
         response.setResponseString(responseRequestDto.getResponseString());
