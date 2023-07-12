@@ -62,13 +62,11 @@ function Login() {
   };
 
   return (
-    <main>
+    <div className="main">
       <div className="content">
-        <div className="loginContent">
-          <div className="ctop">
-            <img className="vektor5" src={vektor5} alt="vektor5" />
-            <img className="vektor6" src={vektor6} alt="vektor6" />
-            <img className="vektor7" src={vektor7} alt="vektor7" />
+      <img className="vektor5" src={vektor5} alt="vektor5" />
+      <img className="vektor6" src={vektor6} alt="vektor6" />
+      <img className="vektor7" src={vektor7} alt="vektor7" />
             <div className="user-menu">
               <label id="email" className="username">
                 Kullanıcı Adı:
@@ -93,6 +91,7 @@ function Login() {
                 value={password}
                 onChange={handlePasswordChange}
               />
+              
               {error && <p>{error}</p>}
               <br />
               <br />
@@ -102,10 +101,9 @@ function Login() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+
       </div>
-    </main>
+    </div>
   );
 }
 

@@ -12,6 +12,7 @@ import {
 import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
+import AdminHomePage from "./pages/adminHome/AdminHomePage"
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,6 +23,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/qrcode" element={<Qrcode />} />
         <Route path="/code" element={<Code />} />
+        <Route path="/adminhome" element={<AdminHomePage />} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
