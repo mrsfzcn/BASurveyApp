@@ -17,7 +17,7 @@ public class BaSurveyAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(BaSurveyAppApplication.class, args);
         System.out.println("{\n       Authenticate Mail  \n" +
-                "  \"email\": admin@bilgeadam.com\n" +
+                "  \"email\": admin@bilgeadamboost.com\n" +
                 "  \"password\": adminadmin \n" +
                 "}");
         System.out.println("{\n       gmail  \n" +

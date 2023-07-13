@@ -41,9 +41,12 @@ public class AuthService {
 
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto request) {
-        if (userService.findByEmail(request.getEmail()).isPresent()) {
+        String generatedEmail = generateEmail(request.getFirstName(), request.getLastName());
+
+        if (userService.findByEmail(generatedEmail).isPresent()) {
             throw new UserAlreadyExistsException("Email already registered.");
         }
+
         List<Role> roles = roleService.findRoles();
         Set<Role> userRoles = roles.stream().filter(role -> request.getRoles().contains(role.getRole())).collect(Collectors.toSet());
         if (userRoles.isEmpty()) {
@@ -52,7 +55,7 @@ public class AuthService {
 
 
         User auth = User.builder()
-                .email(request.getEmail())
+                .email(generatedEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -100,6 +103,23 @@ public class AuthService {
         return RegisterResponseDto.builder()
                 .token(jwtService.generateToken(claims,auth))
                 .build();
+    }
+
+    public static String modifyTurkishCharacters(String input) {
+        input = input.replaceAll("ö", "o")
+                .replaceAll("ü", "u")
+                .replaceAll("ğ", "g")
+                .replaceAll("ı", "i")
+                .replaceAll("ş", "s")
+                .replaceAll("ç", "c");
+        return input;
+    }
+
+    public static String generateEmail(String firstName, String lastName) {
+        String controlledFirstName = modifyTurkishCharacters(firstName.toLowerCase()).trim();
+        String controlledLastName = modifyTurkishCharacters(lastName.toLowerCase()).trim();
+        String email = controlledFirstName + "." + controlledLastName + "@bilgeadamboost.com";
+        return email;
     }
 
     public AuthenticationResponseDto authenticate(LoginRequestDto request) {
