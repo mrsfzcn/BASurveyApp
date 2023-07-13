@@ -20,47 +20,45 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/response")
+@RequestMapping("/responses")
 @RequiredArgsConstructor
 public class ResponseController {
     private final ResponseService responseService;
-    @PostMapping("createresponse")
+    @PostMapping
     @Operation(summary = "Response Create etmek için kullanilan methot")
     public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
-        //  return ResponseEntity.ok(responseService.createResponse(responseRequestSaveDto));
-        // yukarıda ki hata düzeltildi. MFT
         responseService.createResponse(responseRequestSaveDto);
         return ResponseEntity.ok(true);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update")
+    @PutMapping("/{id}")
     @Operation(summary = "id ile response bulup string girdisi ile yeni bir response oluşmasını sağlayan metot.")
-    public ResponseEntity<Void> updateResponse(@RequestBody @Valid ResponseRequestDto dto) {
-        responseService.updateResponse(dto);
+    public ResponseEntity<Void> updateResponse(@PathVariable Long id,@RequestBody @Valid ResponseRequestDto dto) {
+        responseService.updateResponse(dto,id);
         return ResponseEntity.ok().build();
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findbyid")
+    @GetMapping("/{id}")
     @Operation(summary = "id girilerek bulunan response'un görüntülenmesini sağlayan metot.")
-    public ResponseEntity<AnswerResponseDto> findById(@ParameterObject @Valid FindByIdRequestDto dto) {
-        return ResponseEntity.ok(responseService.findByIdResponse(dto.getOid()));
+    public ResponseEntity<AnswerResponseDto> findById(@PathVariable @Valid Long id) {
+        return ResponseEntity.ok(responseService.findByIdResponse(id));
 
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findall")
+    @GetMapping
     @Operation(summary = "Tüm response'ların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<AnswerResponseDto>> findAll() {
         return ResponseEntity.ok(responseService.findAll());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/delete")
+    @DeleteMapping("/{id}")
     @Operation(summary = "id ile bulunan response'un silinmesini sağlayan metot.")
-    public ResponseEntity<Boolean> delete(@RequestParam @Valid Long responseOid) {
-        return ResponseEntity.ok(responseService.deleteResponseById(responseOid));
+    public ResponseEntity<Boolean> delete(@PathVariable @Valid Long id) {
+        return ResponseEntity.ok(responseService.deleteResponseById(id));
     }
 
-    @PutMapping("/savesurveyanswers/{token}")
+    @PutMapping("/survey-answers/{token}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "id ile bulunan question'a verilen tüm response'ları kaydetmeye yarayan metot. #15")
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){

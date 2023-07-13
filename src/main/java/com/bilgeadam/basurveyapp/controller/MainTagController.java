@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Muhammed Furkan Türkmen
  */
 @RestController
-@RequestMapping("/maintag")
+@RequestMapping("/maintags")
 @RequiredArgsConstructor
 public class MainTagController {
     private final MainTagService mainTagService;
-    @PostMapping("/createmaintag")
+    @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){

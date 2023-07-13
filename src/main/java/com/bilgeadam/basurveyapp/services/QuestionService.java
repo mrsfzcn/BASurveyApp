@@ -17,6 +17,7 @@ import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -150,12 +151,12 @@ public class QuestionService {
         return questionsDto;
     }
 
-    public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(FilterSurveyQuestionsByKeywordRequestDto dto) {
-        Survey survey = surveyService.findActiveById(dto.getSurveyOid())
+    public List<QuestionResponseDto> filterSurveyQuestionsByKeyword(Long survey0id,String keyword) {
+        Survey survey = surveyService.findActiveById(survey0id)
                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
         List<QuestionResponseDto> filteredList = allQuestions.stream()
-                .filter(question -> question.getQuestionString().toLowerCase().contains(dto.getKeyword().trim().toLowerCase()))
+                .filter(question -> question.getQuestionString().toLowerCase().contains(keyword.trim().toLowerCase()))
                 .map(question -> QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
@@ -176,11 +177,11 @@ public class QuestionService {
     }
 
     //TODO birden fazla tag olduğunda nasıl çözülecek
-    public List<QuestionResponseDto> filterSurveyQuestions(FilterSurveyQuestionsRequestDto dto) {
-        Survey survey = surveyService.findActiveById(dto.getSurveyOid())
+    public List<QuestionResponseDto> filterSurveyQuestions(Long survey0id, List<Long> questionTag0ids) {
+        Survey survey = surveyService.findActiveById(survey0id)
                 .orElseThrow(() -> new ResourceNotFoundException("Survey not found."));
         List<Question> allQuestions = questionRepository.findSurveyActiveQuestionList(survey.getOid());
-        List<Question> tempQuestions = filterByTags(allQuestions, dto.getQuestionTagOids());
+        List<Question> tempQuestions = filterByTags(allQuestions, questionTag0ids);
 //        if(dto.getSubTagOids().size()!=0){
 //            tempQuestions = filterBySubTag(tempQuestions,dto.getSubTagOids());
 //        }
@@ -234,13 +235,13 @@ public class QuestionService {
                 .collect(Collectors.toList());
     }
 
-    public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(GetQuestionByRoleIdRequestDto dto) {
+    public List<QuestionsTrainerTypeResponseDto> questionByTrainerType(Long trainerid,Long surveyid) {
 
-        Optional<Trainer> trainer = trainerService.findActiveById(dto.getTrainerId());
+        Optional<Trainer> trainer = trainerService.findActiveById(trainerid);
         if (trainer.isEmpty()) {
             throw new ResourceNotFoundException("Trainer is not found");
         }
-        Optional<Survey> survey = surveyService.findActiveById(dto.getSurveyId());
+        Optional<Survey> survey = surveyService.findActiveById(surveyid);
         if (survey.isEmpty()) {
             throw new ResourceNotFoundException("Survey is not found");
         }

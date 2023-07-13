@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/question")
+@RequestMapping("/questions")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
@@ -23,7 +23,7 @@ public class QuestionController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/create")
+    @PostMapping
     @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot. #10")
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
 
@@ -31,7 +31,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update")
+    @PutMapping
     @Operation(summary = "Oid ile mevcut bir soruyu bulup string türünde yeni bir sorunun aynı id ile yazılmasını sağlayan metot.")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
@@ -39,14 +39,14 @@ public class QuestionController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findbyid/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Integer türünde id girilerek o id'ye denk gelen sorunun görntülenmesini sağlayan metot.")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findall")
+    @GetMapping
     @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
@@ -54,46 +54,45 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/delete")
-    @Operation(summary = "Ihnteger türünde id girilerek bulunan sorunun silinmesini sağlayan metot.")
-    public ResponseEntity<Boolean> delete(@RequestBody @Valid Long questionId) {
-        return ResponseEntity.ok(questionService.delete(questionId));
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Integer türünde id girilerek bulunan sorunun silinmesini sağlayan metot.")
+    public ResponseEntity<Boolean> deleteQuestionById(@PathVariable Long id) {
+        return ResponseEntity.ok(questionService.delete(id));
     }
 
-    @GetMapping("/getsurveyquestions/{token}")
+    @GetMapping("/survey-questions/{student-token}")
     @Operation(summary = "Token kullanılarak anket sorularına ulaşılmasını sağlayan metot. #14")
-    public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable String token) {
+    public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable(name = "student-token") String token) {
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/filterbykeyword")
+    @GetMapping("/{survey0id}/keyword")
     @Operation(summary = "Id ile survey'e ulaşıp string tütünde anahtar kelimenin içinde geçtiği soruları görüntülemeyi sağlayan metot.")
-    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@RequestBody @Valid FilterSurveyQuestionsByKeywordRequestDto dto) {
-        return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(dto));
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@PathVariable("survey0id") Long survey0id,@RequestParam String keyword) {
+        return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(survey0id,keyword));
     }
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/filtersurveyquestions")
+    @GetMapping("/survey0id/question-tag")
     @Operation(summary = "Id ile survey bulup, survey'deki tüm soruları görntülemeyi sağlayan metot.")
-    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestBody @Valid FilterSurveyQuestionsRequestDto dto) {
-        return ResponseEntity.ok(questionService.filterSurveyQuestions(dto));
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestParam Long survey0id, @RequestParam List<Long> questionTag0ids) {
+        return ResponseEntity.ok(questionService.filterSurveyQuestions(survey0id,questionTag0ids));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
-    @PostMapping("/questionsbytrainertype")
+    @GetMapping("/trainerid/surveyid")
     @Operation(summary = "Id ile trainer'ı ve survey'i bulup tüm soruları görüntülemeyi sağlayan metot.")
-    ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestBody GetQuestionByRoleIdRequestDto dto) {
-
-        return ResponseEntity.ok(questionService.questionByTrainerType(dto));
+    ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestParam Long trainerid,@RequestParam Long surveyid) {
+        return ResponseEntity.ok(questionService.questionByTrainerType(trainerid,surveyid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findallbyquestiontype/{questionType}")
+    @GetMapping("/type")
     @Operation(summary = "belirli bir question type'a sahip tüm soruları görüntülemeyi sağlayan metot.")
-    public ResponseEntity<List<String>> findAllByQuestionType(@PathVariable @Valid String questionType){
-        return ResponseEntity.ok(questionService.findAllByQuestionType(questionType));
+    public ResponseEntity<List<String>> findAllByQuestionType(@RequestParam String type){
+        return ResponseEntity.ok(questionService.findAllByQuestionType(type));
     }
 
 }
