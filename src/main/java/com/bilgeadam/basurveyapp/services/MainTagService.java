@@ -46,7 +46,7 @@ public class MainTagService {
      * 2_ controller de kisi tek bir yerden tag olusturacak artık.
      * her biri icin ayrı ayrı kayıt islemine gerek yok
      */
-    public void createTag (CreateMainTagRequestDto dto){
+    public void createMainTag (CreateMainTagRequestDto dto){
         for(String tagClass: dto.getTagClass()){
             Tags tag_class= Tags.valueOf(tagClass.trim().toUpperCase());
             // main tag icinde bu classa ait bir bu isimde bir tag var mı diye kontrol edilir.

@@ -51,7 +51,7 @@ public class QuestionTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping
     @Operation(summary = "Tüm tag'lerin görüntülenmesini sağlayan metot.")
-    public ResponseEntity<List<TagResponseDto>> findAllTag() {
+    public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = questionTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }

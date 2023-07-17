@@ -49,7 +49,7 @@ public class SurveyController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findSurveyByid/{surveyId}")
     @Operation(summary = "Survey id'si girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot. #17")
-    ResponseEntity<SurveyResponseDto> findById(@PathVariable("surveyId") Long surveyId) {
+    ResponseEntity<SurveyResponseDto> findByOid(@PathVariable("surveyId") Long surveyId) {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
 

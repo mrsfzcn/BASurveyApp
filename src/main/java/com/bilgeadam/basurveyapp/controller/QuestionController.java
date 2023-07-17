@@ -27,7 +27,7 @@ public class QuestionController {
     @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot. #10")
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
 
-        return ResponseEntity.ok(questionService.createQuestions(createQuestionDtoList));
+        return ResponseEntity.ok(questionService.createQuestion(createQuestionDtoList));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")

@@ -25,7 +25,7 @@ public class MainTagController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
-        mainTagService.createTag(dto);
+        mainTagService.createMainTag(dto);
 
 
         return ResponseEntity.ok(true);
@@ -33,7 +33,7 @@ public class MainTagController {
 
     @GetMapping("/tagname")
     @Operation(summary = "tag ismine göre arama")
-    public ResponseEntity<List<MainTagResponseDto>> findByTagName(@RequestParam String tagname){
+    public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagname){
         return ResponseEntity.ok(mainTagService.findByTagNames(tagname));
     }
     @GetMapping("/tagname/tagclass")

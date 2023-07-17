@@ -47,7 +47,7 @@ public class QuestionTypeController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping
     @Operation(summary = "Tüm question type'ları görüntülemeyi sağlayan metot.")
-    public ResponseEntity<List<AllQuestionTypeResponseDto>> findAllQuestionTypeList() {
+    public ResponseEntity<List<AllQuestionTypeResponseDto>> findAll() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }

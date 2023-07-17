@@ -30,7 +30,7 @@ public class RoleController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/findroles")
     @Operation(summary = "Tüm rollerin görüntülenmesini sağlayan metot.")
-    public ResponseEntity<List<String>> findRoles() {
+    public ResponseEntity<List<String>> findRoleStrings() {
         return ResponseEntity.ok(roleService.findRoleStrings());
     }
 }
