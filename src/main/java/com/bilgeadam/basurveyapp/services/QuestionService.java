@@ -45,7 +45,7 @@ public class QuestionService {
         this.questionTagService = questionTagService;
     }
 
-    public Boolean createQuestions(List<CreateQuestionDto> createQuestionDtoList) {
+    public Boolean createQuestion(List<CreateQuestionDto> createQuestionDtoList) {
         for (CreateQuestionDto createQuestionDto : createQuestionDtoList) {
             if (questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()) {
                 throw new QuestionAlreadyExistsException("Question with the same question string already exists.");

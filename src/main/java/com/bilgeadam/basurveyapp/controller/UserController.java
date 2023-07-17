@@ -27,13 +27,13 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/managers")
-    ResponseEntity<List<ManagerResponseDto>> getManagersList() {
+    ResponseEntity<List<ManagerResponseDto>> getManagerList() {
         return ResponseEntity.ok(userService.getManagerList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/admins")
-    ResponseEntity<List<AdminResponseDto>> getAdminsList() {
+    ResponseEntity<List<AdminResponseDto>> getAdminList() {
 
         return ResponseEntity.ok(userService.getAdminList());
     }
@@ -47,7 +47,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/{userId}")
-    ResponseEntity<UserSimpleResponseDto> findById(@PathVariable("userId") Long userId) {
+    ResponseEntity<UserSimpleResponseDto> findByOid(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.findByOid(userId));
     }
 

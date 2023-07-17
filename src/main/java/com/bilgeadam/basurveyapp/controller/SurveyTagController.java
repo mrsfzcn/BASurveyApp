@@ -51,7 +51,7 @@ public class SurveyTagController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
-    public ResponseEntity<List<TagResponseDto>> findAllTag() {
+    public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = surveyTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }

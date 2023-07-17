@@ -72,7 +72,7 @@ public class ResponseService {
         responseRepository.save(response);
     }
 
-    public AnswerResponseDto findByIdResponse(Long responseOid) {
+    public AnswerResponseDto findById(Long responseOid) {
         Response response = responseRepository.findActiveById(responseOid)
                 .orElseThrow(() -> new ResponseNotFoundException("There's an error while finding response"));
         return ResponseMapper.INSTANCE.toAnswerResponseDto(response);
