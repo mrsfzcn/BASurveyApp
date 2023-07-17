@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +26,7 @@ public interface StudentTagRepository extends BaseRepository<StudentTag, Long> {
 
     @Query(value = "select survey_oid from survey_registration where student_tag_oid = ?1 ",nativeQuery = true)
     List<Long> findSurveyCountByStudentTag(Long studentTagOid);
+    Optional<StudentTag> findOptionalByTagString(String tagString);
+
 
 }

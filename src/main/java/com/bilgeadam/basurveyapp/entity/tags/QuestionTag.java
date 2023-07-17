@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.apache.batik.apps.svgpp.Main;
 
 @NoArgsConstructor
 @Getter
@@ -15,6 +16,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @SuperBuilder
 @Table(name = "questiontags")
-public class QuestionTag extends BaseTag<Question>  {
+public class QuestionTag extends BaseTag<Question> {
 
 }

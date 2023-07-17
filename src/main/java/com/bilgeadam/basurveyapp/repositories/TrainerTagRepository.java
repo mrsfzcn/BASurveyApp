@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.repositories;
 
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,7 @@ public interface TrainerTagRepository extends BaseRepository<TrainerTag, Long> {
 
     @Query(value ="SELECT target_entities_oid FROM trainertags_target_entities WHERE trainer_tags_oid=?1", nativeQuery = true)
     List<Long> findTrainerOidByTrainerTagOid(Long Oid);
+
+    Optional<TrainerTag> findOptionalByTagString(String tagString);
+
 }

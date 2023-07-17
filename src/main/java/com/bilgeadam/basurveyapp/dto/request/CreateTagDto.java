@@ -14,4 +14,5 @@ public class CreateTagDto {
     @NotBlank
     @NotNull
     String tagString;
+    Long mainTagOid;
 }

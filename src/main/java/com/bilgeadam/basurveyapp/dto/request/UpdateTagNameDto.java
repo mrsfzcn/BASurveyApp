@@ -2,15 +2,12 @@ package com.bilgeadam.basurveyapp.dto.request;
 
 import lombok.*;
 
-import java.util.List;
-
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@Builder
-public class UpdateTagDto {
+@ToString
+public class UpdateTagNameDto {
     private String tagString;
     private String newTagString;
-    private String tagClass;
 }

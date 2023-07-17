@@ -36,12 +36,13 @@ public class TestAndRun {
 
     // uygulama ilk calisirken otomatik admin olusturur.
     public void createBaseAdmin() {
-        Optional<User> admin=userService.findByEmail("admin@bilgeadamboost.com");
+        Optional<User> admin=userService.findByEmail("admin.admin@bilgeadamboost.com");
         if (roleService.hasRole("ADMIN")) return;
         roleService.createRole(CreateRoleDto.builder().role("ADMIN").build());
 
         if (admin.isPresent()) return;
         authService.register(RegisterRequestDto.builder()
+
                         .roles(Set.of("ADMIN"))
                         .password("adminadmin")
                         .firstName("admin")

@@ -4,7 +4,9 @@ import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagCreateResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.StudentTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TagMapper;
@@ -29,6 +31,8 @@ public class StudentTagService {
         }
         StudentTag studentTag = StudentTag.builder()
                 .tagString(tagString)
+                .mainTagOid(dto.getMainTagOid())
+
                 .build();
 
         studentTagRepository.save(studentTag);
@@ -93,5 +97,12 @@ public class StudentTagService {
     public List<Long> studentTagCount(Long studentTagOid){
         List<Long> count = studentTagRepository.findSurveyCountByStudentTag(studentTagOid);
         return count;
+    }
+
+    public void updateTagByTagString(String tagString, String newTagString) {
+        StudentTag studentTag = studentTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+        studentTag.setTagString(newTagString);
+       studentTagRepository.save(studentTag);
     }
 }
