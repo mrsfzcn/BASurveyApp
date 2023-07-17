@@ -18,6 +18,7 @@ import java.util.Set;
 public abstract class BaseTag<T> extends BaseEntity{
     @Column(name = "tag_string")
     String tagString;
+    Long mainTagOid;
     @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<T> targetEntities;

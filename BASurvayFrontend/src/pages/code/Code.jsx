@@ -70,7 +70,7 @@ const Code = () => {
           Gönder
         </button>
         <Link to="/login">
-          <button className="button" onClick={handleSubmit}>
+          <button className="button" >
             Giriş sayfasına geri dön
           </button>
         </Link>

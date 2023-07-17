@@ -196,6 +196,20 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(ROLE_NOT_FOUND, exception, request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(TagNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleTagNotFoundException(TagNotFoundException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TAG_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TAG_NOT_FOUND, exception, request);
+    }
+    @ResponseBody
+    @ExceptionHandler(TagAlreadyExistsException.class)
+    public ResponseEntity<ExceptionResponse> handleTagAlreadyExistsException(TagAlreadyExistsException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TAG_NOT_FOUND", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TAG_ALREADY_EXIST, exception, request);
+    }
+
+
     private ResponseEntity<ExceptionResponse> createExceptionInfoResponse(ExceptionType exceptionType, Exception exception, HttpServletRequest request) {
         String exceptionName = exceptionType.name();
         Locale locale;

@@ -5,7 +5,9 @@ import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDt
 import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
@@ -37,6 +39,8 @@ public class TrainerTagService {
         }
         TrainerTag trainerTag = TrainerTag.builder()
                 .tagString(dto.getTagString())
+                .mainTagOid(dto.getMainTagOid())
+
                 .build();
         trainerTagRepository.save(trainerTag);
     }
@@ -101,5 +105,12 @@ public class TrainerTagService {
     }
     public List<Long> findTrainerOidByTrainerTagOid(Long oid){
         return trainerTagRepository.findTrainerOidByTrainerTagOid(oid);
+    }
+
+    public void updateTagByTagString(String tagString, String newTagString) {
+        TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+        trainerTag.setTagString(newTagString);
+        trainerTagRepository.save(trainerTag);
     }
 }

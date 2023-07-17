@@ -263,6 +263,7 @@ public class ResponseService {
 
     // KULLANICIYA ATANAN ANKETLERİN CEVAPLARININ EXCELE EXPORT EDİLMESİNE YARAYAN METOD
     public byte[] exportToExcel(Long studentTag) throws IOException {
+        System.out.println("student tag"+ studentTag);
         Optional<StudentTag> studentTag1 = studentTagService.findById(studentTag);
         List<Response> responses = responseRepository.findAll();
         List<Long> studentTagCount = studentTagService.studentTagCount(studentTag);
@@ -291,8 +292,8 @@ public class ResponseService {
                     row.createCell(0).setCellValue(rowNum-1);
                     row.createCell(1).setCellValue(studentTag1.get().getTagString());
                     // excelde integer değer kabul ediyor. Map'in get metodu obje döndüğünden dolayı objeyi önce stringe daha sonra integer'a parse ettik.
-                    row.createCell(2).setCellValue(Integer.parseInt(String.valueOf(map.get(response.getSurvey().getOid()))));
-                    row.createCell(3).setCellValue(response.getSurvey().getSurveyTitle());
+                  //  row.createCell(2).setCellValue(Integer.parseInt(String.valueOf(map.get(response.getSurvey().getOid()))));
+                   // row.createCell(3).setCellValue(response.getSurvey().getSurveyTitle());
                     row.createCell(4).setCellValue(response.getUser().getEmail());
                     row.createCell(5).setCellValue(response.getQuestion().getQuestionString());
                     row.createCell(6).setCellValue(response.getResponseString());

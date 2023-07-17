@@ -337,7 +337,7 @@ public class SurveyService {
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
                 .studentTag(studentTag.get())
-                .startDate(startDate)
+                .startDate(startDate.minusDays(1))
                 .endDate(startDate.plusDays(dto.getDays()))
                 .build());
 

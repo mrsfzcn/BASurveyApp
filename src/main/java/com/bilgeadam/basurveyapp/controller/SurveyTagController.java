@@ -38,9 +38,10 @@ public class SurveyTagController {
     @Operation(summary = "Belirtilen tag stringine sahip olan survey tag'in güncellenmesini sağlayan metot")
     public ResponseEntity<SurveyTag> updateTagByTagString(
             @PathVariable("tagString") String tagString,
-            @RequestBody @Valid UpdateTagDto dto) {
+            @PathVariable("newTagString") String newTagString
+           ) {
         try {
-            SurveyTag surveyTag = surveyTagService.updateTagByTagString(tagString, dto);
+            SurveyTag surveyTag = surveyTagService.updateTagByTagString(tagString,newTagString);
             return ResponseEntity.ok(surveyTag);
         } catch (SurveyTagNotFoundException e) {
             return ResponseEntity.notFound().build();

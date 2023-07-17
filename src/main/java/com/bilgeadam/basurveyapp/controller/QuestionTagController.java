@@ -39,7 +39,7 @@ public class QuestionTagController {
             @PathVariable("tagString") String tagString,
             @RequestBody @Valid UpdateTagDto dto) {
         try {
-            QuestionTag questionTag = questionTagService.updateTagByTagString(tagString, dto);
+            QuestionTag questionTag = questionTagService.updateTagByTagString(tagString,dto.getNewTagString());
             return ResponseEntity.ok(questionTag);
         } catch (QuestionTagNotFoundException e) {
             return ResponseEntity.notFound().build();

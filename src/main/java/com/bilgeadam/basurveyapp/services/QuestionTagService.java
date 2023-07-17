@@ -38,6 +38,7 @@ public class QuestionTagService {
         }
         QuestionTag questionTag = QuestionTag.builder()
                 .tagString(dto.getTagString())
+                .mainTagOid(dto.getMainTagOid())
                 .state(State.ACTIVE)
                 .build();
         return questionTagRepository.save(questionTag);
@@ -75,12 +76,10 @@ public class QuestionTagService {
         return questionTagRepository.findById(tag);
     }
 
-    public QuestionTag updateTagByTagString(String tagString, UpdateTagDto dto) {
+    public QuestionTag updateTagByTagString(String tagString,String newTagString) {
         QuestionTag questionTag = questionTagRepository.findOptionalByTagString(tagString)
                 .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
-
-        questionTag.setTagString(dto.getTagString());
-
+        questionTag.setTagString(newTagString);
         return questionTagRepository.save(questionTag);
     }
 

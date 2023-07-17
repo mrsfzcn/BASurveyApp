@@ -39,6 +39,8 @@ public class SurveyTagService {
         SurveyTag surveyTag = SurveyTag.builder()
                 .tagString(dto.getTagString())
                 .state(State.ACTIVE)
+                .mainTagOid(dto.getMainTagOid())
+
                 .build();
         return surveyTagRepository.save(surveyTag);
     }
@@ -62,11 +64,11 @@ public class SurveyTagService {
             return surveyTagRepository.softDeleteById(deleteTag.get().getOid());
         }
     }
-    public SurveyTag updateTagByTagString(String tagString, UpdateTagDto dto) {
+    public SurveyTag updateTagByTagString( String tagString,String newTagString) {
         SurveyTag surveyTag = surveyTagRepository.findOptionalByTagString(tagString)
                 .orElseThrow(() -> new SurveyTagNotFoundException("Survey Tag not found"));
 
-        surveyTag.setTagString(dto.getTagString());
+        surveyTag.setTagString(newTagString);
 
         return surveyTagRepository.save(surveyTag);
     }
