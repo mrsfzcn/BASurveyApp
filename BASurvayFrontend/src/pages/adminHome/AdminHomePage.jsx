@@ -1,12 +1,11 @@
+import Sidebar from "../../components/Sidebar";
 function AdminHome() {
+  return (
+    <div className="flex ">
+      <Sidebar />
+      <div className="flex-[8_8_0%] bg-black min-h-screen"></div>
+    </div>
+  );
+}
 
-  
-    return (
-   <main>
-    <p>ADMIN MAIN PAGE</p>
-   </main>
-    );
-  }
-  
-  export default AdminHome;
-  
+export default AdminHome;
