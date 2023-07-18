@@ -35,6 +35,7 @@ public class QuestionTagController {
 
     @PutMapping("/{tagString}")
     @Operation(summary = "Belirtilen tag stringine sahip olan question tag'in güncellenmesini sağlayan metot")
+    @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(
             @PathVariable("tagString") String tagString,
             @RequestBody @Valid UpdateTagDto dto) {

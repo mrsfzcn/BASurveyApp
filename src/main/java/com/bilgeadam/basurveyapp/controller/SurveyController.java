@@ -100,7 +100,7 @@ public class SurveyController {
 
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "#13")
+    @Operation(summary = "anketi ögrenciye atama işlemi#13")
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
     }
@@ -142,7 +142,7 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
-    @GetMapping("/trainersurveys")
+    @GetMapping("/findtrainersurveys")
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
