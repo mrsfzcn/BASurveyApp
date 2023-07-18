@@ -1,0 +1,132 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --accent-blue: hsl(205, 100%, 48%);
+    --accent-cyan: hsl(165, 100%, 50%);
+    --text-primary: hsl(180, 3%, 38%);
+    --text-accent: hsl(180, 5%, 62%);
+    --bg-accent: hsl(205, 15%, 94%);
+
+    --flex-flow: calc((32rem - 100%) * 999);
+    --flow-condition: calc((41.25rem - 100vw) * 999);
+}
+
+a {
+    text-decoration: none;
+}
+
+header {
+    --space: clamp(1rem, calc(-17.7rem + 48.48vw), 2rem);
+    --width: 50rem;
+    --height: 1.5rem;
+    --logo: 4em;
+
+    inline-size: 100vw;
+    min-height: var(--height);
+
+    background: rgb(34, 33, 55);
+    border: clamp(0px, var(--flow-condition), 0.125rem) solid var(--accent-cyan);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+        rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.header-content {
+    gap: 0.75rem 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.header-content > * {
+    flex: 1 1 var(--flex-flow);
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.logo {
+    display: grid;
+    grid-auto-flow: column;
+    place-items: center;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.logo img {
+    width: calc(var(--logo) * 2);
+    margin-right: 0.5rem;
+}
+
+.logo-line {
+    width: 2px;
+    height: calc(var(--logo) - 10px);
+    margin: 5px 0;
+    background-color: white;
+}
+
+.logo-text {
+    color: white;
+    font-weight: 500;
+    font-size: 3rem;
+    margin-left: 35px;
+}
+
+.navigation__list-container {
+    display: flex;
+    margin-inline: auto;
+    gap: 0.25rem;
+    list-style: none;
+}
+
+a:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: -1px;
+    border-radius: 0.25rem;
+}
+
+.nav__link:focus {
+    color: var(--accent-blue);
+}
+
+.circle-button {
+    width: 50px;
+    height: 50px;
+    background-color: rgb(117, 239, 164);
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: 65px;
+}
+
+.profile-popup {
+    position: absolute;
+    top: 130px;
+    right: 30px;
+    width: 150px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
+
+.profile-popup ul {
+    list-style: none;
+}
+
+.profile-popup ul li {
+    padding: 5px 0;
+    cursor: pointer;
+}
