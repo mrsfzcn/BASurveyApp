@@ -4,6 +4,7 @@ import AuthService from "../../services/AuthService";
 import TokenService from '../../services/TokenService';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import HeaderComponent from '../../utils/header/header';
 
 const Code = () => {
   const [error, setError] = useState("");
@@ -13,6 +14,7 @@ const Code = () => {
     token: localStorage.getItem("token") || "",
   });
 
+  
   const handleTwoFactoryChange = (e) => {
     setCode({ ...code, twoFactoryKey: e.target.value });
   };
@@ -49,6 +51,9 @@ const Code = () => {
   };
 
   return (
+<>
+
+<HeaderComponent />
     <div className="content-code">
       <div className="user-menu">
         <label htmlFor="code" className="username">
@@ -76,6 +81,7 @@ const Code = () => {
         </Link>
       </div>
     </div>
+    </>
   );
 };
 
