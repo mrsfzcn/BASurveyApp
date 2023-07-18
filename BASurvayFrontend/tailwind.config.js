@@ -4,9 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        firstColor: "#212a3e",
+        firstColor: "rgb(34, 33, 55)",
         secondColor: "#64e9b1",
       },
+    },
+    screens: {
+      mobile: "390px",
+      tablet: "640px",
+      laptop: "1024px",
+      desktop: "1280px",
+
+      xldektop: "2560px",
     },
   },
   plugins: [],

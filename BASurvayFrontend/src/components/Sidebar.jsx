@@ -16,8 +16,8 @@ function Sidebar() {
           href: "/",
         },
         {
-          name: "Kullanıcı Ekle",
-          ref: "",
+          name: "Kullanıcı Düzenle",
+          href: "",
         },
       ],
     },
@@ -55,7 +55,7 @@ function Sidebar() {
         { name: "Sınıfa Göre Anket Sonuçları", href: "/" },
         { name: "Kişiye Göre Anket Sonuçları", href: "/" },
       ],
-    },   
+    },
     {
       label: "Etiket İşlemleri",
       content: [
@@ -67,11 +67,10 @@ function Sidebar() {
   ];
 
   return (
-    <div className="flex-1 bg-firstColor p-4 flex flex-col gap-12 ">
-      <div className="flex justify-center">
-        <img src={logo} alt="logo" className="text-center" />
+    <div className="flex flex-col gap-4 flex-[1_1_0%] bg-firstColor pl-4 pr-4   ">
+      <div>
+        <img src={logo} alt="" />
       </div>
-
       <Accordion items={items} />
     </div>
   );

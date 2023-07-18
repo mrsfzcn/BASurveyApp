@@ -1,44 +1,33 @@
-import { useState } from "react";
-import Input from "../../components/Input";
-import Sidebar from "../../components/Sidebar";
+// AdminHome.js
+import React, { useState } from "react";
+import Layout from "../../components/Layout";
+import Dropdown from "../../components/Dropdown";
+
 function AdminHome() {
   const [name, setName] = useState("");
+  const [selection, setSelection] = useState(null);
 
   const handleChange = (e) => {
     setName(e.target.value);
   };
 
-  return (
-    <div className="flex min-h-screen ">
-      <Sidebar />
+  const options = [
+    { label: "Red", value: "red" },
+    { label: "Green", value: "green" },
+    { label: "Blue", value: "blue" },
+  ];
 
-      <div className="flex-[8_8_0%]">
-        <div className="flex flex-col">
-          <Input
-            type="text"
-            placeholder="Adı"
-            value={name}
-            onChange={handleChange}
-            className="w-3/5"
-          />
-          <Input
-            type="text"
-            placeholder="Adı"
-            value={name}
-            onChange={handleChange}
-            half
-          />
-          <Input
-            type="text"
-            placeholder="Adı"
-            value={name}
-            onChange={handleChange}
-            half
-            required
-          />
-        </div>
+  const onChange = (option) => {
+    setSelection(option);
+  };
+
+  return (
+    <Layout>
+      <div className="flex">
+        <Dropdown value={selection} onChange={onChange} options={options} />
+        <Dropdown value={selection} onChange={onChange} options={options} />
       </div>
-    </div>
+    </Layout>
   );
 }
 

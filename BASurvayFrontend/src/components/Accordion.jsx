@@ -12,7 +12,7 @@ function Accordion({ items }) {
   const rendered = items.map((item, index) => {
     const isExpanded = index === expandedIndex;
     const content = isExpanded && (
-      <ul className="flex flex-col border bg-secondColor rounded-md px-2 py-1">
+      <ul className="flex flex-col border-black bg-secondColor rounded-md px-2 py-1">
         {item.content.map((contentItem) => (
           <li className="mt-2 mb-1 text-sm" key={contentItem.href}>
             <a href={contentItem.href}>{contentItem.name}</a>
@@ -28,7 +28,7 @@ function Accordion({ items }) {
     return (
       <div key={index}>
         <div
-          className="flex items-center justify-between gap-2 border px-3 py-1.5 bg-secondColor text-gray-900 font-semibold rounded-lg"
+          className="flex items-center justify-between gap-2 border-black px-3 py-1.5 bg-secondColor text-gray-900 font-semibold rounded-lg"
           onClick={() => handleClick(index)}
         >
           {item.label}
@@ -39,7 +39,7 @@ function Accordion({ items }) {
     );
   });
 
-  return <div className="flex flex-col gap-4">{rendered}</div>;
+  return <div className="flex flex-col gap-6 mt-10">{rendered}</div>;
 }
 
 export default Accordion;
