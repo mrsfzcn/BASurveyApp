@@ -2,60 +2,69 @@ import logo from "../assets/images/logo.png";
 import Accordion from "./Accordion";
 
 function Sidebar() {
+  // items sidebar'da gözükmesini istediğimiz liste
+  // content kısmı ise label'a tıkladıktan sonra açılan listedeki content elemanları
+  // href oluşturduğunuz sayfanın linki
+
   const items = [
     {
       label: "Kullanıcı İşlemleri",
-      content: ["Tüm Kullanıcılar", "Kullanıcı Ekle", "Kullanıcı Düzenle"],
+      content: [
+        { name: "Tüm Kullanıcılar", href: "/code" },
+        {
+          name: "Kullanıcı Ekle",
+          href: "/",
+        },
+        {
+          name: "Kullanıcı Ekle",
+          ref: "",
+        },
+      ],
     },
     {
       label: "Anket İşlemleri",
-      content: ["Tüm Anketler", "Anket Ekle", "Anket Düzenle"],
+      content: [
+        { name: "Tüm Anketler", href: "/" },
+        { name: "Anket Ekle", href: "/" },
+        { name: "Anket Düzenle", href: "/" },
+      ],
     },
     {
       label: "Soru İşlemleri",
       content: [
-        "Soruları Listele",
-        "Soru Ekle",
-        "Soru Etiketi İşlemleri",
-        "Soru Tipi İşlemleri",
+        { name: "Soruları Listele", href: "" },
+        { name: "Soru Ekle", href: "" },
+        { name: "Soru Etiketi İşlemleri", href: "" },
+        { name: "Soru Tipi İşlemleri", href: "/" },
       ],
     },
     {
       label: "Sınıf İşlemleri",
       content: [
-        "Öğrenci Listleme",
-        "Eğitmen Listeleme",
-        "Sınıf Etiketi Oluşturma",
-        "Sınıfa Eğitmen Atama",
-        "Sınıfa Öğrenci Atama",
+        { name: "Öğrenci Listleme", href: "/" },
+        { name: "Eğitmen Listeleme", href: "/" },
+        { name: "Sınıf Etiketi Oluşturma", href: "/" },
+        { name: "Sınıfa Eğitmen Atama", href: "/" },
+        { name: "Sınıfa Öğrenci Atama", href: "/" },
       ],
     },
     {
       label: "Raporlama",
       content: [
-        "Sonuçlanmış Anketler",
-        "Sınıfa Göre Anket Sonuçları",
-        "Kişiye Göre Anket Sonuçları",
+        { name: "Sonuçlanmış Anketler", href: "/" },
+        { name: "Sınıfa Göre Anket Sonuçları", href: "/" },
+        { name: "Kişiye Göre Anket Sonuçları", href: "/" },
       ],
     },
   ];
 
-  const cssForAccordion = [
-    {
-      deneme:
-        "flex items-center justify-between gap-2 border px-3 py-1.5 bg-secondColor text-gray-900 font-semibold rounded-lg ",
-    },
-    { content: "flex flex-col border bg-secondColor rounded-md px-2 py-1" },
-  ];
-
   return (
-    <div className="flex-1 bg-firstColor p-4 flex flex-col gap-16 ">
-      <div>
-        <img src={logo} alt="logo" />
-        <hr />
+    <div className="flex-1 bg-firstColor p-4 flex flex-col gap-12 ">
+      <div className="flex justify-center">
+        <img src={logo} alt="logo" className="text-center" />
       </div>
 
-      <Accordion items={items} css={cssForAccordion} />
+      <Accordion items={items} />
     </div>
   );
 }
