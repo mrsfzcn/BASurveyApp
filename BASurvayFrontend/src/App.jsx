@@ -13,6 +13,8 @@ import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
 import AdminHomePage from "./pages/adminHome/AdminHomePage"
+import AddTag from "./pages/tag/AddTag";
+import TagsTable from "./pages/tag/TagsTable";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -25,7 +27,13 @@ function App() {
         <Route path="/code" element={<Code />} />
         <Route path="/adminhome" element={<AdminHomePage />} />
         <Route path="/*" element={<Navigate to="/" />} />
-      </Routes>
+        <Route path="/etiket">
+          <Route index element = {<TagsTable />}/>
+          <Route path="guncelle">
+            <Route index element = {<AddTag />}/>
+          </Route>
+        </Route>  
+          </Routes>
     </Router>
   );
 }

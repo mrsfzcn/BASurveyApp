@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Input from "../../components/Input";
 import Sidebar from "../../components/Sidebar";
-import Table from "../../components/Table";
 function AdminHome() {
   const [name, setName] = useState("");
 

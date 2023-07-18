@@ -55,6 +55,14 @@ function Sidebar() {
         { name: "Sınıfa Göre Anket Sonuçları", href: "/" },
         { name: "Kişiye Göre Anket Sonuçları", href: "/" },
       ],
+    },   
+    {
+      label: "Etiket İşlemleri",
+      content: [
+        { name: "Etiket Ekle", href: "/" },
+        { name: "Etiket Güncelle", href: "/" },
+        { name: "Etiket Silme", href: "/" },
+      ],
     },
   ];
 
