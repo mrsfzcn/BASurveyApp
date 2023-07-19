@@ -12,13 +12,12 @@ import {
 import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
-import AdminHomePage from "./pages/adminHome/AdminHomePage"
-import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey"
 import AdminHomePage from "./pages/adminHome/AdminHomePage";
+import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
 import UserRegistration from "./pages/user/UserRegistration";
-import TumKullanicilar from "./pages/user/TumKullanicilar";
+import AllUsers from "./pages/user/AllUsers/component/List";
 import AddQuestion from "./pages/CreateSurveyPage/AddQuestion";
 import SendSurvey from "./pages/sendSurvey/SendSurvey";
 import TumAnketler from "./pages/surveys/TumAnketler";
@@ -46,21 +45,20 @@ function App() {
           </Route>
         </Route>
         <Route path="/kullanici">
-          <Route index element={<TumKullanicilar />} />
+          <Route index element={<AllUsers />} />
           <Route path="ekle">
             <Route index element={<UserRegistration />} />
           </Route>
         </Route>
         <Route path="/anketler">
-          <Route index element = {<TumAnketler />}/>
+          <Route index element={<TumAnketler />} />
           <Route path="guncelle/:id">
-            <Route index element = {<AnketDuzenle />}/>
+            <Route index element={<AnketDuzenle />} />
           </Route>
           <Route path="ekle">
-            <Route index element = {<AnketEkle />}/>
+            <Route index element={<AnketEkle />} />
           </Route>
         </Route>
-
       </Routes>
     </Router>
   );

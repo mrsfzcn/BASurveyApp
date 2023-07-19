@@ -2,10 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.AdminResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.ManagerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import jakarta.validation.Valid;
@@ -81,5 +78,13 @@ public class UserController {
 
         return ResponseEntity.ok(userService.assignRoleToUser(request));
     }
+
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    @GetMapping("/find-all-user-details")
+    ResponseEntity<List<FindAllUserDetailsResponseDto>> findAllUserDetails() {
+        return ResponseEntity.ok(userService.findAllUserDetails());
+    }
+
+
 
 }

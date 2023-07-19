@@ -39,6 +39,8 @@ public interface UserMapper {
 
     UserSimpleResponseDto toUserSimpleResponseDto(final User user);
 
+    FindAllUserDetailsResponseDto toFindAllUserDetailsResponseDto(final User user);
+
 
 
 

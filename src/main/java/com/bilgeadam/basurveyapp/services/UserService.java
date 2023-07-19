@@ -4,10 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.AssignRoleToUserRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.AdminResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.ManagerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserSimpleResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.UserTrainersAndStudentsResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
@@ -24,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -127,5 +125,14 @@ public class UserService {
 
     public Optional<User> findById(Long id) {
         return findById(id);
+    }
+
+    public List<FindAllUserDetailsResponseDto> findAllUserDetails() {
+        List<User> userList = userRepository.findAllByRolesNotADMIN();
+        if(userList.isEmpty()) throw new UserDoesNotExistsException("Kayıtlı User Bulunamadı");
+        List<FindAllUserDetailsResponseDto> findAllUserDetailsResponseDtoList = userList.stream().map(user ->
+            UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user)
+        ).collect(Collectors.toList());
+        return findAllUserDetailsResponseDtoList;
     }
 }
