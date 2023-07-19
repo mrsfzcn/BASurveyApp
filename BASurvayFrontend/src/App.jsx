@@ -12,8 +12,9 @@ import {
 import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
-import AdminHomePage from "./pages/adminHome/AdminHomePage"
 import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey"
+import AdminHomePage from "./pages/adminHome/AdminHomePage"
+
 
 function App() {
   const [count, setCount] = useState(0);

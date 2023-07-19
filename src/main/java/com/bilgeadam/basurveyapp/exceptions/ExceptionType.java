@@ -51,7 +51,7 @@ public enum ExceptionType {
     TRAINER_NOT_FOUND(9025, "Trainer not found", INTERNAL_SERVER_ERROR),
     SURVEY_TAG_NOT_FOUND(9026, "Survey Tag not found", INTERNAL_SERVER_ERROR),
     QUESTION_TAG_NOT_FOUND(9027, "Question Tag not found", INTERNAL_SERVER_ERROR),
-    SURVEY_TITLE_ALREADY_EXISTS(9028, "Survey Title not found", INTERNAL_SERVER_ERROR),
+    SURVEY_TITLE_ALREADY_EXISTS(9028, "Survey Title not found", BAD_REQUEST),
     SURVEY_HAS_NOT_ASSIGNED_CLASSROOM(9029, "Survey has not assigned to the classroom", INTERNAL_SERVER_ERROR),
     SURVEY_EXPIRED(9030, "Survey is Expired", INTERNAL_SERVER_ERROR),
     SURVEY_NOT_INITIATED(9031, "Survey has not initiated", INTERNAL_SERVER_ERROR),
