@@ -14,14 +14,16 @@ import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
 import AdminHomePage from "./pages/adminHome/AdminHomePage"
 import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey"
-import AdminHomePage from "./pages/adminHome/AdminHomePage";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
 import UserRegistration from "./pages/user/UserRegistration";
 import TumKullanicilar from "./pages/user/TumKullanicilar";
+import TumAnketler from "./pages/surveys/TumAnketler";
+import AnketEkle from "./pages/surveys/AnketEkle";
+import AnketDuzenle from "./pages/surveys/AnketDuzenle";
 
 function App() {
-  const [count, setCount] = useState(0);
+
 
   return (
     <Router>
@@ -44,6 +46,15 @@ function App() {
             <Route index element={<UserRegistration />} />
           </Route>
         </Route>
+        <Route path="/anketler">
+          <Route index element = {<TumAnketler />}/>
+          <Route path="guncelle/:id">
+            <Route index element = {<AnketDuzenle />}/>
+          </Route>
+          <Route path="ekle">
+            <Route index element = {<AnketEkle />}/>
+          </Route>
+        </Route>  
 
       </Routes>
     </Router>
