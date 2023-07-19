@@ -1,0 +1,73 @@
+body {
+    background-color: white; /* Yeni arkaplan rengi */
+  }
+.user-container {  
+    position: absolute;
+    overflow: hidden;
+    margin-top: 60px;
+    margin-left: 150px;
+    display: block; /* Yatay hizalama için */
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .circle-reporting {
+    position: relative;
+    margin-top: 360px;
+    margin-left: 630px;
+    transform: translate(-50%, -50%);
+    width: 321px;
+    height: 321px;
+    background-color: #66318B;
+    border-radius: 50%;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: bottom;
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 36px;
+    letter-spacing: 0em;
+    flex-direction: column;
+    cursor: pointer;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 1) ;
+  }
+  
+  .svg-reporting {
+    margin-top: 20px;
+    margin-left: 26px;
+    
+  }
+
+  .survey-container {
+    position: absolute;
+    overflow: hidden;
+    margin-top: 60px;
+    margin-left: 670px;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  
+  
+
+  .classroom-container {
+   
+    position: absolute;
+    overflow: hidden;
+    margin-top: 400px;
+    margin-left: 670px;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .question-container {
+    position: absolute;
+    overflow: hidden;
+    margin-top: 400px;
+    margin-left: 150px;
+    cursor: pointer;
+    z-index: 1;
+  }
