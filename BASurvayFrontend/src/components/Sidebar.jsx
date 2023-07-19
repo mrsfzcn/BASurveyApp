@@ -25,7 +25,7 @@ function Sidebar() {
       label: "Anket İşlemleri",
       content: [
         { name: "Tüm Anketler", href: "/" },
-        { name: "Anket Ekle", href: "/" },
+        { name: "Anket Ekle", href: "/createsurvey" },
         { name: "Anket Düzenle", href: "/" },
       ],
     },

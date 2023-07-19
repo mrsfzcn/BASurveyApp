@@ -12,6 +12,8 @@ import {
 import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
+import AdminHomePage from "./pages/adminHome/AdminHomePage"
+import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey"
 import AdminHomePage from "./pages/adminHome/AdminHomePage";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
@@ -28,6 +30,7 @@ function App() {
         <Route path="/qrcode" element={<Qrcode />} />
         <Route path="/code" element={<Code />} />
         <Route path="/adminhome" element={<AdminHomePage />} />
+        <Route path="/createsurvey" element={<CreateSurveyPage />} />
         <Route path="/*" element={<Navigate to="/" />} />
         <Route path="/etiket">
           <Route index element={<TagsTable />} />
