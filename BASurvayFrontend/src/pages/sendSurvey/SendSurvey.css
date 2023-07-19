@@ -1,0 +1,11 @@
+.outerclass{
+    height: 100%;
+}
+.innerclass{
+    height: 93%;
+    width: 94%;
+}
+.insideclass{
+    height: 80%;
+    width: 80%;
+}
