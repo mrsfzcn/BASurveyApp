@@ -27,6 +27,7 @@ function Sidebar() {
         { name: "Tüm Anketler", href: "/" },
         { name: "Anket Ekle", href: "/createsurvey" },
         { name: "Anket Düzenle", href: "/" },
+        { name: "Anket Gönder", href: "/sendsurvey" },
       ],
     },
     {

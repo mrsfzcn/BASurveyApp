@@ -7,6 +7,7 @@ function Input({
   fit,
   full,
   half,
+  eigthypercent,
   disabled,
   required,
   ...rest
@@ -18,6 +19,7 @@ function Input({
       "w-fit": fit,
       "w-full": full,
       "w-1/2": half,
+      "w-4/5": eigthypercent,
     }
   );
 
