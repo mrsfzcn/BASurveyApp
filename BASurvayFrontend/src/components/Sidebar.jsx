@@ -13,7 +13,7 @@ function Sidebar() {
         { name: "Tüm Kullanıcılar", href: "/code" },
         {
           name: "Kullanıcı Ekle",
-          href: "/",
+          href: "/kullanici/ekle",
         },
         {
           name: "Kullanıcı Düzenle",

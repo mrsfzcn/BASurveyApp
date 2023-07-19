@@ -5,8 +5,8 @@ function classNames(...classNamesList) {
   function Button({ children, primary, secondary, rounded,bold,fat, ...rest }) {
     const classes = classNames(
       rest.className,
-      "px-5 py-1",
-      primary && "bg-[#64E9B1] text-black",
+      "px-5 py-1  md:w-30 xl:w-40",
+      primary && "bg-[#64E9B1] text-black ",
       secondary && "bg-[#EB5353] text-black",
       bold && "font-bold",
       rounded && "rounded-lg",

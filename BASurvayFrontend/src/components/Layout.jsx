@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
       <Sidebar />
       <div className="flex flex-col flex-[8_8_0%] max-h-screen">
         <Header />
-        <div>{children}</div>
+        <div className="h-full">{children}</div>
       </div>
     </div>
   );
