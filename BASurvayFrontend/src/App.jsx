@@ -21,6 +21,9 @@ import UserRegistration from "./pages/user/UserRegistration";
 import TumKullanicilar from "./pages/user/TumKullanicilar";
 import AddQuestion from "./pages/CreateSurveyPage/AddQuestion";
 import SendSurvey from "./pages/sendSurvey/SendSurvey";
+import TumAnketler from "./pages/surveys/TumAnketler";
+import AnketEkle from "./pages/surveys/AnketEkle";
+import AnketDuzenle from "./pages/surveys/AnketDuzenle";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -46,6 +49,15 @@ function App() {
           <Route index element={<TumKullanicilar />} />
           <Route path="ekle">
             <Route index element={<UserRegistration />} />
+          </Route>
+        </Route>
+        <Route path="/anketler">
+          <Route index element = {<TumAnketler />}/>
+          <Route path="guncelle/:id">
+            <Route index element = {<AnketDuzenle />}/>
+          </Route>
+          <Route path="ekle">
+            <Route index element = {<AnketEkle />}/>
           </Route>
         </Route>
 
