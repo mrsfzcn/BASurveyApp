@@ -21,14 +21,14 @@ public class RoleController {
     private final RoleService roleService;
 
 //    @PreAuthorize("hasAnyRole('ADMIN')")
-@PostMapping("/createrole")
+@PostMapping("/")
 @Operation(summary = "String girdisi ile yeni bir rol oluşturulmasını sağlayan metot. #01")
     public ResponseEntity<CreateRoleResponseDto> createRole(@RequestBody CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @GetMapping("/findroles")
+    @GetMapping("/roles")
     @Operation(summary = "Tüm rollerin görüntülenmesini sağlayan metot.")
     public ResponseEntity<List<String>> findRoleStrings() {
         return ResponseEntity.ok(roleService.findRoleStrings());

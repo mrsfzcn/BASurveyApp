@@ -24,7 +24,7 @@ import java.util.List;
 public class SurveyTagController {
 
     private final SurveyTagService surveyTagService;
-
+    // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "#04")
@@ -33,9 +33,10 @@ public class SurveyTagController {
         SurveyTag createdTag = surveyTagService.createTag(dto);
         return ResponseEntity.ok(createdTag);
     }
-
+    // kaldırılacak.
     @PutMapping("/updatebytagstring/{tagString}")
     @Operation(summary = "Belirtilen tag stringine sahip olan survey tag'in güncellenmesini sağlayan metot")
+    @Hidden
     public ResponseEntity<SurveyTag> updateTagByTagString(
             @PathVariable("tagString") String tagString,
             @PathVariable("newTagString") String newTagString
@@ -49,12 +50,14 @@ public class SurveyTagController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = surveyTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
+    // bu metotda main tag e taşınmalı
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete/{tagString}")
     @Operation(summary = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot.")

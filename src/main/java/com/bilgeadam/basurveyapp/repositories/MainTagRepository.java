@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.entity.enums.Tags;
 import com.bilgeadam.basurveyapp.entity.tags.MainTag;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

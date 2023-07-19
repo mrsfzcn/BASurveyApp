@@ -23,8 +23,9 @@ import java.util.Optional;
 public class StudentTagController {
 
     private final StudentTagService studentTagService;
+    // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/create")
+    @PostMapping("/")
     @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #03")
     @Hidden
     public ResponseEntity<StudentTagCreateResponseDto> createTag(@RequestBody @Valid CreateTagDto dto ){
@@ -43,10 +44,11 @@ public class StudentTagController {
 
 
 
-
+    // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findByStudentTagName")
     @Operation(summary = "student tag girilerek bulunan student'ın gösterilmesini sağlayan metot.")
+    @Hidden
     public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
         return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));
     }
