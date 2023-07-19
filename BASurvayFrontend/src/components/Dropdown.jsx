@@ -51,9 +51,7 @@ function Dropdown({ options, value, onChange }) {
         {value?.label || "Seçim yapınız"}
         <GoChevronDown className="text-lg" />
       </Panel>
-      {isOpen && (
-        <Panel className="absolute top-full ">{renderedOptions}</Panel>
-      )}
+      {isOpen && <Panel className=" top-full ">{renderedOptions}</Panel>}
     </div>
   );
 }
