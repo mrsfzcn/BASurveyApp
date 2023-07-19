@@ -14,7 +14,7 @@ function Input({
 }) {
   const classes = classNames(
     rest.className,
-    "p-2 text-lg bg-transparent border-b border-black outline-none text-black transition disabled:bg-neutral-900 disabled:opacity-70 disabled:cursor-not-allowed",
+    "p-2 text-lg bg-transparent border-b border-black outline-none text-black transition disabled:text-white disabled:bg-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed",
     {
       "w-fit": fit,
       "w-full": full,

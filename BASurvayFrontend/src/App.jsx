@@ -1,7 +1,5 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
-
-import "./App.css";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,8 +10,7 @@ import {
 import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
-import AdminHomePage from "./pages/adminHome/AdminHomePage"
-import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey"
+import CreateSurveyPage from "./pages/CreateSurveyPage/createsurvey";
 import AdminHomePage from "./pages/adminHome/AdminHomePage";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
@@ -24,10 +21,9 @@ import SendSurvey from "./pages/sendSurvey/SendSurvey";
 import TumAnketler from "./pages/surveys/TumAnketler";
 import AnketEkle from "./pages/surveys/AnketEkle";
 import AnketDuzenle from "./pages/surveys/AnketDuzenle";
+import UpdateTag from "./pages/tag/UpdateTag";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <Router>
       <Routes>
@@ -42,7 +38,7 @@ function App() {
         <Route path="/etiket">
           <Route index element={<TagsTable />} />
           <Route path="guncelle">
-            <Route index element={<AddTag />} />
+            <Route index element={<UpdateTag />} />
           </Route>
         </Route>
         <Route path="/kullanici">
@@ -52,15 +48,14 @@ function App() {
           </Route>
         </Route>
         <Route path="/anketler">
-          <Route index element = {<TumAnketler />}/>
+          <Route index element={<TumAnketler />} />
           <Route path="guncelle/:id">
-            <Route index element = {<AnketDuzenle />}/>
+            <Route index element={<AnketDuzenle />} />
           </Route>
           <Route path="ekle">
-            <Route index element = {<AnketEkle />}/>
+            <Route index element={<AnketEkle />} />
           </Route>
         </Route>
-
       </Routes>
     </Router>
   );
