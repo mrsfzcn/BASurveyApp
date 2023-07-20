@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./list.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import Layout from "../../../../components/Layout";
 
 import EditIcon from "../svg/edit-svg.jsx";
@@ -21,27 +23,30 @@ export default function List() {
     .filter((item) =>
       item.firstName.toLowerCase().trim().includes(search.toLowerCase().trim())
     );
+  const navigate = useNavigate();
+
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8090/api/v1/user/find-all-user-details`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setUserList(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8090/api/v1/user/find-all-user-details`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUserList(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleCombo = (event) => {
     setSelectedCombo(event.target.value);
@@ -54,6 +59,22 @@ export default function List() {
 
   const handleSortName = () => {
     let sortedList = currentItems.sort();
+  };
+
+  const handleEditClick = async (oid) => {
+    console.log(oid);
+    localStorage.setItem("userId", oid);
+    navigate("/kullanıcı-düzenleme"); //editleme url'i gelecek
+  };
+
+  const handleDeleteClick = async (oid) => {
+    console.log(oid);
+    await axios.delete(`http://localhost:8090/api/v1/user/delete/${oid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    fetchData();
   };
 
   return (
@@ -94,7 +115,7 @@ export default function List() {
                 </div>
                 <div className="listAra">
                   <span>Ara: </span>
-                  <input onChange={handleSearch} />
+                  <input className="araButton" onChange={handleSearch} />
                 </div>
               </div>
               <div
@@ -147,16 +168,21 @@ export default function List() {
                   <tbody className="lineTableBody">
                     {currentItems.map((user, index) => (
                       <tr className="tableRow" key={index}>
-                        <td>{user.firstName}</td>
-                        <td>{user.lastName}</td>
-                        <td>{user.email}</td>
-                        <td>{user.authorizedRole}</td>
-                        <td>{user.createdAt}</td>
-                        <td>
-                          <button className="editButton">
+                        <td style={{ width: "13rem" }}>{user.firstName}</td>
+                        <td style={{ width: "13rem" }}>{user.lastName}</td>
+                        <td style={{ width: "13rem" }}>{user.email}</td>
+                        <td style={{ width: "13rem" }}>
+                          {user.authorizedRole}
+                        </td>
+                        <td style={{ width: "13rem" }}>{user.createdAt}</td>
+                        <td style={{ width: "15rem" }}>
+                          <button
+                            className="editButton"
+                            onClick={() => handleEditClick(user.oid)}
+                          >
                             <EditIcon />
                           </button>
-                          <button>
+                          <button onClick={() => handleDeleteClick(user.oid)}>
                             <DeleteIcon />
                           </button>
                         </td>
@@ -173,7 +199,11 @@ export default function List() {
                   </p>
                 </div>
                 <div>
-                  <span>ÖNCEKİ</span>
+                  {currentPage > 1 && (
+                    <button onClick={() => paginate(currentPage - 1)}>
+                      ÖNCEKİ
+                    </button>
+                  )}
                   {Array.from({
                     length: Math.ceil(userList.length / itemsPerPage),
                   }).map((_, index) => (
@@ -185,7 +215,11 @@ export default function List() {
                       {index + 1}
                     </button>
                   ))}
-                  <span>SONRAKİ</span>
+                  {currentPage < Math.ceil(userList.length / itemsPerPage) && (
+                    <button onClick={() => paginate(currentPage + 1)}>
+                      SONRAKİ
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
