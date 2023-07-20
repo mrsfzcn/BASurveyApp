@@ -15,7 +15,7 @@ import AdminHomePage from "./pages/adminHome/AdminHomePage";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
 import UserRegistration from "./pages/user/UserRegistration";
-import TumKullanicilar from "./pages/user/TumKullanicilar";
+import AllUsers from "./pages/user/TumKullanicilar";
 import AddQuestion from "./pages/CreateSurveyPage/AddQuestion";
 import SendSurvey from "./pages/sendSurvey/SendSurvey";
 import TumAnketler from "./pages/surveys/TumAnketler";
@@ -24,6 +24,8 @@ import AnketDuzenle from "./pages/surveys/AnketDuzenle";
 import UpdateTag from "./pages/tag/UpdateTag";
 
 function App() {
+  const [count, setCount] = useState(0);
+
   return (
     <Router>
       <Routes>

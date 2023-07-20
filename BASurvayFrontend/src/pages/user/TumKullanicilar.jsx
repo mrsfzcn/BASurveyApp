@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import UserTable from "./AllUsers/component/List";
 
 const TumKullanicilar = () => {
   return (
-    <div>TumKullanicilar</div>
-  )
-}
+    <>
+      <UserTable />
+    </>
+  );
+};
 
-export default TumKullanicilar
+export default TumKullanicilar;

@@ -35,4 +35,7 @@ public interface UserRepository extends BaseRepository<User,Long> {
 
     @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid IN (SELECT oid FROM roles WHERE role = 'STUDENT' OR role = 'ASSISTANT_TRAINER' OR role = 'MASTER_TRAINER')) ORDER BY email", nativeQuery = true)
     List<User> findTrainersAndStudents();
+
+    @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid IN (SELECT oid FROM roles WHERE role != 'ADMIN')) ORDER BY email", nativeQuery = true)
+    List<User> findAllByRolesNotADMIN();
 }
