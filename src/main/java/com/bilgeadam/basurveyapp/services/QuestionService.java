@@ -2,10 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
-import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionTagResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
@@ -281,6 +278,24 @@ public class QuestionService {
 
     public List<String> findAllByQuestionType(String questionType){
         return questionRepository.findQuestionTypeAsString(questionType);
+    }
+
+    public List<FindAllQuestionResponseDto> findAllQuestion() {
+        List<Question> questionList = questionRepository.findAllActive();
+        List<FindAllQuestionResponseDto> dtos = new ArrayList<>();
+        List<String> questionTagList;
+        FindAllQuestionResponseDto dto;
+        for (Question question: questionList) {
+            questionTagList = question.getQuestionTag().stream().map(x -> x.getTagString()).toList();
+            dto = FindAllQuestionResponseDto.builder().
+            questionOid(question.getOid())
+                    .questionString(question.getQuestionString())
+                            .questionType(question.getQuestionType().getQuestionType()).
+                    questionTags(questionTagList).
+                    build();
+            dtos.add(dto);
+        }
+        return dtos;
     }
 }
 
