@@ -8,24 +8,22 @@ import Layout from "../../../../components/Layout";
 import EditIcon from "../svg/edit-svg.jsx";
 import SortIcon from "../svg/sort-solid.jsx";
 import DeleteIcon from "../svg/delete-svg";
+import Input from "../../../../components/Input";
 
 export default function List() {
   const [selectedCombo, setSelectedCombo] = useState(10);
   const [userList, setUserList] = useState([]);
   const [search, setSeach] = useState("");
+  const [searchedList, setSearchedList] = useState([]);
   const token = localStorage.getItem("token");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemPerPage] = useState(10);
+  const [paginationLength, setPaginationLength] = useState();
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = userList
-    .slice(indexOfFirstItem, indexOfLastItem)
-    .filter((item) =>
-      item.firstName.toLowerCase().trim().includes(search.toLowerCase().trim())
-    );
   const navigate = useNavigate();
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [sortName, setSortName] = useState();
 
   useEffect(() => {
     fetchData();
@@ -42,11 +40,28 @@ export default function List() {
         }
       );
       setUserList(response.data);
+      setSearchedList(response.data);
       console.log(response.data);
+      setPaginationLength(Math.ceil(searchedList.length / itemsPerPage));
     } catch (error) {
       console.error(error);
     }
   };
+
+  const filterUsers = (userList, search, currentPage, itemsPerPage) => {
+    const filteredList = userList.filter((item) =>
+      item.firstName.toLowerCase().trim().includes(search.toLowerCase().trim())
+    );
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredList.slice(indexOfFirstItem, indexOfLastItem);
+    setSearchedList(currentItems);
+    setPaginationLength(Math.ceil(filteredList.length / itemsPerPage));
+  };
+
+  useEffect(() => {
+    filterUsers(userList, search, currentPage, itemsPerPage);
+  }, [search, currentPage, itemsPerPage, userList]);
 
   const handleCombo = (event) => {
     setSelectedCombo(event.target.value);
@@ -58,7 +73,20 @@ export default function List() {
   };
 
   const handleSortName = () => {
-    let sortedList = currentItems.sort();
+    const status = !sortName;
+    setSortName(status);
+
+    if (status) {
+      const sortedList = userList.sort();
+      console.log("Sort");
+      console.log(sortName);
+      setUserList(sortedList);
+    } else {
+      const reversedList = userList.reverse();
+      setUserList(reversedList);
+      console.log("reverse");
+      console.log(sortName);
+    }
   };
 
   const handleEditClick = async (oid) => {
@@ -76,6 +104,12 @@ export default function List() {
     });
     fetchData();
   };
+
+  const currentItems = userList
+    .slice(indexOfFirstItem, indexOfLastItem)
+    .filter((item) =>
+      item.firstName.toLowerCase().trim().includes(search.toLowerCase().trim())
+    );
 
   return (
     <>
@@ -103,10 +137,11 @@ export default function List() {
                   <span>Göster: </span>
                   <div>
                     <select
-                      id="combo-box"
+                      className="combo-box"
                       value={selectedCombo}
                       onChange={handleCombo}
                     >
+                      <option value={2}>2</option>
                       <option value={5}>5</option>
                       <option value={10}>10</option>
                     </select>
@@ -115,7 +150,7 @@ export default function List() {
                 </div>
                 <div className="listAra">
                   <span>Ara: </span>
-                  <input className="araButton" onChange={handleSearch} />
+                  <Input className="araButton" onChange={handleSearch} />
                 </div>
               </div>
               <div
@@ -132,8 +167,8 @@ export default function List() {
                     <tr>
                       <th style={{ width: "13rem", paddingBottom: "2rem" }}>
                         <span>Adı</span>
-                        <button className="bottomSort">
-                          <SortIcon onClick={handleSortName} />
+                        <button className="bottomSort" onClick={handleSortName}>
+                          <SortIcon />
                         </button>
                       </th>
                       <th style={{ width: "13rem", paddingBottom: "2rem" }}>
@@ -193,7 +228,7 @@ export default function List() {
               </div>
               <div className="footer">
                 <div>
-                  <p>
+                  <p style={{ marginBottom: "2rem" }}>
                     {userList.length} kullanıcıdan {currentItems.length}'sı
                     gösteriliryor.
                   </p>
@@ -205,17 +240,20 @@ export default function List() {
                     </button>
                   )}
                   {Array.from({
-                    length: Math.ceil(userList.length / itemsPerPage),
-                  }).map((_, index) => (
-                    <button
-                      key={index}
-                      className="paginationButton"
-                      onClick={() => paginate(index + 1)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  {currentPage < Math.ceil(userList.length / itemsPerPage) && (
+                    length: paginationLength,
+                  }).map((_, index) =>
+                    currentPage - 1 === index || currentPage === index ? (
+                      <button
+                        key={index}
+                        className="paginationButton"
+                        onClick={() => paginate(index + 1)}
+                      >
+                        {index + 1}
+                      </button>
+                    ) : null
+                  )}
+
+                  {currentPage < paginationLength && (
                     <button onClick={() => paginate(currentPage + 1)}>
                       SONRAKİ
                     </button>
