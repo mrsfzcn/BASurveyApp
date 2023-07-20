@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.FindAllQuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionsTrainerTypeResponseDto;
@@ -50,6 +51,14 @@ public class QuestionController {
     @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
+        return ResponseEntity.ok(responseDtoList);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findallquestion")
+    @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
+    public ResponseEntity<List<FindAllQuestionResponseDto>> findAllQuestion() {
+        List<FindAllQuestionResponseDto> responseDtoList = questionService.findAllQuestion();
         return ResponseEntity.ok(responseDtoList);
     }
 

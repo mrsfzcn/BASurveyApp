@@ -13,6 +13,7 @@ import Login from "./pages/LoginPage/login";
 import Qrcode from "./pages/qrcode/qrcode";
 import Code from "./pages/code/Code";
 import AdminHomePage from "./pages/adminHome/AdminHomePage"
+import QuestionListPage from "./pages/questionPage/questionList/QuestionListPage";
 import AddTag from "./pages/tag/AddTag";
 import TagsTable from "./pages/tag/TagsTable";
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/qrcode" element={<Qrcode />} />
         <Route path="/code" element={<Code />} />
         <Route path="/adminhome" element={<AdminHomePage />} />
+        <Route path="/questionlist" element={<QuestionListPage/>}/>
         <Route path="/*" element={<Navigate to="/" />} />
         <Route path="/etiket">
           <Route index element = {<TagsTable />}/>

@@ -1,0 +1,81 @@
+
+.table-wrapper{
+    
+  max-width: 100%;
+}
+
+.data-table {
+  text-indent: 0;
+    border-color: inherit;
+    margin-left: 450px;
+    border-collapse: collapse;
+}
+
+.table{
+  display: flex;
+  overflow: hidden;
+  table-layout: fixed;
+  border-collapse: collapse;
+  /* box-shadow: 0px 0px 10px 10px #ccc; */
+  white-space: nowrap;
+  
+  
+  width: 90%;
+  margin: auto;
+  overflow-x:auto ;
+  overflow-y: auto;
+}
+
+.table thead{
+  background-color: #ccc;
+  color: #222;
+  position: sticky;
+  top: 0;
+}
+
+.table th,
+.table td{
+  padding: 0.5rem;
+}
+
+
+
+.table td{
+  overflow: hidden;
+  text-overflow: ellipsis;
+ 
+}
+
+.table tbody tr:hover{
+  background-color: #eee;
+}
+
+
+.actions svg{
+  cursor: pointer;
+  
+ 
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.delete-btn{
+  color: #eb5353;
+  margin-top: 1rem;
+}
+
+.edit-btn{
+  color: #64E9B1;
+  margin-top: 1rem;
+}
+
+
+.table-container {
+  max-height: 58vh; /* veya istediğiniz bir yükseklik değeri */
+  overflow-y: auto;
+   /* İsteğe bağlı: Kenarlıklar için bir çerçeve ekler */
+}
