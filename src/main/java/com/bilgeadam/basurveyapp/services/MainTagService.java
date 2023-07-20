@@ -106,19 +106,15 @@ public class MainTagService {
         }
         return mainTagResponseDtos;
     }
-    public MainTagResponseDto findByTagNameAndTagClass(String tagName,String tagClass) {
-        MainTag mainTag= findByTagNameAndTagClass(tagName,Tags.valueOf(tagClass));
-        return MainTagMapper.INSTANCE.toDto(mainTag);
-    }
-    public List<MainTag> findOptionalByTagClass(String tagClass){
-        List<MainTag> mainTags=mainTagRepository.findOptionalByTagClass(Tags.valueOf(tagClass)).orElseThrow(()->new TagNotFoundException("tag class not found"));
-        return mainTags;
-    }
+
 
     public Boolean updateTagByTagName(UpdateTagNameDto dto) {
         if (dto.getTagString().equals(null) || dto.getTagString()==""){
             throw new TagNotFoundException("Tag name not empty ");
         }
+        List<MainTag> mainTags = findByTagName(dto.getTagString());
+        System.out.println("tag name list : "+ mainTags.toString());
+
         for (MainTag mainTag: findByTagName(dto.getTagString())){
             mainTag.setTagName(dto.getNewTagString());
             mainTagRepository.save(mainTag);
@@ -145,6 +141,7 @@ public class MainTagService {
         if (dto.getTagString().equals(null) || dto.getTagString()==""){
             throw new TagNotFoundException("Tag name not empty ");
         }
+
         Tags tagClass= Tags.valueOf(dto.getTagClass());
         MainTag mainTag=findByTagNameAndTagClass(dto.getTagString(),tagClass);
         mainTagRepository.save(mainTag);
@@ -163,6 +160,10 @@ public class MainTagService {
         return true;
     }
 
+    public List<MainTagResponseDto> findAllTags(){
+        List<MainTagResponseDto> mainTagResponseDtos = mainTagRepository.findAll().stream().map(x->MainTagMapper.INSTANCE.toDto(x)).toList();
+        return mainTagResponseDtos;
+    }
 
 
     public MainTag findByTagNameAndTagClass(String tagName,Tags tagClass) {
@@ -173,6 +174,17 @@ public class MainTagService {
 
     public List<MainTag> findByTagName(String tagName) {
         List<MainTag> mainTags= mainTagRepository.findOptionalByTagName(tagName).orElseThrow(() -> new TagNotFoundException("tag not found"));
+        if (mainTags.size()==0 ){
+            throw new TagNotFoundException("Tag Name Not Found");
+        }
+        return mainTags;
+    }
+    public MainTagResponseDto findByTagNameAndTagClass(String tagName,String tagClass) {
+        MainTag mainTag= findByTagNameAndTagClass(tagName,Tags.valueOf(tagClass));
+        return MainTagMapper.INSTANCE.toDto(mainTag);
+    }
+    public List<MainTag> findOptionalByTagClass(String tagClass){
+        List<MainTag> mainTags=mainTagRepository.findOptionalByTagClass(Tags.valueOf(tagClass)).orElseThrow(()->new TagNotFoundException("tag class not found"));
         return mainTags;
     }
 

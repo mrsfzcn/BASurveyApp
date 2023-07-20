@@ -52,7 +52,11 @@ public class MainTagController {
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
     }
-
+    @GetMapping("/findall")
+    @Operation(summary = "tüm tag'leri getirir")
+    public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
+        return ResponseEntity.ok(mainTagService.findAllTags());
+    }
 
 
 }
