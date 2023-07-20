@@ -41,11 +41,16 @@ public class AuthService {
 
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto request) {
-        String generatedEmail = generateEmail(request.getFirstName(), request.getLastName());
-
-        if (userService.findByEmail(generatedEmail).isPresent()) {
-            throw new UserAlreadyExistsException("Email already registered.");
+        String generatedEmail;
+        int count = 0;
+        do{
+            count++;
+            generatedEmail = generateEmail(request.getFirstName()+ count, request.getLastName()) ;
+            if (userService.findByEmail(generatedEmail).isEmpty()) {
+                break;
+            }
         }
+        while(true);
 
         List<Role> roles = roleService.findRoles();
         Set<Role> userRoles = roles.stream().filter(role -> request.getRoles().contains(role.getRole())).collect(Collectors.toSet());
