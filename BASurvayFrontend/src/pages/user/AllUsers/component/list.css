@@ -181,8 +181,16 @@
 
 .lineTableBody td {
   border-bottom: 1px solid #ccc;
+  text-align: center;
 }
 
 .lineTableBody tr:last-child td {
   border-bottom: none;
+}
+
+.combo-box {
+  border-bottom: 2px solid #64e9b1;
+  background-color: transparent;
+  margin-left: 0.3rem;
+  margin-right: 0.3rem;
 }
