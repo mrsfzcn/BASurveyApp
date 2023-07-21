@@ -16,4 +16,12 @@ public class UserUpdateRequestDto {
     @NotBlank
     @NotNull
     private String lastName;
+
+    @NotBlank
+    @NotNull
+    private String email;
+
+    @NotBlank
+    @NotNull
+    private String authorizedRole;
 }

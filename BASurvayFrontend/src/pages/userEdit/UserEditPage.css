@@ -1,0 +1,67 @@
+.content {
+  background-color: white;
+}
+.inputs {
+  width: 550px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
+  border: none;
+}
+.inputs input {
+  margin-top: 40px;
+  margin-left: 60px;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.user-edit-page {
+  display: flex;
+}
+.outer-react {
+  width: 1179px;
+  height: 908px;
+  border: 1px;
+  display: flex;
+  flex-direction: column;
+  background-color: hsla(0, 0%, 90%, 1);
+}
+.inner-react {
+  background-color: hsla(0, 0%, 95%, 1);
+  width: 1119px;
+  height: 815px;
+  margin: 25px;
+  border-radius: 7.5px;
+}
+.inner2-react {
+  width: 917px;
+  height: 617px;
+  margin: 0 auto;
+  margin-top: 70px;
+  background-color: hsla(0, 0%, 100%, 1);
+}
+.text {
+  border-bottom: 1px solid black;
+}
+.content-heading {
+  display: flex;
+}
+.kaydet {
+  background: hsla(155, 75%, 65%, 1);
+}
+.vazgec {
+  background: hsla(0, 79%, 62%, 1);
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 420px;
+  margin-right: 270px;
+}
+
+.buttons button {
+  width: 100px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 5px;
+}

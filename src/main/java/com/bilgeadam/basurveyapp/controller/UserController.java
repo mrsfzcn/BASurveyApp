@@ -50,7 +50,8 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update/{userEmail}")
-    ResponseEntity<Void> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UserUpdateRequestDto dto) {
+    ResponseEntity<User> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UserUpdateRequestDto dto) {
+
         userService.updateUser(userEmail, dto);
         return ResponseEntity.ok().build();
     }

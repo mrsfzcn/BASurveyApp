@@ -61,6 +61,8 @@ public class UserService {
         }
         userToBeUpdated.get().setFirstName(dto.getFirstName());
         userToBeUpdated.get().setLastName(dto.getLastName());
+        userToBeUpdated.get().setEmail(dto.getEmail());
+        userToBeUpdated.get().setAuthorizedRole(dto.getAuthorizedRole());
         return userRepository.save(userToBeUpdated.get());
     }
 
