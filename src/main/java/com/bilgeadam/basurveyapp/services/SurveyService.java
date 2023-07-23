@@ -127,15 +127,20 @@ public class SurveyService {
         return surveyRepository.findAllActive(pageable);
     }
 
-    public Boolean create(SurveyCreateRequestDto dto) {
+    public SurveySimpleResponseDto  create(SurveyCreateRequestDto dto) {
 
         try {
             Survey survey = INSTANCE.toSurvey(dto);
             surveyRepository.save(survey);
+            SurveySimpleResponseDto response = new SurveySimpleResponseDto();
+            response.setSurveyOid(survey.getOid());
+            response.setSurveyTitle(survey.getSurveyTitle());
+            response.setCourseTopic(survey.getCourseTopic());
+
+            return response;
         } catch (Exception e) {
             throw new SurveyTitleAlreadyExistException("This survey title already in use.");
         }
-        return true;
     }
 
     public Survey update(Long surveyId, SurveyUpdateRequestDto dto) {

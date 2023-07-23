@@ -23,6 +23,7 @@ import TumAnketler from "./pages/surveys/TumAnketler";
 import AnketEkle from "./pages/surveys/AnketEkle";
 import AnketDuzenle from "./pages/surveys/AnketDuzenle";
 import UpdateTag from "./pages/tag/UpdateTag";
+import PreviewSurvey from "./pages/CreateSurveyPage/PreviewSurvey";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -38,6 +39,7 @@ function App() {
         <Route path="/sendsurvey" element={<SendSurvey />} />
         <Route path="/createsurvey" element={<CreateSurveyPage />} />
         <Route path="/addquestion" element={<AddQuestion />} />
+        <Route path="/preview" element={<PreviewSurvey />} />
         <Route path="/*" element={<Navigate to="/" />} />
         <Route path="/etiket">
           <Route index element={<TagsTable />} />
