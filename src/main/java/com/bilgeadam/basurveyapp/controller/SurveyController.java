@@ -56,7 +56,7 @@ public class SurveyController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
     @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot. #11")
-    ResponseEntity<Boolean> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
+    ResponseEntity<SurveySimpleResponseDto> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
     }
 
