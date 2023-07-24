@@ -41,14 +41,14 @@ public class AuthService {
 
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto request) {
-        String generatedEmail;
+        String generatedEmail = generateEmail(request.getFirstName().trim(), request.getLastName());
         int count = 0;
         do{
-            count++;
-            generatedEmail = generateEmail(request.getFirstName()+ count, request.getLastName()) ;
             if (userService.findByEmail(generatedEmail).isEmpty()) {
                 break;
             }
+            count++;
+            generatedEmail = generateEmail(request.getFirstName()+ count, request.getLastName());
         }
         while(true);
 
@@ -57,7 +57,6 @@ public class AuthService {
         if (userRoles.isEmpty()) {
             throw new RoleNotFoundException("Given roles not found.");
         }
-
 
         User auth = User.builder()
                 .email(generatedEmail)
@@ -106,7 +105,7 @@ public class AuthService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", auth.getAuthorizedRole());
         return RegisterResponseDto.builder()
-                .token(jwtService.generateToken(claims,auth))
+                .email(auth.getEmail())
                 .build();
     }
 
@@ -124,7 +123,7 @@ public class AuthService {
         String controlledFirstName = modifyTurkishCharacters(firstName.toLowerCase()).trim();
         String controlledLastName = modifyTurkishCharacters(lastName.toLowerCase()).trim();
         String email = controlledFirstName + "." + controlledLastName + "@bilgeadamboost.com";
-        return email;
+        return email.replaceAll(" ","");
     }
 
     public AuthenticationResponseDto authenticate(LoginRequestDto request) {

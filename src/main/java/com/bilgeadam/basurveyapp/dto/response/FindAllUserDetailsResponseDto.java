@@ -18,6 +18,6 @@ public class FindAllUserDetailsResponseDto {
     private String lastName;
     private String email;
     private String authorizedRole;
-    private Date createdAt;
+    private String createdDate;
 
 }
