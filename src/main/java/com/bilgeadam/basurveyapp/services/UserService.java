@@ -12,6 +12,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
+import jdk.swing.interop.SwingInterOpUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,9 +132,15 @@ public class UserService {
 
     public List<FindAllUserDetailsResponseDto> findAllUserDetails() {
         List<User> userList = userRepository.findAllByRolesNotADMIN();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         if(userList.isEmpty()) throw new UserDoesNotExistsException("Kayıtlı User Bulunamadı");
-        List<FindAllUserDetailsResponseDto> findAllUserDetailsResponseDtoList = userList.stream().map(user ->
-            UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user)
+        List<FindAllUserDetailsResponseDto> findAllUserDetailsResponseDtoList = userList.stream().map(user ->{
+            FindAllUserDetailsResponseDto dto = UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user);
+            String date = dateFormat.format(user.getCreatedAt());
+            System.out.println(dto);
+            dto.setCreatedDate(date);
+            return dto;
+        }
         ).collect(Collectors.toList());
         return findAllUserDetailsResponseDtoList;
     }
