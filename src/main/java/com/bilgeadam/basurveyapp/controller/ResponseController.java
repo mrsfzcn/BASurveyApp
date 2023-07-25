@@ -32,14 +32,14 @@ public class ResponseController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/{id}")
+    @PutMapping("/updateResponse/{id}")
     @Operation(summary = "id ile response bulup string girdisi ile yeni bir response oluşmasını sağlayan metot.")
     public ResponseEntity<Void> updateResponse(@PathVariable Long id,@RequestBody @Valid ResponseRequestDto dto) {
         responseService.updateResponse(dto,id);
         return ResponseEntity.ok().build();
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{id}")
+    @GetMapping("/findById/{id}")
     @Operation(summary = "id girilerek bulunan response'un görüntülenmesini sağlayan metot.")
     public ResponseEntity<AnswerResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(responseService.findById(id));
@@ -52,7 +52,7 @@ public class ResponseController {
         return ResponseEntity.ok(responseService.findAll());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deleteResponseById/{id}")
     @Operation(summary = "id ile bulunan response'un silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteResponseById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(responseService.deleteResponseById(id));

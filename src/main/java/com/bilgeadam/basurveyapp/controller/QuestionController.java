@@ -24,7 +24,7 @@ public class QuestionController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping
+    @PostMapping("")
     @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot. #10")
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
 
@@ -32,7 +32,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping
+    @PutMapping("/updateQuestion")
     @Operation(summary = "Oid ile mevcut bir soruyu bulup string türünde yeni bir sorunun aynı id ile yazılmasını sağlayan metot.")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
@@ -40,14 +40,14 @@ public class QuestionController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{id}")
+    @GetMapping("/findById/{id}")
     @Operation(summary = "Integer türünde id girilerek o id'ye denk gelen sorunun görntülenmesini sağlayan metot.")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping
+    @GetMapping("/findall")
     @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
@@ -63,7 +63,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletequestionbyid/{id}")
     @Operation(summary = "Integer türünde id girilerek bulunan sorunun silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteQuestionById(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.delete(id));

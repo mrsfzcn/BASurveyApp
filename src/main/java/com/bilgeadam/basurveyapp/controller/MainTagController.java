@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MainTagController {
     private final MainTagService mainTagService;
-    @PostMapping
+    @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
@@ -31,28 +31,28 @@ public class MainTagController {
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/tagname")
+    @GetMapping("/findbytagnames")
     @Operation(summary = "tag ismine göre arama")
     public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagname){
         return ResponseEntity.ok(mainTagService.findByTagNames(tagname));
     }
-    @GetMapping("/tagname/tagclass")
+    @GetMapping("/findbytagnameandtagclass")
     @Operation(summary = "tag ismi ve tag classına göre arama.tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<MainTagResponseDto> findByTagNameAndTagClass(@RequestParam String tagname,@RequestParam String tagclass){
         return ResponseEntity.ok(mainTagService.findByTagNameAndTagClass(tagname,tagclass));
     }
-    @PutMapping("/tagname")
+    @PutMapping("/updatetagbytagname")
     @Operation(summary = "tag ismi ile update islemi yapılır.")
     public ResponseEntity<Boolean> updateTagByTagName(@RequestBody UpdateTagNameDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagName(dto));
     }
 
-    @PutMapping("/tagname/tagclass")
+    @PutMapping("/updatetagbytagnameandtagclass")
     @Operation(summary = "tag ismi ve tag classi ile update islemi yapılır.")
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
     }
-    @GetMapping("/findall")
+    @GetMapping("/")
     @Operation(summary = "tüm tag'leri getirir")
     public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
         return ResponseEntity.ok(mainTagService.findAllTags());
