@@ -33,7 +33,7 @@ public class QuestionTagController {
         return ResponseEntity.ok(createdTag);
     }
 
-    @PutMapping("/{tagString}")
+    @PutMapping("/updatetagbytagstring/{tagString}")
     @Operation(summary = "Belirtilen tag stringine sahip olan question tag'in güncellenmesini sağlayan metot")
     @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(
@@ -57,9 +57,10 @@ public class QuestionTagController {
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/tagString")
+    @DeleteMapping("/deleteByTagString")
     @Operation(summary = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteByTagString(@RequestParam @Valid String tagString) {
+        System.out.println("*******-> "+tagString);
         try {
             boolean deleted = questionTagService.deleteByTagString(tagString);
             return ResponseEntity.ok(deleted);

@@ -30,7 +30,7 @@ public class QuestionTypeController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/{id}")
+    @PutMapping("/updateQuestionType/{id}")
     @Operation(summary = "Id ile questiontype'a ulaşılıp string türünde yeni questiontype girilmesini sağlayan metot.")
     public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto,@PathVariable Long id) {
         questionTypeService.updateQuestionType(dto,id);
@@ -38,7 +38,7 @@ public class QuestionTypeController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{id}")
+    @GetMapping("/findById/{id}")
     @Operation(summary = "Id ile questiontype'a ulaşıp görüntülenmesini sağlayan metot.")
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionTypeService.findById(id));
@@ -52,7 +52,7 @@ public class QuestionTypeController {
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("{id}")
+    @DeleteMapping("delete/{id}")
     @Operation(summary = "id numarası ile ulaşılan question type'ı silmeyi sağlayan metot.")
     public ResponseEntity<Boolean> delete(@PathVariable Long id) {
         return ResponseEntity.ok(questionTypeService.delete(id));

@@ -53,6 +53,7 @@ public class SurveyTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/findall")
+    @Hidden
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = surveyTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
