@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 @Builder
 public class QuestionFindByIdResponseDto {
+
+    Long questionOid;
     String questionString;
     Integer order;
     List<SurveySimpleResponseDto> surveys;

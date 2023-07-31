@@ -6,6 +6,8 @@ import com.bilgeadam.basurveyapp.dto.response.AllQuestionTypeResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.QuestionTypeFindByIdResponseDto;
 import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTypeNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.QuestionTypeRepository;
 import lombok.RequiredArgsConstructor;
@@ -72,5 +74,12 @@ public class QuestionTypeService {
 
     public Optional<QuestionType> findActiveById(Long questionTypeOid) {
         return questionTypeRepository.findActiveById(questionTypeOid);
+    }
+
+    public QuestionType updateQuestionTypeByTypeString(String newTypeString, String typeString) {
+        QuestionType questionType = questionTypeRepository.findOptionalByQuestionType(typeString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+        questionType.setQuestionType(newTypeString);
+        return questionTypeRepository.save(questionType);
     }
 }
