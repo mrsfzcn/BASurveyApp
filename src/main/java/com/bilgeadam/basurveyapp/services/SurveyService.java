@@ -159,6 +159,7 @@ public class SurveyService {
         if (surveyToBeDeleted.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
+        responseService.surveyIsAnswered(surveyId);
         return surveyRepository.softDeleteById(surveyToBeDeleted.get().getOid());
     }
 

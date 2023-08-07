@@ -12,7 +12,6 @@ import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
-import lombok.RequiredArgsConstructor;
 
 
 import org.apache.poi.ss.usermodel.Row;
@@ -32,7 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.STUDENT_TAG_NOT_FOUND;
+import static com.bilgeadam.basurveyapp.exceptions.ExceptionType.*;
 
 
 @Service
@@ -338,6 +337,12 @@ public class ResponseService {
         List<String> studentName = surveyService.findStudentNameBySurveyOid(surveyid,studentTagOid);
 
         return studentName;
+    }
+    public void surveyIsAnswered(Long survey0id){
+        int count = responseRepository.findByStudentAnsweredSurvey(survey0id);
+        if(count > 0){
+            throw new SurveyAnsweredException(SURVEY_ANSWERED.getMessage());
+        }
     }
 
     public void saveAll(List<Response> updatedResponses) {
