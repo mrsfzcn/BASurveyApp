@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.RegenerateQrCodeResponse;
 import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,4 +57,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyCode(verifyCodeRequestDto));
     }
 
+    @PutMapping("/regenerate-qr-code")
+    public ResponseEntity<RegenerateQrCodeResponse> regenareteQrCode(@RequestBody RegenerateQrCodeRequest regenerateQrCodeRequest){
+        return ResponseEntity.ok(authService.regenerateQrCode(regenerateQrCodeRequest));
+    }
 }

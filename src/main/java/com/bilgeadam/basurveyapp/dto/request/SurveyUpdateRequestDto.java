@@ -13,4 +13,6 @@ public class SurveyUpdateRequestDto {
     @NotBlank
     @NotNull
     private String surveyTitle;
+
+
 }

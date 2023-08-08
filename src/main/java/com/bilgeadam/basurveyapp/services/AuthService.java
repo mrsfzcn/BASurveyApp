@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.AuthenticationResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.RegenerateQrCodeResponse;
 import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.ExceptionType;
@@ -222,6 +223,20 @@ public class AuthService {
             return true;
         }
         return false;
+
+    }
+
+    public RegenerateQrCodeResponse regenerateQrCode(RegenerateQrCodeRequest regenerateQrCodeRequest) {
+        String email = jwtService.extractEmail(regenerateQrCodeRequest.getToken());
+        Optional<User> user = userService.findByEmail(email);
+        if (user.isEmpty()) throw new UserDoesNotExistsException(ExceptionType.USER_DOES_NOT_EXIST.getMessage());
+        user.get().setTwoFactorKey(qrCodeService.generateSecret());
+        userService.save(user.get());
+
+        return RegenerateQrCodeResponse.builder()
+                .qrCode(qrCodeService.getUriForImage(user.get().getTwoFactorKey()))
+                .build();
+
 
     }
 }
