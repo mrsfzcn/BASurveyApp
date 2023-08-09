@@ -59,7 +59,9 @@ public enum ExceptionType {
     SURVEY_ASSIGN_INVALID_DATE(9033,"Date field can't containt past date",BAD_REQUEST),
     TAG_NOT_FOUND(9034,"Tag not found",INTERNAL_SERVER_ERROR),
     TAG_ALREADY_EXIST(9034,"Tag already exists",INTERNAL_SERVER_ERROR),
-    SURVEY_ANSWERED(9034,"Survey answered. Can not delete",BAD_REQUEST),
+    SURVEY_ANSWERED(9034,"Survey answered. Can not deleted",BAD_REQUEST),
+    QUESTION_ANSWERED(9035,"Question answered. Can not deleted",BAD_REQUEST),
+
 
     /*
         Validation errors.

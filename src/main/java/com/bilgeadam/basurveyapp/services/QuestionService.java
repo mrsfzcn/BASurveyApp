@@ -113,7 +113,12 @@ public class QuestionService {
         if (deleteQuestion.isEmpty()) {
             throw new QuestionNotFoundException("Question not found to delete");
         } else {
+            if(deleteQuestion.get().getResponses().size()>0){
+                throw new QuestionAnsweredException("Answered questions can not be deleted.");
+            }
             Question question = deleteQuestion.get();
+            System.out.println(deleteQuestion.get().getResponses().size());
+
            return questionRepository.softDeleteById(question.getOid());
         }
     }

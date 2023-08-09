@@ -319,5 +319,17 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.SURVEY_ASSIGN_INVALID_DATE",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(SURVEY_ASSIGN_INVALID_DATE,exception,request);
     }
+    @ResponseBody
+    @ExceptionHandler(SurveyAnsweredException.class)
+    public ResponseEntity<ExceptionResponse> handleSurveyAnsweredException(SurveyAnsweredException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.SURVEY_ANSWERED",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(SURVEY_ANSWERED,exception,request);
+    }
+    @ResponseBody
+    @ExceptionHandler(QuestionAnsweredException.class)
+    public ResponseEntity<ExceptionResponse> handleQuestionAnsweredException(QuestionAnsweredException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.QUESTION_ANSWERED",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(QUESTION_ANSWERED,exception,request);
+    }
 
 }
