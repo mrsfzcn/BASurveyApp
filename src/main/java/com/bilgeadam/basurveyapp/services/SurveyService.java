@@ -343,7 +343,7 @@ public class SurveyService {
         SurveyRegistration surveyRegistration = surveyRegistrationRepository.save(SurveyRegistration.builder()
                 .survey(survey)
                 .studentTag(studentTag.get())
-                .startDate(startDate.minusDays(1))
+                .startDate(startDate)
                 .endDate(startDate.plusDays(dto.getDays()))
                 .build());
 
@@ -352,9 +352,9 @@ public class SurveyService {
         surveyRepository.save(survey);
 
 
-        if (!surveyRegistration.getStartDate().isBefore(LocalDateTime.now())) {
+
             sendEmail(surveyRegistration, dto.getDays());
-        }
+
 
 
         return true;
