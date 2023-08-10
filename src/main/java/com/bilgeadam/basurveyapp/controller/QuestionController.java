@@ -32,7 +32,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/updateQuestion")
+    @PutMapping("/update-question")
     @Operation(summary = "Oid ile mevcut bir soruyu bulup string türünde yeni bir sorunun aynı id ile yazılmasını sağlayan metot.")
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
@@ -40,14 +40,14 @@ public class QuestionController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findById/{id}")
+    @GetMapping("/find-by-id/{id}")
     @Operation(summary = "Integer türünde id girilerek o id'ye denk gelen sorunun görntülenmesini sağlayan metot.")
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionService.findById(id));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findall")
+    @GetMapping("/find-all")
     @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
@@ -55,7 +55,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findallquestion")
+    @GetMapping("/find-all-question")
     @Operation(summary = "Tüm soruların görntülenmesini sağlayan metot.")
     public ResponseEntity<List<FindAllQuestionResponseDto>> findAllQuestion() {
         List<FindAllQuestionResponseDto> responseDtoList = questionService.findAllQuestion();
@@ -63,7 +63,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/deletequestionbyid/{id}")
+    @DeleteMapping("/delete-question-by-id/{id}")
     @Operation(summary = "Integer türünde id girilerek bulunan sorunun silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteQuestionById(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.delete(id));
@@ -76,22 +76,22 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{survey0id}/keyword")
+    @GetMapping("/{survey-oid}/keyword")
     @Operation(summary = "Id ile survey'e ulaşıp string tütünde anahtar kelimenin içinde geçtiği soruları görüntülemeyi sağlayan metot.")
-    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@PathVariable("survey0id") Long survey0id,@RequestParam String keyword) {
+    public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@PathVariable("survey-oid") Long survey0id,@RequestParam String keyword) {
         return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(survey0id,keyword));
     }
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/survey0id/question-tag")
+    @GetMapping("/survey-oid/question-tag")
     @Operation(summary = "Id ile survey bulup, survey'deki tüm soruları görntülemeyi sağlayan metot.")
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestParam Long survey0id, @RequestParam List<Long> questionTag0ids) {
         return ResponseEntity.ok(questionService.filterSurveyQuestions(survey0id,questionTag0ids));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
-    @GetMapping("/trainerid/surveyid")
+    @GetMapping("/trainer-id/survey-id")
     @Operation(summary = "Id ile trainer'ı ve survey'i bulup tüm soruları görüntülemeyi sağlayan metot.")
     ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestParam Long trainerid,@RequestParam Long surveyid) {
         return ResponseEntity.ok(questionService.questionByTrainerType(trainerid,surveyid));

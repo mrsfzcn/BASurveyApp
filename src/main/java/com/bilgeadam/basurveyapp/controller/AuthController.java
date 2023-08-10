@@ -8,14 +8,10 @@ import com.bilgeadam.basurveyapp.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author Eralp Nitelik
- */
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -34,16 +30,11 @@ public class AuthController {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    /**
-     * @param request
-     * authorizedToken must kept in front-end for change between accounts
-     */
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update-login-credentials")
-    //TODO "changelogin" ismi değişecek --> (bug olarak board' a eklendi)
     @Operation(summary = "")
-    public ResponseEntity<AuthenticationResponseDto> changeLogin(@RequestBody @Valid ChangeLoginRequestDto request) {
-        return ResponseEntity.ok(authService.changeLogin(request));
+    public ResponseEntity<AuthenticationResponseDto> updateLoginCredentials(@RequestBody @Valid ChangeLoginRequestDto request) {
+        return ResponseEntity.ok(authService.updateLoginCredentials(request));
     }
 
     @PostMapping("/switch-authorization-roles")
@@ -52,13 +43,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.switchAuthorizationRoles(request));
     }
 
-    @PostMapping("/verifycode")
+    @PostMapping("/verify-code")
     public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto){
         return ResponseEntity.ok(authService.verifyCode(verifyCodeRequestDto));
     }
 
     @PutMapping("/regenerate-qr-code")
-    public ResponseEntity<RegenerateQrCodeResponse> regenareteQrCode(@RequestBody RegenerateQrCodeRequest regenerateQrCodeRequest){
+    public ResponseEntity<RegenerateQrCodeResponse> regenerateQrCode(@RequestBody RegenerateQrCodeRequest regenerateQrCodeRequest){
         return ResponseEntity.ok(authService.regenerateQrCode(regenerateQrCodeRequest));
     }
 }

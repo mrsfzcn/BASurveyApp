@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * @author Muhammed Furkan Türkmen
- */
+
 @RestController
-@RequestMapping("/maintags")
+@RequestMapping("/main-tags")
 @RequiredArgsConstructor
 public class MainTagController {
     private final MainTagService mainTagService;
@@ -26,28 +24,26 @@ public class MainTagController {
     @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createMainTag(dto);
-
-
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/findbytagnames")
+    @GetMapping("/find-by-tag-names")
     @Operation(summary = "tag ismine göre arama")
     public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagname){
         return ResponseEntity.ok(mainTagService.findByTagNames(tagname));
     }
-    @GetMapping("/findbytagnameandtagclass")
+    @GetMapping("/find-by-tag-name-and-tag-class")
     @Operation(summary = "tag ismi ve tag classına göre arama.tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
     public ResponseEntity<MainTagResponseDto> findByTagNameAndTagClass(@RequestParam String tagname,@RequestParam String tagclass){
         return ResponseEntity.ok(mainTagService.findByTagNameAndTagClass(tagname,tagclass));
     }
-    @PutMapping("/updatetagbytagname")
+    @PutMapping("/update-tag-by-tag-name")
     @Operation(summary = "tag ismi ile update islemi yapılır.")
     public ResponseEntity<Boolean> updateTagByTagName(@RequestBody UpdateTagNameDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagName(dto));
     }
 
-    @PutMapping("/updatetagbytagnameandtagclass")
+    @PutMapping("/update-tag-by-tag-name-and-tag-class")
     @Operation(summary = "tag ismi ve tag classi ile update islemi yapılır.")
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
@@ -57,6 +53,5 @@ public class MainTagController {
     public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
         return ResponseEntity.ok(mainTagService.findAllTags());
     }
-
 
 }

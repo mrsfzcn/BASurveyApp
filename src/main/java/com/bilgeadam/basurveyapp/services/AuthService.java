@@ -10,13 +10,14 @@ import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.ExceptionType;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserAlreadyExistsException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author Eralp Nitelik
- */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -103,6 +101,11 @@ public class AuthService {
             trainer.setUser(auth);
             trainerService.createTrainer(trainer);
         }
+
+        //header
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication: " + authentication);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", auth.getAuthorizedRole());
         return RegisterResponseDto.builder()
@@ -167,7 +170,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthenticationResponseDto changeLogin(ChangeLoginRequestDto request) {
+    public AuthenticationResponseDto updateLoginCredentials(ChangeLoginRequestDto request) {
         Optional<User> authorizedUser = userService.findByEmail(jwtService.extractEmail(request.getAuthorizedToken()));
         if (authorizedUser.isEmpty()) throw new ResourceNotFoundException("User is not found");
 //        if (!roleService.userHasAuthorizedRole(authorizedUser.get(), ROLE_CONSTANTS.ROLE_MANAGER))

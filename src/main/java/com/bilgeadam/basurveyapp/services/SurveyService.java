@@ -351,11 +351,7 @@ public class SurveyService {
 
         surveyRepository.save(survey);
 
-
-
-            sendEmail(surveyRegistration, dto.getDays());
-
-
+        sendEmail(surveyRegistration, dto.getDays());
 
         return true;
     }

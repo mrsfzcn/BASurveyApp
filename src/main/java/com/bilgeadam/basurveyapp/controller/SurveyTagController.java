@@ -34,12 +34,12 @@ public class SurveyTagController {
         return ResponseEntity.ok(createdTag);
     }
     // kaldırılacak.
-    @PutMapping("/updatebytagstring/{tagString}")
+    @PutMapping("/update-by-tag-string/{tag-string}")
     @Operation(summary = "Belirtilen tag stringine sahip olan survey tag'in güncellenmesini sağlayan metot")
     @Hidden
     public ResponseEntity<SurveyTag> updateTagByTagString(
-            @PathVariable("tagString") String tagString,
-            @PathVariable("newTagString") String newTagString
+            @PathVariable("tag-string") String tagString,
+            @PathVariable("new-tag-string") String newTagString
            ) {
         try {
             SurveyTag surveyTag = surveyTagService.updateTagByTagString(tagString,newTagString);

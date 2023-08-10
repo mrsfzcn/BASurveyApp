@@ -32,14 +32,14 @@ public class ResponseController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/updateResponse/{id}")
+    @PutMapping("/update-response/{id}")
     @Operation(summary = "id ile response bulup string girdisi ile yeni bir response oluşmasını sağlayan metot.")
     public ResponseEntity<Void> updateResponse(@PathVariable Long id,@RequestBody @Valid ResponseRequestDto dto) {
         responseService.updateResponse(dto,id);
         return ResponseEntity.ok().build();
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findById/{id}")
+    @GetMapping("/find-by-id/{id}")
     @Operation(summary = "id girilerek bulunan response'un görüntülenmesini sağlayan metot.")
     public ResponseEntity<AnswerResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(responseService.findById(id));
@@ -52,7 +52,7 @@ public class ResponseController {
         return ResponseEntity.ok(responseService.findAll());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/deleteResponseById/{id}")
+    @DeleteMapping("/delete-response-by-id/{id}")
     @Operation(summary = "id ile bulunan response'un silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteResponseById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(responseService.deleteResponseById(id));
@@ -66,14 +66,14 @@ public class ResponseController {
     }
 
 
-    @GetMapping("/findAllResponsesOfUserFromSurvey")
+    @GetMapping("/find-all-responses-of-user-from-survey")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "survey id ve user email girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot. #24")
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUserFromSurvey(FindAllResponsesOfUserFromSurveyRequestDto dto) {
         return ResponseEntity.ok(responseService.findAllResponsesOfUserFromSurvey(dto));
     }
 
-    @GetMapping("/findAllResponsesOfUser")
+    @GetMapping("/find-all-responses-of-user")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(summary = "survey id ve user email girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot. #24")
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUser(String userEmail) {
@@ -81,7 +81,7 @@ public class ResponseController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'MASTER_TRAINER', 'ASISTANT_TRAINER')")
-    @GetMapping("/findResponseByStudentTag")
+    @GetMapping("/find-response-by-student-tag")
     @Operation(summary = "clasroom id'si girilerek bulunan tüm response'ların görüntülenmesini sağlayan metot.")
     public ResponseEntity<List<AnswerResponseDto>> findResponseByStudentTag(@RequestParam Long studentTagOid) {
         return ResponseEntity.ok(responseService.findResponseByStudentTag(studentTagOid));
@@ -89,7 +89,7 @@ public class ResponseController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'STUDENT')")
-    @PostMapping("/updateStudentResponses")
+    @PostMapping("/update-student-responses")
     @Operation(summary = "id ile bulunan response için string türünde girdi ile yeni değer atanmasını sağlayan metot.  #23")
     public ResponseEntity<Boolean> updateStudentAnswers(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
@@ -107,24 +107,24 @@ public class ResponseController {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER')")
-    @GetMapping("/survey-response-rate/{surveyid}/{studentTagOid}")
+    @GetMapping("/survey-response-rate/{survey-id}/{student-tag-oid}")
     @Operation(summary = "anketin doldurulma oranını döndüren metod")
-    public ResponseEntity<Double> surveyResponseRate(@PathVariable Long surveyid,Long studentTagOid){
-        return ResponseEntity.ok(responseService.surveyResponseRate(surveyid,studentTagOid));
+    public ResponseEntity<Double> surveyResponseRate(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRate(surveyId,studentTagOid));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER')")
-    @GetMapping("/survey-response-rates/{surveyid}/{studentTagOid}")
+    @GetMapping("/survey-response-rates/{survey-id}/{student-tag-oid}")
     @Operation(summary = "anketin atandığı sınıftaki öğrencilerin ad soyadını döndüren metod")
-    public ResponseEntity<List<String>> surveyResponseRateName(@PathVariable Long surveyid,Long studentTagOid){
-        return ResponseEntity.ok(responseService.surveyResponseRateName(surveyid,studentTagOid));
+    public ResponseEntity<List<String>> surveyResponseRateName(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
+        return ResponseEntity.ok(responseService.surveyResponseRateName(surveyId,studentTagOid));
     }
 
     @PreAuthorize("hasAnyRole('MANAGER')")
-    @GetMapping("/who-need-to-complete/{surveyid}")
+    @GetMapping("/who-need-to-complete/{survey-id}")
     @Operation(summary = "anketi cevaplaması gereken öğrencileri bulan metod ")
-    public ResponseEntity<List<WhoDidntAnswerSurveyStudentDto>> whoNeedToComplete(@PathVariable Long surveyid){
-        return ResponseEntity.ok(responseService.whoNeedToComplete(surveyid));
+    public ResponseEntity<List<WhoDidntAnswerSurveyStudentDto>> whoNeedToComplete(@PathVariable(name = "survey-id") Long surveyId){
+        return ResponseEntity.ok(responseService.whoNeedToComplete(surveyId));
     }
 
 }

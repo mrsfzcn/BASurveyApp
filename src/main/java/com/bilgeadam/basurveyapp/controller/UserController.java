@@ -43,22 +43,22 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/{userId}")
-    ResponseEntity<UserSimpleResponseDto> findByOid(@PathVariable("userId") Long userId) {
+    @GetMapping("/{user-id}")
+    ResponseEntity<UserSimpleResponseDto> findByOid(@PathVariable("user-id") Long userId) {
         return ResponseEntity.ok(userService.findByOid(userId));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update/{userEmail}")
-    ResponseEntity<User> updateUser(@PathVariable("userEmail") String userEmail, @RequestBody UserUpdateRequestDto dto) {
+    @PutMapping("/update/{user-email}")
+    ResponseEntity<User> updateUser(@PathVariable("user-email") String userEmail, @RequestBody UserUpdateRequestDto dto) {
 
         userService.updateUser(userEmail, dto);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/delete/{userId}")
-    ResponseEntity<Void> deleteUser(@PathVariable("userId") Long userId) {
+    @DeleteMapping("/delete/{user-id}")
+    ResponseEntity<Void> deleteUser(@PathVariable("user-id") Long userId) {
         try {
             userService.deleteUser(userId);
             return ResponseEntity.ok().build();
@@ -68,13 +68,13 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('MANAGER')")
-    @GetMapping("/trainersandstudents")
+    @GetMapping("/trainers-and-students")
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping("/assingroletouser")
+    @PostMapping("/assing-role-to-user")
     ResponseEntity<Boolean> assignRoleToUser(@RequestBody @Valid AssignRoleToUserRequestDto request) {
 
         return ResponseEntity.ok(userService.assignRoleToUser(request));
@@ -85,7 +85,4 @@ public class UserController {
     ResponseEntity<List<FindAllUserDetailsResponseDto>> findAllUserDetails() {
         return ResponseEntity.ok(userService.findAllUserDetails());
     }
-
-
-
 }

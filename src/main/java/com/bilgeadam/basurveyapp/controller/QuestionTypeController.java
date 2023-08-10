@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/questiontypes")
+@RequestMapping("/question-types")
 @RequiredArgsConstructor
 public class QuestionTypeController {
     private final QuestionTypeService questionTypeService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/updatequestiontypebytypestring")
+    @PutMapping("/update-question-type-by-type-string")
     @Operation(summary = "Belirtilen type stringine sahip olan question type'in güncellenmesini sağlayan metot")
     public ResponseEntity <QuestionType> updateQuestionTypeByTagString(@RequestBody UpdateQuestionTypeByTagStringRequestDto dto){
 
@@ -42,14 +42,14 @@ public class QuestionTypeController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/createquestiontype")
+    @PostMapping("/create-question-type")
     @Operation(summary = "String türünde questiontype ismi girilerek yeni bir tür oluşturan metot. #8")
     public ResponseEntity<Boolean> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.createQuestionType(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/updateQuestionType/{id}")
+    @PutMapping("/update-question-type/{id}")
     @Operation(summary = "Id ile questiontype'a ulaşılıp string türünde yeni questiontype girilmesini sağlayan metot.")
     public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto,@PathVariable Long id) {
         questionTypeService.updateQuestionType(dto,id);
@@ -57,14 +57,14 @@ public class QuestionTypeController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findById/{id}")
+    @GetMapping("/find-by-id/{id}")
     @Operation(summary = "Id ile questiontype'a ulaşıp görüntülenmesini sağlayan metot.")
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionTypeService.findById(id));
 
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/getallquestiontype")
+    @GetMapping("/get-all-question-type")
     @Operation(summary = "Tüm question type'ları görüntülemeyi sağlayan metot.")
     public ResponseEntity<List<AllQuestionTypeResponseDto>> findAll() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
