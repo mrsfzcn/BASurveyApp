@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/questiontags")
+@RequestMapping("/question-tags")
 @RequiredArgsConstructor
 public class QuestionTagController {
 
@@ -33,11 +33,11 @@ public class QuestionTagController {
         return ResponseEntity.ok(createdTag);
     }
 
-    @PutMapping("/updatetagbytagstring/{tagString}")
+    @PutMapping("/update-tag-by-tag-string/{tag-string}")
     @Operation(summary = "Belirtilen tag stringine sahip olan question tag'in güncellenmesini sağlayan metot")
     @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(
-            @PathVariable("tagString") String tagString,
+            @PathVariable("tag-string") String tagString,
             @RequestBody @Valid UpdateTagDto dto) {
         try {
             QuestionTag questionTag = questionTagService.updateTagByTagString(tagString,dto.getNewTagString());
@@ -57,7 +57,7 @@ public class QuestionTagController {
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/deleteByTagString")
+    @DeleteMapping("/delete-by-tag-string")
     @Operation(summary = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteByTagString(@RequestParam @Valid String tagString) {
         System.out.println("*******-> "+tagString);

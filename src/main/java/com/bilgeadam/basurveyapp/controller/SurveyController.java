@@ -27,7 +27,7 @@ public class SurveyController {
     private final SurveyService surveyService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/getallsurveyquestionresponsebystudent")
+    @GetMapping("/get-all-survey-question-response-by-student")
     @Operation(summary = "Bir anketteki belirli bir student tag' e sahip olan ogrencilerin -her soru için ayrı şekilde- verdigi yanıtları donduren methot #Oğuz")
     ResponseEntity<List<SurveyQuestionResponseByStudentResponseDto>> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto){
         return ResponseEntity.ok(surveyService.getAllSurveyQuestionResponseByStudent(dto));
@@ -47,9 +47,9 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findSurveyByid/{surveyId}")
+    @GetMapping("/find-survey-by-id/{survey-id}")
     @Operation(summary = "Survey id'si girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot. #17")
-    ResponseEntity<SurveyResponseDto> findByOid(@PathVariable("surveyId") Long surveyId) {
+    ResponseEntity<SurveyResponseDto> findByOid(@PathVariable("survey-id") Long surveyId) {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
 
@@ -61,7 +61,7 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/assignSurveyTag")
+    @PostMapping("/assign-survey-tag")
     @Operation(summary = "Long olarak surveyTag0id ve survey0id girilir. Birden fazla tag için ',' ile ayrılmalıdır.")
     ResponseEntity<SurveySimpleResponseDto> assignSurveyTag(@RequestBody @Valid SurveyTagAssignRequestDto dto) {
         return ResponseEntity.ok(surveyService.assignSurveyTag(dto));
@@ -84,16 +84,16 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update/{surveyId}")
+    @PutMapping("/update/{survey-id}")
     @Operation(summary = "String türünde survey title girilerek ulaşılan suver'de değişiklik yapılmasını sağlayan metot.")
-    ResponseEntity<Survey> update(@PathVariable("surveyId") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
+    ResponseEntity<Survey> update(@PathVariable("survey-id") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
         return ResponseEntity.ok(surveyService.update(surveyId, dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @DeleteMapping("/delete/{surveyId}")
+    @DeleteMapping("/delete/{survey-id}")
     @Operation(summary = "Suver id girilerek ulaşılan survey'in silinmesini sağlayan metot.")
-    ResponseEntity<Void> delete(@PathVariable("surveyId") Long surveyId) {
+    ResponseEntity<Void> delete(@PathVariable("survey-id") Long surveyId) {
         surveyService.delete(surveyId);
         return ResponseEntity.ok().build();
     }
@@ -106,7 +106,7 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findSurveysByStudentTag")
+    @GetMapping("/find-surveys-by-student-tag")
     @Operation(summary = "#19")
     public ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentTag(
             @RequestParam Long studentTagOid) {
@@ -114,41 +114,41 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
-    @GetMapping("/findSurveysByStudentOid")
+    @GetMapping("/find-surveys-by-student-oid")
     @Operation(summary = "#18")
     ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentOid(@RequestParam Long studentOid) {
         return ResponseEntity.ok(surveyService.findSurveysByStudentOid(studentOid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findsurveyanswersunmasked")
+    @GetMapping("/find-survey-answers-unmasked")
     @Operation(summary = "#20")
     ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findMaskedSurveyAnswersAsAdminOrManager")
+    @GetMapping("/find-masked-survey-answers-as-admin-or-manager")
     @Operation(summary = "#21")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsAdminOrManager(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsAdminOrManager(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('MASTER_TRAINER', 'ASSISTANT_TRAINER')")
-    @GetMapping("/findMaskedSurveyAnswersAsTrainer")
+    @GetMapping("/find-masked-survey-answers-as-trainer")
     @Operation(summary = "#22")
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsTrainer(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
         return ResponseEntity.ok(surveyService.findMaskedSurveyAnswersAsTrainer(findSurveyAnswersRequestDto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
-    @GetMapping("/findtrainersurveys")
+    @GetMapping("/find-trainer-surveys")
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
-    @GetMapping("/findSurveyParticipants")
+    @GetMapping("/find-survey-participants")
     ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyParticipants(dto));
     }

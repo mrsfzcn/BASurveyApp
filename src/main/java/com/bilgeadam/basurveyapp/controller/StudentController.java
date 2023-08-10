@@ -23,20 +23,9 @@ public class StudentController {
     ResponseEntity<List<StudentResponseDto>> getStudentList() {
         return ResponseEntity.ok(studentService.getStudentList());
     }
-    /*
-        "/create" Method is summoned via StudentService Class in different services. There are no reasons to be able to access
-        to this endpoint. Just in case of need, I leave it in comment line instead of deleting it.
-     */
-    /*
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/create")
-    public ResponseEntity<Boolean> createStudent(@RequestBody Student student){
-        return ResponseEntity.ok(studentService.createStudent(student));
-    }
-     */
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/assignStudentTag")
+    @PutMapping("/assign-student-tag")
     @Operation(summary = "#6")
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));

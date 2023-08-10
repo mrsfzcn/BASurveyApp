@@ -27,13 +27,13 @@ public class Test {
     }
 
     @PreAuthorize("hasRole('MASTER_TRAINER')")
-    @GetMapping("/mtrainer")
+    @GetMapping("/m-trainer")
     public ResponseEntity<String> testMT() {
         return ResponseEntity.ok("MT test successful!");
     }
 
     @PreAuthorize("hasRole('ASSISTANT_TRAINER')")
-    @GetMapping("/atrainer")
+    @GetMapping("/a-trainer")
     public ResponseEntity<String> testAT() {
         return ResponseEntity.ok("AT test successful!");
     }

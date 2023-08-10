@@ -20,7 +20,7 @@ public class TrainerController {
     private final TrainerService trainerService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/mastertrainers")
+    @GetMapping("/master-trainers")
     @Operation(summary = "Master trainer'ları görüntülemeyi sağlayan metot.")
     ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainerList() {
         return ResponseEntity.ok(trainerService.getMasterTrainerList());
@@ -28,13 +28,13 @@ public class TrainerController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/assistanttrainers")
+    @GetMapping("/assistant-trainers")
     @Operation(summary = "Asistant trainer'ları görüntülemeyi sağlayan metot.")
     ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainerList() {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/assignTrainerTag")
+    @PostMapping("/assign-trainer-tag")
     @Operation(summary = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot. #7")
     public ResponseEntity<TrainerResponseDto> updateTrainer(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));

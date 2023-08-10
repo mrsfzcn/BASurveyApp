@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/studenttag")
+@RequestMapping("/student-tag")
 @RequiredArgsConstructor
 public class StudentTagController {
 
@@ -32,16 +32,6 @@ public class StudentTagController {
         return ResponseEntity.ok(studentTagService.createTag(dto));
 
     }
-    /***
-     * Service içindeki getStudentsByStudentTag metodun dışarıya aktarılması gereksiz bu işlevi yapan controllerda metot var.
-     * */
-
-//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-//    @PostMapping("/getStudentsByStudentTag")
-//    public ResponseEntity<List<Student>> getStudentsByStudentTag(@RequestBody @Valid StudentTag studentTag ){
-//        return ResponseEntity.ok(studentTagService.getStudentsByStudentTag(studentTag));
-//    }
-
 
 
     // kaldırılacak.
@@ -53,13 +43,13 @@ public class StudentTagController {
         return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/findByStudentTagOid")
+    @PostMapping("/find-by-student-tag-oid")
     @Operation(summary = "student tag oid girerek ulaşılan student'ın gösterilmesini sağlayan metot.")
     public ResponseEntity<List<Student>> findByStudentTagOid(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findByStudentTagOid(studentTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/findActiveById")
+    @PostMapping("/find-active-by-id")
     @Operation(summary = "studentTagOid ile ilgili oid'ye ait StudentTag'i getiriyor. (ACTIVE ise)")
     public ResponseEntity<Optional<StudentTag>> findActiveById(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findActiveById(studentTagOid));
@@ -71,7 +61,7 @@ public class StudentTagController {
         return ResponseEntity.ok(studentTagService.delete(studentTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/studenttags")
+    @GetMapping("/student-tags")
     @Operation(summary = "Tüm student tag'lerin görüntülenmesini sağlayan metot.")
     ResponseEntity<List<StudentTagDetailResponseDto>> getStudentTagList() {
         return ResponseEntity.ok(studentTagService.getStudentTagList());
