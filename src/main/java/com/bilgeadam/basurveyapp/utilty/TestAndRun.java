@@ -13,6 +13,7 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class TestAndRun {
     public void init() {
         new Thread(() -> {
             createBaseAdmin();
+            createDefaultRoles();
         }).start();
 
     }
@@ -49,6 +51,14 @@ public class TestAndRun {
                         .lastName("admin")
                 .build());
 
+    }
+    public void createDefaultRoles(){
+        String[] roles = {"MANAGER", "MASTER_TRAINER", "ASSISTANT_TRAINER", "STUDENT"};
+        for (String roleName : roles) {
+            if (!roleService.hasRole(roleName)) {
+                roleService.createRole(CreateRoleDto.builder().role(roleName).build());
+            }
+        }
     }
 
 
