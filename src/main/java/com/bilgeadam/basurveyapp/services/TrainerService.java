@@ -115,4 +115,9 @@ public class TrainerService {
     public Optional<Trainer> findActiveByEmail(String email) {
         return trainerRepository.findActiveByEmail(email);
     }
+
+    public void deleteByTrainerOid(Long oid) {
+      Optional<Trainer> trainer =  trainerRepository.findTrainerByUserOid(oid);
+      trainerRepository.softDeleteById(trainer.get().getOid());
+    }
 }

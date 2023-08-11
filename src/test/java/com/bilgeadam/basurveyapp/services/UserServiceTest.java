@@ -43,12 +43,19 @@ public class UserServiceTest {
     @Mock
     private RoleService roleService;
 
+    private StudentService studentService;
     private UserService userService;
+
+    private TrainerService trainerService;
+    private ManagerService managerService;
+
+    public UserServiceTest() {
+    }
 
     @BeforeAll
     public void Init(){
         MockitoAnnotations.openMocks(this);
-        userService= new UserService(userRepository,jwtService,roleService);
+        userService= new UserService(userRepository,jwtService,roleService, studentService, trainerService, managerService);
     }
 
     @Test
