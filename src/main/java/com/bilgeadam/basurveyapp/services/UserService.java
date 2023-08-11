@@ -12,8 +12,6 @@ import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
-import jdk.swing.interop.SwingInterOpUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +19,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,10 +30,18 @@ public class UserService {
     private final JwtService jwtService;
     private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, @Lazy JwtService jwtService, @Lazy RoleService roleService) {
+    private final StudentService studentService;
+    private final TrainerService trainerService;
+
+    private final ManagerService managerService;
+
+    public UserService(UserRepository userRepository, @Lazy JwtService jwtService, @Lazy RoleService roleService, StudentService studentService, TrainerService trainerService, ManagerService managerService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.roleService = roleService;
+        this.studentService = studentService;
+        this.trainerService = trainerService;
+        this.managerService = managerService;
     }
 
     public List<ManagerResponseDto> getManagerList() {
@@ -72,10 +77,23 @@ public class UserService {
     public boolean deleteUser(Long userId) {
 
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
+
         if (userToBeDeleted.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
-        return userRepository.softDeleteById(userToBeDeleted.get().getOid());
+
+        if(userToBeDeleted.get().getAuthorizedRole().equals("STUDENT")){
+            studentService.deleteByStudentOid(userToBeDeleted.get().getOid());
+        } else if (userToBeDeleted.get().getAuthorizedRole().equals("MASTER_TRAINER") || userToBeDeleted.get().getAuthorizedRole().equals("ASSISTANT_TRAINER")) {
+            trainerService.deleteByTrainerOid(userToBeDeleted.get().getOid());
+        } else if (userToBeDeleted.get().getAuthorizedRole().equals("MANAGER")) {
+            managerService.deleteByManagerOid(userToBeDeleted.get().getOid());
+        }
+
+        return   userRepository.softDeleteById(userToBeDeleted.get().getOid());
+
+
+
     }
 
     public UserSimpleResponseDto findByOid(Long userId) {
@@ -139,7 +157,7 @@ public class UserService {
         List<FindAllUserDetailsResponseDto> findAllUserDetailsResponseDtoList = userList.stream().map(user ->{
             FindAllUserDetailsResponseDto dto = UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user);
             String date = dateFormat.format(user.getCreatedAt());
-            System.out.println(dto);
+
             dto.setCreatedDate(date);
             return dto;
         }

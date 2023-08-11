@@ -66,4 +66,9 @@ public class StudentService {
 
         return studentRepository.findById(studentOid);
     }
+
+    public void deleteByStudentOid(Long oid) {
+       Optional<Student> student =  studentRepository.findByUser(oid);
+       studentRepository.softDeleteById(student.get().getOid());
+    }
 }
