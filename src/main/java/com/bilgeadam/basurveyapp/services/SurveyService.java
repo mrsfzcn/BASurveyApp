@@ -143,13 +143,14 @@ public class SurveyService {
         }
     }
 
-    public Survey update(Long surveyId, SurveyUpdateRequestDto dto) {
+    public Survey update(SurveyUpdateRequestDto dto) {
 
-        Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(surveyId);
+        Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(dto.getSurveyOid());
         if (surveyToBeUpdated.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
+        surveyToBeUpdated.get().setCourseTopic(dto.getCourseTopic());
         return surveyRepository.save(surveyToBeUpdated.get());
     }
 

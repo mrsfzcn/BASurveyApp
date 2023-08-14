@@ -84,10 +84,10 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update/{survey-id}")
+    @PutMapping("/update")
     @Operation(summary = "String türünde survey title girilerek ulaşılan suver'de değişiklik yapılmasını sağlayan metot.")
-    ResponseEntity<Survey> update(@PathVariable("survey-id") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
-        return ResponseEntity.ok(surveyService.update(surveyId, dto));
+    ResponseEntity<Survey> update(@RequestBody @Valid SurveyUpdateRequestDto dto) {
+        return ResponseEntity.ok(surveyService.update(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
