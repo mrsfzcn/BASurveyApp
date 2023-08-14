@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
@@ -44,10 +45,30 @@ public class QuestionService {
 
     public Boolean createQuestion(List<CreateQuestionDto> createQuestionDtoList) {
         for (CreateQuestionDto createQuestionDto : createQuestionDtoList) {
-            if (questionRepository.findByQuestionString(createQuestionDto.getQuestionString()).isPresent()) {
-                throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
-            }
+            Optional<Question> existingQuestion = questionRepository.findByQuestionString(createQuestionDto.getQuestionString());
 
+            if (existingQuestion.isPresent()) {
+                Question questionToUpdate = existingQuestion.get();
+                if (questionToUpdate.getState().toString().equals("DELETED")) {
+                    questionToUpdate.setState(State.ACTIVE);
+                    questionToUpdate.getQuestionTag().forEach(questionTag -> {
+                        questionTag.getTargetEntities().remove(questionToUpdate);
+                        questionTagService.save(questionTag);
+                    });
+                    questionToUpdate.setQuestionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                            () -> new QuestionTypeNotFoundException("Question type is not found")));
+                    questionToUpdate.setQuestionTag(createQuestionDto.getTagOids().stream().map(questionTagOid->
+                            questionTagService.findActiveById(questionTagOid).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet()));
+                    Question question = questionToUpdate;
+                    question.getQuestionTag().forEach(questionTag -> {
+                        questionTag.getTargetEntities().add(question);
+                    });
+                    questionRepository.save(question);
+                    return true;
+                } else {
+                    throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
+                }
+            } else {
             Set<QuestionTag> questionTagList = new HashSet<>();
 
             List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
@@ -67,6 +88,7 @@ public class QuestionService {
                 questionTag.getTargetEntities().add(question);
                 questionTagService.save(questionTag);
             });
+        }
         }
         return true;
     }
