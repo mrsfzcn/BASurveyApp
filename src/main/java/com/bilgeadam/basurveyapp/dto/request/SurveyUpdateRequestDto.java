@@ -10,9 +10,13 @@ import lombok.*;
 @Setter
 @Builder
 public class SurveyUpdateRequestDto {
+    @NotNull
+    Long surveyOid;
     @NotBlank
     @NotNull
     private String surveyTitle;
-
+    @NotBlank
+    @NotNull
+    private String courseTopic;
 
 }
