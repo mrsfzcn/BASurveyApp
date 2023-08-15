@@ -187,9 +187,9 @@ public class SurveyService {
                                         .email(student.getUser().getEmail())
                                         .firstName(student.getUser().getFirstName())
                                         .lastName(student.getUser().getLastName()).build()
-                        );
-                    }
-                }));
+                                );
+                            }
+                        }));
         SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
         surveyResponseDto.setStudentsWhoNotAnswered(studentsWhoNotAnswered);
         return surveyResponseDto;
@@ -320,7 +320,9 @@ public class SurveyService {
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
                 .findAny();
-
+        if(studentTag.get().getTargetEntities().isEmpty()){
+            throw new  StudentNotFoundException("Bu sınıfta öğrenci bulunmamaktadır!");
+        }
 
         studentList(studentTag.get().getOid(),survey.getOid());
 
@@ -737,7 +739,7 @@ public class SurveyService {
 
 
     public List<Long> findTotalStudentBySurveyOid(Long surveyid,Long studentTagOid) {
-       return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+        return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
     }
 
     public List<String> findStudentNameBySurveyOid(Long surveyid,Long studentTagOid) {
