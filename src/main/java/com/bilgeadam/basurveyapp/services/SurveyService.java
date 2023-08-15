@@ -789,6 +789,23 @@ public class SurveyService {
 
         return surveyQuestionResponseByStudentResponseDtos;
     }
+
+    public List<SurveyQuestionsResponseDto> findSurveyQuestions(Long surveyid) {
+        Survey survey = isSurveyExists(surveyid);
+        List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
+        for(Question question:survey.getQuestions()){
+            responseDtoList.add(SurveyQuestionsResponseDto.builder()
+                            .questionIds(question.getOid())
+                            .questionString(question.getQuestionString())
+                            .questionType(question.getQuestionString())
+                            .build());
+        }
+        return responseDtoList;
+    }
+    public Survey isSurveyExists(Long id){
+        return surveyRepository.findActiveById(id)
+                .orElseThrow(() -> new SurveyNotFoundException("Anket bulunamadı"));
+    }
 }
 
 
