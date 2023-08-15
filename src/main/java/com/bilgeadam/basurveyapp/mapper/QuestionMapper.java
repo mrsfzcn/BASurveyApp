@@ -69,6 +69,7 @@ public interface QuestionMapper {
      */
 
     @Mapping(target = "questionType", source = "questionType.questionType")
+    @Mapping(target = "questionOid", source = "oid")
     QuestionFindByIdResponseDto toQuestionFindByIdResponseDto(Question question);
 
     @Mapping(target = "surveyOid", source = "oid")
