@@ -158,6 +158,12 @@ public class SurveyController {
     public ResponseEntity<List<SurveyQuestionsResponseDto>> findSurveyQuestions(@PathVariable Long surveyid){
         return ResponseEntity.ok(surveyService.findSurveyQuestions(surveyid));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @DeleteMapping("/{surveyid}/questions")
+    @Operation(summary = "surveyid verilerek ankete atanan soruları gösteren metot")
+    public ResponseEntity<Boolean> removeSurveyQuestions(@PathVariable Long surveyid,@RequestBody RemoveSurveyQuestionRequestDto dto){
+        return ResponseEntity.ok(surveyService.removeSurveyQuestions(surveyid,dto));
+    }
 
 }
 

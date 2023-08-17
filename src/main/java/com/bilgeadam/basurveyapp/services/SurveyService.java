@@ -16,9 +16,6 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -329,7 +326,7 @@ public class SurveyService {
 
 
         if (surveyRegistrationOptional.isPresent()) {
-            throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
+            throw new SurveyAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -791,7 +788,7 @@ public class SurveyService {
     }
 
     public List<SurveyQuestionsResponseDto> findSurveyQuestions(Long surveyid) {
-        Survey survey = isSurveyExists(surveyid);
+        Survey survey = validateSurveyExists(surveyid);
         List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
         for(Question question:survey.getQuestions()){
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
@@ -802,9 +799,26 @@ public class SurveyService {
         }
         return responseDtoList;
     }
-    public Survey isSurveyExists(Long id){
+    public Boolean removeSurveyQuestions(Long surveyId,RemoveSurveyQuestionRequestDto dto) {
+        Survey survey = validateSurveyExists(surveyId);
+        validateSurveyAssigment(surveyId);
+        survey.getQuestions().removeIf(question -> dto.getQuestionIds().contains(question.getOid()));
+        for(Long ids : dto.getQuestionIds()){
+            Question question = questionService.findActiveById(ids).orElseThrow(() -> new QuestionNotFoundException("Invalid questionId"));
+            question.getSurveys().removeIf(s -> s.getOid().equals(surveyId));
+        }
+        surveyRepository.save(survey);
+        return true;
+    }
+    public Survey validateSurveyExists(Long id){
         return surveyRepository.findActiveById(id)
-                .orElseThrow(() -> new SurveyNotFoundException("Anket bulunamadı"));
+                .orElseThrow(() -> new SurveyNotFoundException("Survey not found"));
+    }
+    public void validateSurveyAssigment(Long surveyId){
+        List<SurveyRegistration> registrations = surveyRegistrationRepository.findSurveyRegistrationsBySurvey0id(surveyId);
+        if(!registrations.isEmpty())
+            throw new SurveyAlreadyAssignToClassException("Survey assignment has been completed. Removing questions from the survey is not allowed.");
+
     }
 }
 
