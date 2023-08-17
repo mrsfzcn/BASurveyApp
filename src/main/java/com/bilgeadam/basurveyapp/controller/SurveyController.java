@@ -152,6 +152,12 @@ public class SurveyController {
     ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyParticipants(dto));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @GetMapping("/{surveyid}/questions")
+    @Operation(summary = "surveyid verilerek ankete atanan soruları gösteren metot")
+    public ResponseEntity<List<SurveyQuestionsResponseDto>> findSurveyQuestions(@PathVariable Long surveyid){
+        return ResponseEntity.ok(surveyService.findSurveyQuestions(surveyid));
+    }
 
 }
 
