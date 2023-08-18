@@ -160,7 +160,7 @@ public class SurveyController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
     @DeleteMapping("/{surveyid}/questions")
-    @Operation(summary = "Survey0id ile questionId listesi verilerek anketten soru çıkarmaya yarayan metot")
+    @Operation(summary = "surveyid verilerek ankete atanan soruları gösteren metot")
     public ResponseEntity<Boolean> removeSurveyQuestions(@PathVariable Long surveyid,@RequestBody RemoveSurveyQuestionRequestDto dto){
         return ResponseEntity.ok(surveyService.removeSurveyQuestions(surveyid,dto));
     }

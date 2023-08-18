@@ -16,9 +16,6 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -143,13 +140,14 @@ public class SurveyService {
         }
     }
 
-    public Survey update(Long surveyId, SurveyUpdateRequestDto dto) {
+    public Survey update(SurveyUpdateRequestDto dto) {
 
-        Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(surveyId);
+        Optional<Survey> surveyToBeUpdated = surveyRepository.findActiveById(dto.getSurveyOid());
         if (surveyToBeUpdated.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
+        surveyToBeUpdated.get().setCourseTopic(dto.getCourseTopic());
         return surveyRepository.save(surveyToBeUpdated.get());
     }
 
@@ -187,9 +185,9 @@ public class SurveyService {
                                         .email(student.getUser().getEmail())
                                         .firstName(student.getUser().getFirstName())
                                         .lastName(student.getUser().getLastName()).build()
-                        );
-                    }
-                }));
+                                );
+                            }
+                        }));
         SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
         surveyResponseDto.setStudentsWhoNotAnswered(studentsWhoNotAnswered);
         return surveyResponseDto;
@@ -320,13 +318,15 @@ public class SurveyService {
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
                 .findAny();
-
+        if(studentTag.get().getTargetEntities().isEmpty()){
+            throw new  StudentNotFoundException("Bu sınıfta öğrenci bulunmamaktadır!");
+        }
 
         studentList(studentTag.get().getOid(),survey.getOid());
 
 
         if (surveyRegistrationOptional.isPresent()) {
-            throw new SurveryAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
+            throw new SurveyAlreadyAssignToClassException("Survey has been already assigned to Classroom.");
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -737,7 +737,7 @@ public class SurveyService {
 
 
     public List<Long> findTotalStudentBySurveyOid(Long surveyid,Long studentTagOid) {
-       return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+        return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
     }
 
     public List<String> findStudentNameBySurveyOid(Long surveyid,Long studentTagOid) {
@@ -785,6 +785,40 @@ public class SurveyService {
 
 
         return surveyQuestionResponseByStudentResponseDtos;
+    }
+
+    public List<SurveyQuestionsResponseDto> findSurveyQuestions(Long surveyid) {
+        Survey survey = validateSurveyExists(surveyid);
+        List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
+        for(Question question:survey.getQuestions()){
+            responseDtoList.add(SurveyQuestionsResponseDto.builder()
+                            .questionIds(question.getOid())
+                            .questionString(question.getQuestionString())
+                            .questionType(question.getQuestionString())
+                            .build());
+        }
+        return responseDtoList;
+    }
+    public Boolean removeSurveyQuestions(Long surveyId,RemoveSurveyQuestionRequestDto dto) {
+        Survey survey = validateSurveyExists(surveyId);
+        validateSurveyAssigment(surveyId);
+        survey.getQuestions().removeIf(question -> dto.getQuestionIds().contains(question.getOid()));
+        for(Long ids : dto.getQuestionIds()){
+            Question question = questionService.findActiveById(ids).orElseThrow(() -> new QuestionNotFoundException("Invalid questionId"));
+            question.getSurveys().removeIf(s -> s.getOid().equals(surveyId));
+        }
+        surveyRepository.save(survey);
+        return true;
+    }
+    public Survey validateSurveyExists(Long id){
+        return surveyRepository.findActiveById(id)
+                .orElseThrow(() -> new SurveyNotFoundException("Survey not found"));
+    }
+    public void validateSurveyAssigment(Long surveyId){
+        List<SurveyRegistration> registrations = surveyRegistrationRepository.findSurveyRegistrationsBySurvey0id(surveyId);
+        if(!registrations.isEmpty())
+            throw new SurveyAlreadyAssignToClassException("Survey assignment has been completed. Removing questions from the survey is not allowed.");
+
     }
 }
 

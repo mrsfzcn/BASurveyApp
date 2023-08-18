@@ -4,8 +4,11 @@ import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.QuestionType;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
+import com.bilgeadam.basurveyapp.entity.base.BaseTag;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
@@ -51,6 +54,7 @@ public class QuestionService {
                 Question questionToUpdate = existingQuestion.get();
                 if (questionToUpdate.getState().toString().equals("DELETED")) {
                     questionToUpdate.setState(State.ACTIVE);
+
                     questionToUpdate.getQuestionTag().forEach(questionTag -> {
                         questionTag.getTargetEntities().remove(questionToUpdate);
                         questionTagService.save(questionTag);
@@ -100,9 +104,17 @@ public class QuestionService {
         if (updateQuestion.isEmpty()) {
             throw new QuestionNotFoundException("Question is not found to update");
         } else {
+            updateQuestion.get().getQuestionTag().forEach(questionTag -> {
+                questionTag.getTargetEntities().remove(updateQuestion.get());
+                questionTagService.save(questionTag);
+            });
             updateQuestion.get().setQuestionString(updateQuestionDto.getQuestionString());
             updateQuestion.get().setQuestionTag(updateQuestionDto.getTagOids().stream().map(questionTagOid->
                     questionTagService.findActiveById(questionTagOid).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet()));
+
+            Optional<QuestionType> questionType = questionTypeService.findActiveById(updateQuestionDto.getQuestionTypeOid());
+            updateQuestion.get().setQuestionType(questionType.get());
+
             Question question = updateQuestion.get();
             question.getQuestionTag().forEach(questionTag -> {
                 questionTag.getTargetEntities().add(question);
@@ -115,12 +127,31 @@ public class QuestionService {
 
     public QuestionFindByIdResponseDto findById(Long questionId) {
         Optional<Question> optionalQuestion = questionRepository.findActiveById(questionId);
+
         if (optionalQuestion.isEmpty()) {
             throw new QuestionNotFoundException("Question is not found");
-        } else {
-
-            return QuestionMapper.INSTANCE.toQuestionFindByIdResponseDto(optionalQuestion.get());
         }
+        List<QuestionTag> questionTagList;
+        QuestionFindByIdResponseDto dto;
+        List<TagResponseDto> questionTags = new ArrayList<>(); // List oldugundan for dongsuyle icine koycaz.
+        TagResponseDto tagResponseDto;
+
+        questionTagList = optionalQuestion.get().getQuestionTag().stream().toList();
+
+        for (QuestionTag questionTag: questionTagList) {
+            tagResponseDto = TagResponseDto.builder()
+                    .tagStringId(questionTag.getOid())
+                    .tagString(questionTag.getTagString())
+                    .build();
+            questionTags.add(tagResponseDto);
+        }
+
+        return QuestionFindByIdResponseDto.builder().
+                questionOid(optionalQuestion.get().getOid())
+                .questionString(optionalQuestion.get().getQuestionString())
+                .questionType(optionalQuestion.get().getQuestionType().getQuestionType()).
+                questionTags(questionTags).
+                build();
     }
 
     public List<QuestionResponseDto> findAll() {
@@ -308,10 +339,12 @@ public class QuestionService {
     }
 
     public List<FindAllQuestionResponseDto> findAllQuestion() {
+
         List<Question> questionList = questionRepository.findAllActive();
         List<FindAllQuestionResponseDto> dtos = new ArrayList<>();
         List<String> questionTagList;
         FindAllQuestionResponseDto dto;
+
         for (Question question: questionList) {
             questionTagList = question.getQuestionTag().stream().map(x -> x.getTagString()).toList();
             dto = FindAllQuestionResponseDto.builder().
