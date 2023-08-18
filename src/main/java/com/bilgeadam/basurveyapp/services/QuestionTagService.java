@@ -88,4 +88,10 @@ public class QuestionTagService {
                 .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
         return questionTagRepository.softDeleteById(questionTag.getOid());
     }
+
+    public boolean activeByTagString(String tagString) {
+        QuestionTag questionTag = questionTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+        return questionTagRepository.activeById(questionTag.getOid());
+    }
 }

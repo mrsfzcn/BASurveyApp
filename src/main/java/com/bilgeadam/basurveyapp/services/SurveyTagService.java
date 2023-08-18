@@ -73,9 +73,9 @@ public class SurveyTagService {
         return surveyTagRepository.save(surveyTag);
     }
     public boolean deleteByTagString(String tagString) {
-        SurveyTag questionTag = surveyTagRepository.findOptionalByTagString(tagString)
+        SurveyTag surveyTag = surveyTagRepository.findOptionalByTagString(tagString)
                 .orElseThrow(() -> new SurveyTagNotFoundException("Survey tag not found"));
-        return surveyTagRepository.softDeleteById(questionTag.getOid());
+        return surveyTagRepository.softDeleteById(surveyTag.getOid());
     }
 
     public Optional<SurveyTag> findActiveById(Long surveyTagOid) {
@@ -84,5 +84,11 @@ public class SurveyTagService {
 
     public void save(SurveyTag surveyTag) {
         surveyTagRepository.save(surveyTag);
+    }
+
+    public boolean activeByTagString(String tagString) {
+        SurveyTag surveyTag = surveyTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new SurveyTagNotFoundException("Survey tag not found"));
+        return surveyTagRepository.activeById(surveyTag.getOid());
     }
 }

@@ -61,4 +61,11 @@ public interface BaseRepository<T extends BaseEntity, Oid> extends JpaRepository
         return true;
     };
 
+    default boolean activeById(Oid oid){
+        T entity = findDeletedById(oid).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        entity.setState(State.ACTIVE);
+        save(entity);
+        return true;
+    };
+
 }

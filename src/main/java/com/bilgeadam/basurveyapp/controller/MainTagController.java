@@ -2,10 +2,13 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateMainTagRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateTagDto;
+import com.bilgeadam.basurveyapp.dto.request.UpdateTagNameAndTagClassesDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateTagNameDto;
 import com.bilgeadam.basurveyapp.dto.response.MainTagResponseDto;
+import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.MainTagService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,6 +55,25 @@ public class MainTagController {
     @Operation(summary = "tüm tag'leri getirir")
     public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
         return ResponseEntity.ok(mainTagService.findAllTags());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @DeleteMapping("/delete-by-tag-string/{tagString}")
+    @Operation(summary = "Tag stringine göre bulunan main tag'in silinmesini sağlayan metot.")
+    public ResponseEntity<Boolean> deleteByTagName(@PathVariable String tagString) {
+        try {
+            boolean deleted = mainTagService.deleteByTagName(tagString);
+            return ResponseEntity.ok(deleted);
+        } catch (QuestionTagNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/update-tag-by-tag-name-and-tag-classes-all")
+    @Operation(summary = "tag güncelleme islemi. tag basliklarinda belirtilen isimde tag günceller. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
+    public ResponseEntity<Boolean> updateTagByTagNameAndTagClassesFrontEnd(@RequestBody UpdateTagNameAndTagClassesDto dto){
+        mainTagService.updateTagByTagNameAndTagClassesFrontEnd(dto);
+        return ResponseEntity.ok(true);
     }
 
 }

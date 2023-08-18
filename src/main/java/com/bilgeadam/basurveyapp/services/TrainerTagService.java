@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
+import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
@@ -71,6 +72,12 @@ public class TrainerTagService {
         }
     }
 
+    public boolean deleteByTagString(String tagString) {
+        TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+        return trainerTagRepository.softDeleteById(trainerTag.getOid());
+    }
+
     public List<TrainerTagDetailResponseDto> getTrainerTagList() {
         return TagMapper.INSTANCE.toTrainerTagDetailResponseDtoList(trainerTagRepository.findAllActive());
     }
@@ -113,4 +120,12 @@ public class TrainerTagService {
         trainerTag.setTagString(newTagString);
         trainerTagRepository.save(trainerTag);
     }
+
+    public boolean activeByTagString(String tagString) {
+        TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
+                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+        return trainerTagRepository.activeById(trainerTag.getOid());
+    }
+
+
 }

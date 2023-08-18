@@ -84,10 +84,10 @@ public class SurveyController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/update/{survey-id}")
+    @PutMapping("/update")
     @Operation(summary = "String türünde survey title girilerek ulaşılan suver'de değişiklik yapılmasını sağlayan metot.")
-    ResponseEntity<Survey> update(@PathVariable("survey-id") Long surveyId, @RequestBody SurveyUpdateRequestDto dto) {
-        return ResponseEntity.ok(surveyService.update(surveyId, dto));
+    ResponseEntity<Survey> update(@RequestBody @Valid SurveyUpdateRequestDto dto) {
+        return ResponseEntity.ok(surveyService.update(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -151,6 +151,18 @@ public class SurveyController {
     @GetMapping("/find-survey-participants")
     ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyParticipants(dto));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @GetMapping("/{surveyid}/questions")
+    @Operation(summary = "surveyid verilerek ankete atanan soruları gösteren metot")
+    public ResponseEntity<List<SurveyQuestionsResponseDto>> findSurveyQuestions(@PathVariable Long surveyid){
+        return ResponseEntity.ok(surveyService.findSurveyQuestions(surveyid));
+    }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @DeleteMapping("/{surveyid}/questions")
+    @Operation(summary = "Survey0id ile questionId listesi verilerek anketten soru çıkarmaya yarayan metot")
+    public ResponseEntity<Boolean> removeSurveyQuestions(@PathVariable Long surveyid,@RequestBody RemoveSurveyQuestionRequestDto dto){
+        return ResponseEntity.ok(surveyService.removeSurveyQuestions(surveyid,dto));
     }
 
 }
