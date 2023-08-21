@@ -74,7 +74,7 @@ public class TrainerTagService {
 
     public boolean deleteByTagString(String tagString) {
         TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+                .orElseThrow(() -> new TrainerTagNotFoundException("Trainer tag not found"));
         return trainerTagRepository.softDeleteById(trainerTag.getOid());
     }
 
@@ -116,14 +116,14 @@ public class TrainerTagService {
 
     public void updateTagByTagString(String tagString, String newTagString) {
         TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+                .orElseThrow(() -> new TrainerTagNotFoundException("Trainer tag not found"));
         trainerTag.setTagString(newTagString);
         trainerTagRepository.save(trainerTag);
     }
 
     public boolean activeByTagString(String tagString) {
         TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+                .orElseThrow(() -> new TrainerTagNotFoundException("Trainer tag not found"));
         return trainerTagRepository.activeById(trainerTag.getOid());
     }
 

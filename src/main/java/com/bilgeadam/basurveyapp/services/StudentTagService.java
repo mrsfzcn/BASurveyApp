@@ -76,7 +76,7 @@ public class StudentTagService {
 
     public boolean deleteByTagString(String tagString) {
         StudentTag studentTag = studentTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found"));
         return studentTagRepository.softDeleteById(studentTag.getOid());
     }
 
@@ -107,14 +107,14 @@ public class StudentTagService {
 
     public void updateTagByTagString(String tagString, String newTagString) {
         StudentTag studentTag = studentTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question Tag not found"));
+                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found"));
         studentTag.setTagString(newTagString);
        studentTagRepository.save(studentTag);
     }
 
     public boolean activeByTagString(String tagString) {
         StudentTag studentTag = studentTagRepository.findOptionalByTagString(tagString)
-                .orElseThrow(() -> new QuestionTagNotFoundException("Question tag not found"));
+                .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found"));
         return studentTagRepository.activeById(studentTag.getOid());
     }
 }
