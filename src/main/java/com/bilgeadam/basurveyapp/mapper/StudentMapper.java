@@ -19,6 +19,7 @@ public interface StudentMapper {
     @Mapping(target = "lastName", source = "user.lastName")
     @Mapping(target = "email", source = "user.email")
     StudentResponseDto toStudentResponseDto(Student student);
+    @Mapping(source = "createdAt", target = "createdAt", dateFormat = "dd.MM.yyyy")
     List<StudentResponseDto> toStudentResponseDtoList(List<Student> studentList);
     List<StudentTagResponseDto> toStudentTagResponseDto(Set<StudentTag> studentTags);
 }

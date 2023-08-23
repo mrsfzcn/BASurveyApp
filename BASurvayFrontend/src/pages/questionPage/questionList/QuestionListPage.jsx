@@ -8,8 +8,6 @@ function QuestionListPage() {
   const [surveys, setSurveys] = useState([]);
   const header = ["No", "Soru", "Soru Etiketleri", "Soru Tipi", "İşlemler"];
   const token = localStorage.getItem("token");
-  console.log("merhaba");
-  // http://localhost:8090/api/v1/questions/findallquestion
   
   useEffect(() => {
     const fetchData = async () => {

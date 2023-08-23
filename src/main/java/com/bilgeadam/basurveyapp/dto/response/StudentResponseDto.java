@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.dto.response;
 
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -14,5 +15,6 @@ public class StudentResponseDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String createdAt;
     private List<StudentTagResponseDto> studentTags;
 }
