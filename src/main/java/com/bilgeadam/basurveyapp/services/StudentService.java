@@ -6,8 +6,11 @@ import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.SurveyAlreadyAssignToClassException;
+import com.bilgeadam.basurveyapp.exceptions.custom.TagAlreadyAssignedException;
 import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.repositories.StudentRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +28,19 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public StudentResponseDto updateStudent(StudentUpdateDto dto) {
+    public StudentResponseDto updateStudent(StudentUpdateDto dto)   {
         Optional<Student> studentOptional = studentRepository.findActiveById(dto.getStudentOid());
         Optional<StudentTag> studentTagOptional = studentTagService.findActiveById(dto.getStudentTagOid());
 
         Student student = studentOptional.orElseThrow(() -> new ResourceNotFoundException("Student is not found"));
         StudentTag studentTag = studentTagOptional.orElseThrow(() -> new ResourceNotFoundException("Student tag is not found"));
+
+        if (!student.getStudentTags().isEmpty()) {
+            throw new TagAlreadyAssignedException("The student already has a tag assigned");
+        }
+        if (student.getStudentTags().contains(studentTag)) {
+            throw new TagAlreadyAssignedException("This tag is already assigned to the student");
+        }
 
         student.getStudentTags().add(studentTag);
         studentTag.getTargetEntities().add(student);
