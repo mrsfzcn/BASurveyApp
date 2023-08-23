@@ -294,6 +294,14 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.STUDENT_TAG_NOT_FOUND", null, Locale.getDefault()), exception);
         return createExceptionInfoResponse(STUDENT_TAG_NOT_FOUND, exception, request);
     }
+
+    @ResponseBody
+    @ExceptionHandler(TagAlreadyAssignedException.class)
+    public ResponseEntity<ExceptionResponse> handleTagAlreadyAssignedException(TagAlreadyAssignedException exception, HttpServletRequest request) {
+        log.warn(messageSource.getMessage("exception.TAG_ALREADY_ASSIGNED", null, Locale.getDefault()), exception);
+        return createExceptionInfoResponse(TAG_ALREADY_ASSIGNED, exception, request);
+    }
+
     @ResponseBody
     @ExceptionHandler(SurveyAlreadyAssignToClassException.class)
     public ResponseEntity<ExceptionResponse> handleSurveyAlreadyAssingToClassException(SurveyAlreadyAssignToClassException exception, HttpServletRequest request){
