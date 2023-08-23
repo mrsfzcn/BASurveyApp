@@ -28,6 +28,12 @@ public interface TrainerMapper {
     @Mapping(target = "email", source = "user.email")
     AssistantTrainerResponseDto toAssistantTrainerResponseDto(Trainer trainer);
     List<AssistantTrainerResponseDto> toAssistantTrainerResponseDtos(List<Trainer> trainers);
+
+    @Mapping(target = "firstName", source = "user.firstName")
+    @Mapping(target = "lastName", source = "user.lastName")
+    @Mapping(target = "email", source = "user.email")
+    TrainerResponseNoTagsDto toTrainerResponseNoTagsDtos(Trainer trainer);
+    List<TrainerResponseNoTagsDto> toTrainerResponseNoTagsDtos(List<Trainer> trainers);
     List<AssistantTrainerTagResponseDto> toAssistantTrainerTagResponseDto(Set<TrainerTag> trainerTags);
 
     @Mapping(target = "firstName", source = "user.firstName")

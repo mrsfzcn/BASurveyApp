@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
+import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
@@ -125,6 +126,17 @@ public class TrainerTagService {
         TrainerTag trainerTag = trainerTagRepository.findOptionalByTagString(tagString)
                 .orElseThrow(() -> new TrainerTagNotFoundException("Trainer tag not found"));
         return trainerTagRepository.activeById(trainerTag.getOid());
+    }
+
+    public List<TagResponseDto> findAll() {
+
+        List<TrainerTag> trainerTags = trainerTagRepository.findAllActive();
+        return trainerTags.stream()
+                .map(trainerTag -> TagResponseDto.builder()
+                        .tagStringId(trainerTag.getOid())
+                        .tagString(trainerTag.getTagString())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 

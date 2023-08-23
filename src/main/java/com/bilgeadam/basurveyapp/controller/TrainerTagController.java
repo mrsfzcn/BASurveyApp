@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.request.FindTrainersByTagStringRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindUserByEmailRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
+import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
 import com.bilgeadam.basurveyapp.services.TrainerTagService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -61,6 +62,15 @@ public class TrainerTagController {
     @Operation(summary = "trainer tag string i girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot")
     public List<String> findTrainersByTrainerTagString(@RequestBody @Valid FindTrainersByTagStringRequestDto dto){
         return trainerTagService.findTrainersByTrainerTagString(dto.getTagString());
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/findall")
+    @Operation(summary = "Aktif olan tüm trainer tag'lerin görüntülenmesini sağlayan metot.")
+    public ResponseEntity<List<TagResponseDto>> findAll() {
+        List<TagResponseDto> responseDtoList = trainerTagService.findAll();
+        return ResponseEntity.ok(responseDtoList);
     }
 
 }

@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerResponseNoTagsDto;
 import com.bilgeadam.basurveyapp.services.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,13 @@ public class TrainerController {
     @Operation(summary = "Asistant trainer'ları görüntülemeyi sağlayan metot.")
     ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainerList() {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @GetMapping("/find-all-trainers")
+    @Operation(summary = "Tüm trainer'ları görüntülemeyi sağlayan metot.")
+    ResponseEntity<List<TrainerResponseNoTagsDto>> getTrainerList() {
+        return ResponseEntity.ok(trainerService.getTrainerList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/assign-trainer-tag")
