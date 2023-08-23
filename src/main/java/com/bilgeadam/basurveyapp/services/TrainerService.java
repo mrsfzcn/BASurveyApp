@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerResponseNoTagsDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.TrainerExTags;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
@@ -110,6 +111,13 @@ public class TrainerService {
         List<Trainer> assistantTrainers = trainerRepository.findAllAssistantTrainers();
 
         return TrainerMapper.INSTANCE.toAssistantTrainerResponseDtos(assistantTrainers);
+    }
+
+    public List<TrainerResponseNoTagsDto> getTrainerList() {
+
+        List<Trainer> findAllTrainers = trainerRepository.findAllActive();
+
+        return TrainerMapper.INSTANCE.toTrainerResponseNoTagsDtos(findAllTrainers);
     }
 
     public Optional<Trainer> findActiveByEmail(String email) {
