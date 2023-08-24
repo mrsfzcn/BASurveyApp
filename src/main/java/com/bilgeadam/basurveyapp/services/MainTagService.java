@@ -153,25 +153,20 @@ public class MainTagService {
         if (dto.getTagString().equals(null) || dto.getTagString()==""){
             throw new TagNotFoundException("Tag name not empty ");
         }
-        List<MainTag> mainTags = findByTagName(dto.getTagString());
-        System.out.println("tag name list : "+ mainTags.toString());
 
-        for (MainTag mainTag: mainTags){
-            mainTag.setTagName(dto.getNewTagString());
+        Optional<List<MainTag>> mainTagsActiveOptional= mainTagRepository.findOptionalByTagNameAndState(dto.getTagString(),State.ACTIVE);
+        List<MainTag> mainTagsActive = mainTagsActiveOptional.get();
+        for (MainTag mainTag: mainTagsActive){
             mainTag.setState(State.DELETED);
             mainTagRepository.save(mainTag);
             if (mainTag.getTagClass().equals(Tags.QUESTION)){
                 questionTagService.deleteByTagString(dto.getTagString());
-                questionTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
             } else if (mainTag.getTagClass().equals(Tags.TRAINER)) {
                 trainerTagService.deleteByTagString(dto.getTagString());
-                trainerTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
             } else if (mainTag.getTagClass().equals(Tags.SURVEY)) {
                 surveyTagService.deleteByTagString(dto.getTagString());
-                surveyTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
             } else if (mainTag.getTagClass().equals(Tags.STUDENT)) {
                 studentTagService.deleteByTagString(dto.getTagString());
-                studentTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
             }else {
                 throw new TagNotFoundException("böyle bir tag adi bulunamadi");
             }
@@ -179,30 +174,29 @@ public class MainTagService {
         for(String tagClass: dto.getTagClass()){
             Tags tag_class= Tags.valueOf(tagClass.trim().toUpperCase());
             // main tag icinde bu classa ait bir bu isimde bir tag var mı diye kontrol edilir.
-            if (mainTagRepository.isTagClassAndTagName(tag_class, dto.getNewTagString())) {
+            if (mainTagRepository.isTagClassAndTagName(tag_class, dto.getTagString())) {
                 // burada hata fırlatınca listede ki diger tagleri kontrol etmiyor bu yüzden bos birakildi.
-                Optional<MainTag> mainTagsDeleted= mainTagRepository.findOptionalByTagNameAndTagClassAndState(dto.getNewTagString(),Tags.valueOf(tagClass),State.DELETED);
+                Optional<MainTag> mainTagsDeleted= mainTagRepository.findOptionalByTagNameAndTagClassAndState(dto.getTagString(),Tags.valueOf(tagClass),State.DELETED);
 
                 if(mainTagsDeleted.isPresent()){
                     MainTag mainTagNTC = mainTagsDeleted.get();
-                    mainTagNTC.setState(State.ACTIVE);
-                    mainTagRepository.save(mainTagNTC);
 
                     if (tag_class.equals(Tags.QUESTION)) {
                         questionTagService.activeByTagString(mainTagNTC.getTagName());
-
+                        mainTagNTC.setState(State.ACTIVE);
+                        mainTagRepository.save(mainTagNTC);
                     } else if (tag_class.equals(Tags.STUDENT)) {
-
                         studentTagService.activeByTagString(mainTagNTC.getTagName());
-
+                        mainTagNTC.setState(State.ACTIVE);
+                        mainTagRepository.save(mainTagNTC);
                     } else if (tag_class.equals(Tags.SURVEY)) {
-
                         surveyTagService.activeByTagString(mainTagNTC.getTagName());
-
+                        mainTagNTC.setState(State.ACTIVE);
+                        mainTagRepository.save(mainTagNTC);
                     } else if (tag_class.equals(Tags.TRAINER)) {
-
                         trainerTagService.activeByTagString(mainTagNTC.getTagName());
-
+                        mainTagNTC.setState(State.ACTIVE);
+                        mainTagRepository.save(mainTagNTC);
                     } else {
                         throw new TagNotFoundException("tag not found");
                     }
@@ -220,24 +214,18 @@ public class MainTagService {
                             .build());
 
                 } else if (tag_class.equals(Tags.STUDENT)) {
-                    System.out.println("student tag kayit");
-
                     studentTagService.createTag(CreateTagDto.builder()
                             .tagString(dto.getNewTagString())
                             .mainTagOid(mainTag.getOid())
                             .build());
 
                 } else if (tag_class.equals(Tags.SURVEY)) {
-                    System.out.println("survey tag kayit");
-
                     surveyTagService.createTag(CreateTagDto.builder()
                             .tagString(dto.getNewTagString())
                             .mainTagOid(mainTag.getOid())
                             .build());
 
                 } else if (tag_class.equals(Tags.TRAINER)) {
-                    System.out.println("trainer tag kayit");
-
                     trainerTagService.createTag(CreateTagDto.builder()
                             .tagString(dto.getNewTagString())
                             .mainTagOid(mainTag.getOid())
@@ -246,9 +234,22 @@ public class MainTagService {
                 }else {
                     throw new TagNotFoundException("tag not found");
                 }
-
-
-
+            }
+        }
+        List<MainTag> mainTagsAll = findByTagName(dto.getTagString());
+        for (MainTag mainTag: mainTagsAll){
+            mainTag.setTagName(dto.getNewTagString());
+            mainTagRepository.save(mainTag);
+            if (mainTag.getTagClass().equals(Tags.QUESTION)){
+                questionTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
+            } else if (mainTag.getTagClass().equals(Tags.TRAINER)) {
+                trainerTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
+            } else if (mainTag.getTagClass().equals(Tags.SURVEY)) {
+                surveyTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
+            } else if (mainTag.getTagClass().equals(Tags.STUDENT)) {
+                studentTagService.updateTagByTagString(dto.getTagString(),dto.getNewTagString());
+            }else {
+                throw new TagNotFoundException("böyle bir tag adi bulunamadi");
             }
         }
         return true;
