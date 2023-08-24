@@ -35,7 +35,7 @@ public class MainTagService {
      * her biri icin ayrı ayrı kayıt islemine gerek yok
      */
     public void createMainTag (CreateMainTagRequestDto dto){
-        deleteByTagName(dto.getTagName());
+
             for(String tagClass: dto.getTagClass()){
                 Tags tag_class= Tags.valueOf(tagClass.trim().toUpperCase());
                 // main tag icinde bu classa ait bir bu isimde bir tag var mı diye kontrol edilir.
@@ -49,6 +49,7 @@ public class MainTagService {
                         mainTagRepository.save(mainTagD);
 
                     if (tag_class.equals(Tags.QUESTION)) {
+
                         questionTagService.activeByTagString(mainTagD.getTagName());
 
                     } else if (tag_class.equals(Tags.STUDENT)) {
