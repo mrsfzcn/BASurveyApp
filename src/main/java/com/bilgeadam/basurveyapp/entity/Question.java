@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -16,6 +18,7 @@ import java.util.Set;
 @Builder
 @Table(name = "questions")
 public class Question extends BaseEntity {
+    // todo : veritabanında 255 karakter ile sınırlı. bu sorun olabilir
     @Column(name = "question_string")
     private String questionString;
     @Column(name = "question_order")
@@ -32,4 +35,7 @@ public class Question extends BaseEntity {
     @JsonBackReference
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<QuestionTag> questionTag;
+
+    //@Lob
+    private List<String> options = new ArrayList<>();
 }

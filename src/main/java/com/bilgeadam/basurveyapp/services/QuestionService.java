@@ -84,6 +84,7 @@ public class QuestionService {
                             () -> new QuestionTypeNotFoundException("Question type is not found")))
                     .order(createQuestionDto.getOrder())
                     .questionTag(questionTagList)
+                    .options(createQuestionDto.getOptions())
                     .build();
 
             questionRepository.save(question);
