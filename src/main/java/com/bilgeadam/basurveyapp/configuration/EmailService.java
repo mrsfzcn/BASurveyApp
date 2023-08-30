@@ -18,7 +18,7 @@ public class EmailService {
     @Autowired
     private SimpleMailMessage preConfiguredMessage;
 
-    private static final String FROM = "bilgeadamjavaboost@gmail.com";
+    private static final String FROM = "stajnotify@bilgeadamakademi.com";
     private static final String SUBJECT = "BilgeAdam Değerlendirme Anketi";
 
 
