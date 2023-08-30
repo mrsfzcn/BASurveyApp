@@ -4,15 +4,18 @@ import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerResponseNoTagsDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerResponseListTagsDto;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.TrainerExTags;
+import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.mapper.TrainerMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -113,19 +116,22 @@ public class TrainerService {
         return TrainerMapper.INSTANCE.toAssistantTrainerResponseDtos(assistantTrainers);
     }
 
-    public List<TrainerResponseNoTagsDto> getTrainerList() {
+    public List<TrainerResponseListTagsDto> getTrainerList() {
 
         List<Trainer> findAllTrainers = trainerRepository.findAllActive();
 
-        return TrainerMapper.INSTANCE.toTrainerResponseNoTagsDtos(findAllTrainers);
+        return TrainerMapper.INSTANCE.toTrainerResponseListTagsDtos(findAllTrainers);
     }
 
     public Optional<Trainer> findActiveByEmail(String email) {
         return trainerRepository.findActiveByEmail(email);
     }
 
-    public void deleteByTrainerOid(Long oid) {
+    public Boolean deleteByTrainerOid(Long oid) {
       Optional<Trainer> trainer =  trainerRepository.findTrainerByUserOid(oid);
-      trainerRepository.softDeleteById(trainer.get().getOid());
+        Trainer userOfTrainer = findActiveById(trainer.get().getOid()).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        userOfTrainer.getUser().setState(State.DELETED);
+        trainerRepository.save(userOfTrainer);
+      return trainerRepository.softDeleteById(trainer.get().getOid());
     }
 }

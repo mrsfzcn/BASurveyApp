@@ -4,7 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.TrainerUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerResponseNoTagsDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerResponseListTagsDto;
 import com.bilgeadam.basurveyapp.services.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class TrainerController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-all-trainers")
     @Operation(summary = "Tüm trainer'ları görüntülemeyi sağlayan metot.")
-    ResponseEntity<List<TrainerResponseNoTagsDto>> getTrainerList() {
+    ResponseEntity<List<TrainerResponseListTagsDto>> getTrainerList() {
         return ResponseEntity.ok(trainerService.getTrainerList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -46,5 +46,12 @@ public class TrainerController {
     @Operation(summary = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot. #7")
     public ResponseEntity<TrainerResponseDto> updateTrainer(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @DeleteMapping("/delete-trainer-by-id/{id}")
+    @Operation(summary = "Integer türünde id girilerek bulunan trainerın silinmesini sağlayan metot.")
+    public ResponseEntity<Boolean> deleteTrainerById(@PathVariable Long id) {
+        return ResponseEntity.ok(trainerService.deleteByTrainerOid(id));
     }
 }
