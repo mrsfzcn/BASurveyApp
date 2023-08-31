@@ -22,5 +22,8 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
             nativeQuery = true)
     List<Student> findByStudentTagOid(Long studentTagOid);
 
+    @Query("SELECT st FROM Student st WHERE st.state = 'ACTIVE' AND st.oid = ?1")
+    Optional<Student> findStudentByOid(Long oid);
+
 
 }

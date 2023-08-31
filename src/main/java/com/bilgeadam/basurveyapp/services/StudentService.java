@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.SurveyAlreadyAssignToClassException;
@@ -77,8 +78,11 @@ public class StudentService {
         return studentRepository.findById(studentOid);
     }
 
-    public void deleteByStudentOid(Long oid) {
-       Optional<Student> student =  studentRepository.findByUser(oid);
-       studentRepository.softDeleteById(student.get().getOid());
+    public Boolean deleteByStudentOid(Long oid) {
+       Optional<Student> student =  studentRepository.findStudentByOid(oid);
+        Student userOfStudent = studentRepository.findActiveById(student.get().getOid()).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        userOfStudent.getUser().setState(State.DELETED);
+        studentRepository.save(userOfStudent);
+        return studentRepository.softDeleteById(student.get().getOid());
     }
 }
