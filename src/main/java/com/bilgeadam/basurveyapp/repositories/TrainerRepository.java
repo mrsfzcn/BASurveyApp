@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface TrainerRepository extends BaseRepository<Trainer, Long> {
-    @Query("SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.user.oid = ?1")
+    @Query("SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.oid = ?1")
     Optional<Trainer> findTrainerByUserOid(Long oid);
 
     @Query(value = "SELECT * FROM trainers tr WHERE tr.state = 'ACTIVE' AND  tr.is_master_trainer = 'true'", nativeQuery = true)

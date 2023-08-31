@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class TrainerResponseNoTagsDto {
+public class TrainerResponseListTagsDto {
     private Long oid;
     private String firstName;
     private String lastName;
     private String email;
+    private String createdAt;
+    private List<TrainerTagResponseDto> trainerTags;
 }
