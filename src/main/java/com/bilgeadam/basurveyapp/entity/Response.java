@@ -15,7 +15,7 @@ import lombok.*;
 public class Response extends BaseEntity {
 
     @Column(name = "response_string", nullable = false)
-    private String responseString;
+    private String responseString; //todo: çok seçmeli sorularda çoklu cevap kaydedilebiliyor.Burası list tutulabilir
     @JsonManagedReference
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "oid", name = "question")
