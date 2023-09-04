@@ -53,6 +53,13 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.findByOid(surveyId));
     }
 
+
+    @GetMapping("/find-survey-by-email-token/{token}")
+    @Operation(summary = "Email token'ı girilerek ulaşılan survey'in görüntülebnmesini sağlayan metot. ")
+    ResponseEntity<SurveyResponseByEmailTokenDto> findByEmailToken(@PathVariable String token) {
+        return ResponseEntity.ok(surveyService.findByEmailToken(token));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping
     @Operation(summary = "String türünde title ve topic girilerek yeni bir survey oluşturulmasını sağlayan metot. #11")

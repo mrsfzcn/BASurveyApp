@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.configuration.jwt;
 
+import com.bilgeadam.basurveyapp.exceptions.custom.UndefinedTokenException;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,6 +16,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -85,8 +87,9 @@ public class JwtService {
     /*
         Email Related Token Methods!
      */
-    public String generateSurveyEmailToken(Long surveyOid, Long studentTagOid, String userEmail, Integer day) {
+    public String generateSurveyEmailToken(Long userId,Long surveyOid, Long studentTagOid, String userEmail, Integer day) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
         claims.put("surveyOid", surveyOid);
         claims.put("studentTagOid",studentTagOid);
         return Jwts.builder()
@@ -119,4 +122,23 @@ public class JwtService {
     private Long calculateDayMiliseconds(Integer day) {
         return day * 86_400_000L;
     }
+
+    public Optional<Long> getSurveyIdFromToken(String jwtToken) {
+        try {
+            final Claims claims = extractAllClaims(jwtToken);
+            return Optional.of(Long.valueOf(claims.get("surveyOid").toString()));
+        }catch(Exception e){
+            throw new UndefinedTokenException("Invalid token.");
+        }
+    }
+
+    public Optional<Long> getUserIdFromToken(String jwtToken) {
+        try {
+            final Claims claims = extractAllClaims(jwtToken);
+            return Optional.of(Long.valueOf(claims.get("userId").toString()));
+        }catch(Exception e){
+            throw new UndefinedTokenException("Invalid token.");
+        }
+    }
+
 }

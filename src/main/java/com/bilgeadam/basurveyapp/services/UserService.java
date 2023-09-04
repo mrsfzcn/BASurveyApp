@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.UndefinedTokenException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
@@ -98,6 +99,20 @@ public class UserService {
 
     public UserSimpleResponseDto findByOid(Long userId) {
 
+        Optional<User> userById = userRepository.findActiveById(userId);
+        if (userById.isEmpty()) {
+            throw new UserDoesNotExistsException("User is not found");
+        }
+        return UserMapper.INSTANCE.toUserSimpleResponseDto(userById.get());
+    }
+
+    public UserSimpleResponseDto findByEmailToken(String token) {
+        Optional<Long> userIdOptional = jwtService.getUserIdFromToken(token);
+        if (userIdOptional.isEmpty()) {
+            throw new UndefinedTokenException("Invalid token.");
+        }
+        Long userId = userIdOptional.get();
+        System.out.println(userId);
         Optional<User> userById = userRepository.findActiveById(userId);
         if (userById.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
