@@ -32,6 +32,8 @@ public interface SurveyMapper {
 
     SurveyResponseDto toSurveyResponseDto(final Survey survey);
 
+    SurveyResponseByEmailTokenDto toSurveyResponseByEmailTokenDto(final Survey survey);
+
     List<SurveyResponseDto> toSurveyResponseDto(final List<Survey> surveys);
 
     SurveyTagResponseDto toSurveyTagResponseDto(final SurveyTag surveyTag);

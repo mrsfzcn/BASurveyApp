@@ -104,6 +104,7 @@ public class SurveyService {
                             .forEach(student -> emailTokenMap.put(
                                     student.getUser().getEmail(),
                                     jwtService.generateSurveyEmailToken(
+                                            student.getUser().getOid(),
                                             sR.getSurvey().getOid(),
                                             sR.getStudentTag().getOid(),
                                             student.getUser().getEmail(),
@@ -191,6 +192,24 @@ public class SurveyService {
         SurveyResponseDto surveyResponseDto = SurveyMapper.INSTANCE.toSurveyResponseDto(surveyById.get());
         surveyResponseDto.setStudentsWhoNotAnswered(studentsWhoNotAnswered);
         return surveyResponseDto;
+    }
+
+    public SurveyResponseByEmailTokenDto findByEmailToken(String token) {
+        Optional<Long> surveyIdOptional = jwtService.getSurveyIdFromToken(token);
+        if (surveyIdOptional.isEmpty()) {
+            throw new UndefinedTokenException("Invalid token.");
+        }
+        Long surveyId = surveyIdOptional.get();
+        Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
+        Set<Question> surveyQuestions = surveyById.get().getQuestions().stream().collect(Collectors.toSet());
+        surveyById.get().setQuestions(surveyQuestions.stream().collect(Collectors.toList()));
+        if (surveyById.isEmpty()) {
+            throw new SurveyNotFoundException("Survey is not found");
+        }
+
+        SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(surveyById.get());
+
+        return surveyResponseByEmailTokenDto;
     }
 
     //TODO Bakılması lazım. Gereksiz olabilir.
@@ -373,6 +392,7 @@ public class SurveyService {
                 .forEach(user -> emailTokenMap.put(
                         user.getEmail(),
                         jwtService.generateSurveyEmailToken(
+                                user.getOid(),
                                 surveyRegistration.getSurvey().getOid(),
                                 studentTagOid,
                                 user.getEmail(),

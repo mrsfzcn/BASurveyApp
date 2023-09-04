@@ -48,6 +48,12 @@ public class UserController {
         return ResponseEntity.ok(userService.findByOid(userId));
     }
 
+
+    @GetMapping("/find-user-by-email-token/{token}")
+    ResponseEntity<UserSimpleResponseDto> findByEmailToken(@PathVariable String token) {
+        return ResponseEntity.ok(userService.findByEmailToken(token));
+    }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update/{user-email}")
     ResponseEntity<User> updateUser(@PathVariable("user-email") String userEmail, @RequestBody UserUpdateRequestDto dto) {

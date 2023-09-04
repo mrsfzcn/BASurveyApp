@@ -24,7 +24,7 @@ public class EmailService {
 
     private static final String PASSWORD_RESET_HTML_BODY =
             "<h1>BilgeAdam Değerlendirme Anketi</h1>" +
-                    "<a href='http://localhost:8090/api/v1/question/getsurveyquestions/$tokenValue'>" +
+                    "<a href='http://localhost:5173/anket-doldurma-sayfası?Value=$tokenValue'>" +
                     "Ankete gitmek için tıklayın!" +
                     "</a>" +
                     "<br/><br/>" +
