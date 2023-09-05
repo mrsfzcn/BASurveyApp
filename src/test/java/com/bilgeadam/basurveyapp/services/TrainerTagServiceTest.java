@@ -1,5 +1,6 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
@@ -37,10 +38,14 @@ public class TrainerTagServiceTest {
     private TrainerService trainerService;
 
     private TrainerTagService trainerTagService;
+
+    private UserService userService;
+
+    private JwtService jwtService;
     @BeforeEach
     public void Init() {
         MockitoAnnotations.openMocks(this);
-       trainerTagService = new TrainerTagService(trainerTagRepository,trainerService);
+       trainerTagService = new TrainerTagService(trainerTagRepository,trainerService,userService,jwtService);
     }
 
 //    @Test

@@ -141,4 +141,13 @@ public class JwtService {
         }
     }
 
+    public Optional<Long> getStudentTagOidFromToken(String jwtToken) {
+        try {
+            final Claims claims = extractAllClaims(jwtToken);
+            return Optional.of(Long.valueOf(claims.get("studentTagOid").toString()));
+        }catch(Exception e){
+            throw new UndefinedTokenException("Invalid token.");
+        }
+    }
+
 }

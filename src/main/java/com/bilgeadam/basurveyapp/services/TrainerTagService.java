@@ -1,24 +1,21 @@
 package com.bilgeadam.basurveyapp.services;
 
+import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
-import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
-import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Trainer;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
-import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagExistException;
-import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.TagMapper;
 import com.bilgeadam.basurveyapp.repositories.TrainerTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,9 +27,16 @@ public class TrainerTagService {
     private final TrainerTagRepository trainerTagRepository;
     private final TrainerService trainerService;
 
-    public TrainerTagService(TrainerTagRepository trainerTagRepository,@Lazy TrainerService trainerService) {
+    private final UserService userService;
+
+    private final JwtService jwtService;
+
+
+    public TrainerTagService(TrainerTagRepository trainerTagRepository,@Lazy TrainerService trainerService,@Lazy UserService userService,@Lazy JwtService jwtService) {
         this.trainerTagRepository = trainerTagRepository;
         this.trainerService = trainerService;
+        this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     public void createTag(CreateTagDto dto) {
@@ -96,8 +100,20 @@ public class TrainerTagService {
         return GetTrainerTagsByEmailResponse.builder().trainerTags(tags).build();
     }
 
-    public List<String> findTrainersByTrainerTagString(String tagString) {
-        return trainerTagRepository.findByTagString(tagString);
+    public List<UserSimpleResponseDto> findTrainersByEmailToken(String token) {
+        Optional<Long> studentTagOidOptional = jwtService.getStudentTagOidFromToken(token);
+        if (studentTagOidOptional.isEmpty()) {
+            throw new UndefinedTokenException("Invalid token.");
+        }
+        Long studentTagOid = studentTagOidOptional.get();
+         List<Long> userIdsOfTrainer= trainerTagRepository.findByTagOid(studentTagOid);
+        List<UserSimpleResponseDto> userList = new ArrayList<>();
+         for(Long  userId : userIdsOfTrainer) {
+             UserSimpleResponseDto userSimpleResponseDto =userService.findByOid(userId);
+             userList.add(userSimpleResponseDto);
+         }
+        return userList;
+
     }
 
     public void save(TrainerTag trainerTag) {
