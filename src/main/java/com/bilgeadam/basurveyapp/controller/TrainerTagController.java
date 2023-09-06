@@ -3,10 +3,7 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.CreateTagDto;
 import com.bilgeadam.basurveyapp.dto.request.FindTrainersByTagStringRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindUserByEmailRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.FindActiveTrainerTagByIdResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.GetTrainerTagsByEmailResponse;
-import com.bilgeadam.basurveyapp.dto.response.TagResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerTagDetailResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.services.TrainerTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,10 +55,10 @@ public class TrainerTagController {
         return ResponseEntity.ok(trainerTagService.getTrainerTagsByEmail(dto.getEmail()));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PostMapping("/find-trainers-by-trainer-tag")
-    @Operation(summary = "trainer tag string i girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot")
-    public List<String> findTrainersByTrainerTagString(@RequestBody @Valid FindTrainersByTagStringRequestDto dto){
-        return trainerTagService.findTrainersByTrainerTagString(dto.getTagString());
+    @GetMapping("/find-trainers-by-trainer-tag/{token}")
+    @Operation(summary = "Email token girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot")
+    public List<UserSimpleResponseDto> findTrainersByEmailToken(@PathVariable String token){
+        return trainerTagService.findTrainersByEmailToken(token);
     }
 
 
