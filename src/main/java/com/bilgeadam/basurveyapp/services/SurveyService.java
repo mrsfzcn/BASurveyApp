@@ -195,19 +195,13 @@ public class SurveyService {
     }
 
     public SurveyResponseByEmailTokenDto findByEmailToken(String token) {
-        Optional<Long> surveyIdOptional = jwtService.getSurveyIdFromToken(token);
-        if (surveyIdOptional.isEmpty()) {
+        Optional<Long> surveyId = jwtService.getSurveyIdFromToken(token);
+        if (surveyId.isEmpty()) {
             throw new UndefinedTokenException("Invalid token.");
         }
-        Long surveyId = surveyIdOptional.get();
-        Optional<Survey> surveyById = surveyRepository.findActiveById(surveyId);
-        Set<Question> surveyQuestions = surveyById.get().getQuestions().stream().collect(Collectors.toSet());
-        surveyById.get().setQuestions(surveyQuestions.stream().collect(Collectors.toList()));
-        if (surveyById.isEmpty()) {
-            throw new SurveyNotFoundException("Survey is not found");
-        }
-
-        SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(surveyById.get());
+        Survey survey = surveyRepository.findActiveById(surveyId.get()).orElseThrow(() -> {throw new SurveyNotFoundException("Survey is not found");});
+        System.out.println(survey);
+        SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(survey);
 
         return surveyResponseByEmailTokenDto;
     }
@@ -657,9 +651,19 @@ public class SurveyService {
     public void addQuestionsToSurvey(SurveyAddQuestionsRequestDto dto) {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
-        dto.getQuestionIds().forEach(qId -> {
+
+        dto.getQuestionIds().sort(Comparator.comparing(QuestionOrderResponseDto :: getOrder));
+
+        dto.getQuestionIds().forEach(questionOrderDto -> {
+            Long qId = questionOrderDto.getQuestionOid();
             Question question = questionService.findActiveById(qId).orElseThrow(() ->
                     new QuestionNotFoundException("Question not found."));
+            SurveyQuestionOrder surveyQuestionOrder = SurveyQuestionOrder.builder()
+                    .survey(survey)
+                    .question(question)
+                    .order(questionOrderDto.getOrder())
+                    .build();
+            survey.getSurveyQuestionOrders().add(surveyQuestionOrder);
             question.getSurveys().add(survey);
             questions.add(question);
         });

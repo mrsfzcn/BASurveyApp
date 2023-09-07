@@ -21,8 +21,6 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
 
-
-
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("")
     @Operation(summary = "String türünde bir soru, long türünde soru tipi ve integer türünde order girilerek yeni soru oluşturulmasını sağlayan metot. #10")

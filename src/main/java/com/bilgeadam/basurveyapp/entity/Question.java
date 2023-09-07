@@ -21,8 +21,6 @@ public class Question extends BaseEntity {
     // todo : veritabanında 255 karakter ile sınırlı. bu sorun olabilir
     @Column(name = "question_string")
     private String questionString;
-    @Column(name = "question_order")
-    private Integer order;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private QuestionType questionType;
     @JsonBackReference
@@ -30,7 +28,7 @@ public class Question extends BaseEntity {
     private Set<Response> responses;
 
     @JsonBackReference
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "questions")
     private Set<Survey> surveys;
     @JsonBackReference
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -38,4 +36,7 @@ public class Question extends BaseEntity {
 
     //@Lob
     private List<String> options = new ArrayList<>();
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SurveyQuestionOrder> questionSurveys;
 }
