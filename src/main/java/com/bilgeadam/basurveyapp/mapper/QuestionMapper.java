@@ -32,7 +32,7 @@ public interface QuestionMapper {
      * questionCreate
      */
 
-    Question toQuestion(final CreateQuestionDto createQuestionDto);
+    //Question toQuestion(final CreateQuestionDto createQuestionDto);
 
 
 

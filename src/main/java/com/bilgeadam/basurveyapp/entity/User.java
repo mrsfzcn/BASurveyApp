@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 @JsonIgnoreType
 @NoArgsConstructor
@@ -24,7 +25,6 @@ import java.util.Set;
 public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
     private String password;
     @Column(name = "first_name", nullable = false)
     private String firstName;

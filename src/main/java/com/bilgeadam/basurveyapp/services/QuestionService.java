@@ -82,9 +82,8 @@ public class QuestionService {
                     .questionString(createQuestionDto.getQuestionString())
                     .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                             () -> new QuestionTypeNotFoundException("Question type is not found")))
-                    .order(createQuestionDto.getOrder())
                     .questionTag(questionTagList)
-                    .options(createQuestionDto.getOptions())
+                    //.options(createQuestionDto.getOptions())
                     .build();
 
             questionRepository.save(question);
@@ -194,7 +193,6 @@ public class QuestionService {
                 questionsDto.add(QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
-                        .order(question.getOrder())
                         .questionTags(question.getQuestionTag().stream().map(
                                 questionTag -> QuestionTagResponseDto.builder()
                                         .oid(questionTag.getOid())
@@ -216,7 +214,6 @@ public class QuestionService {
                 .map(question -> QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
-                        .order(question.getOrder())
                         .questionTags(question.getQuestionTag().stream().map(
                                 questionTag -> QuestionTagResponseDto.builder()
                                         .oid(questionTag.getOid())
@@ -245,7 +242,6 @@ public class QuestionService {
             return tempQuestions.stream().map(question -> QuestionResponseDto.builder()
                     .questionOid(question.getOid())
                     .questionString(question.getQuestionString())
-                    .order(question.getOrder())
                     .questionTags(QuestionTagMapper.INSTANCE.toQuestionTagResponseDtoList(question.getQuestionTag()))
                     .build())
                     .collect(Collectors.toList());

@@ -13,7 +13,6 @@ public class SurveyServiceConverter {
                 .questionOid(question.getOid())
                 .questionString(question.getQuestionString())
                 .questionTypeOid(question.getQuestionType().getOid())
-                .order(question.getOrder())
                 .responses(responseDtos)
                 .build();
     }
@@ -23,7 +22,6 @@ public class SurveyServiceConverter {
                 .questionOid(question.getOid())
                 .questionString(question.getQuestionString())
                 .questionTypeOid(question.getQuestionType().getOid())
-                .order(question.getOrder())
                 .responses(responseDtos)
                 .build();
     }

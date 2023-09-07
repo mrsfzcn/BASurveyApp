@@ -78,7 +78,6 @@ public interface SurveyMapper {
     @Mapping(source = "oid", target = "questionOid")
     @Mapping(source = "questionString", target = "questionString")
     @Mapping(source = "questionType.oid", target = "questionTypeOid")
-    @Mapping(source = "order", target = "order")
     QuestionWithAnswersResponseDto toQuestionWithAnswersResponseDto(final Question question);
 
     @Mapping(source = "oid", target = "responseOid")

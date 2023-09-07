@@ -44,7 +44,6 @@ public class TestAndRun {
 
         if (admin.isPresent()) return;
         authService.register(RegisterRequestDto.builder()
-
                         .roles(Set.of("ADMIN"))
                         .password("adminadmin")
                         .firstName("admin")
@@ -60,7 +59,5 @@ public class TestAndRun {
             }
         }
     }
-
-
-
+    
 }
