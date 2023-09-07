@@ -83,7 +83,7 @@ public class QuestionService {
                     .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
                             () -> new QuestionTypeNotFoundException("Question type is not found")))
                     .questionTag(questionTagList)
-                    //.options(createQuestionDto.getOptions())
+                    .options(createQuestionDto.getOptions())
                     .build();
 
             questionRepository.save(question);

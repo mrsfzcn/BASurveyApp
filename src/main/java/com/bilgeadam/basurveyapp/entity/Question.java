@@ -28,7 +28,7 @@ public class Question extends BaseEntity {
     private Set<Response> responses;
 
     @JsonBackReference
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "questions")
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Survey> surveys;
     @JsonBackReference
     @ManyToMany(mappedBy = "targetEntities", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

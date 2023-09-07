@@ -39,7 +39,7 @@ public class Survey extends BaseEntity {
     private List<Student> studentsWhoDidntAnswered;
 
     @JsonManagedReference
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Question> questions;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
