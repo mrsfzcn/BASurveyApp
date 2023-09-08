@@ -199,8 +199,7 @@ public class SurveyService {
         if (surveyId.isEmpty()) {
             throw new UndefinedTokenException("Invalid token.");
         }
-        Survey survey = surveyRepository.findActiveById(surveyId.get()).orElseThrow(() -> {throw new SurveyNotFoundException("Survey is not found");});
-        System.out.println(survey);
+        Survey survey = surveyRepository.findSurveyWithOrderedQuestions(surveyId.get()).orElseThrow(() -> {throw new SurveyNotFoundException("Survey is not found");});
         SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(survey);
 
         return surveyResponseByEmailTokenDto;

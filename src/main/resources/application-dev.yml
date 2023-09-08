@@ -14,18 +14,6 @@ spring:
         globally_quoted_identifiers: true
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: hrmsapplicationteam1@gmail.com #Şifre hrms1234**
-    password: mwwkmlzfpbfaweoq
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            required: true
-            enabled: true
   messages:
     basename: i18n/messages
     fallback-to-system-locale: false

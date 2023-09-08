@@ -13,7 +13,6 @@ public class SurveyResponseByEmailTokenDto {
     private Long oid;
     private String surveyTitle;
     private String courseTopic;
-
     private List<SurveyClassroomResponseDto> surveyTags;
     private List<SurveyQuestionResponseDto> questions;
 }
