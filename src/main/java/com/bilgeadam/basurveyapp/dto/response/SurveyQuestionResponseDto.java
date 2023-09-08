@@ -13,7 +13,6 @@ public class SurveyQuestionResponseDto {
 
     private Long oid;
     private String questionString;
-    private Integer order;
     private String questionType;
     private List<String> options;
 }
