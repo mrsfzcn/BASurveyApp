@@ -13,6 +13,7 @@ import com.bilgeadam.basurveyapp.mapper.StudentMapper;
 import com.bilgeadam.basurveyapp.repositories.StudentRepository;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,5 +85,14 @@ public class StudentService {
         userOfStudent.getUser().setState(State.DELETED);
         studentRepository.save(userOfStudent);
         return studentRepository.softDeleteById(student.get().getOid());
+    }
+
+
+    public User findUserByStudentOid(Long oid) {
+        Optional<Student> studentByOid = studentRepository.findStudentByOid(oid);
+        if (studentByOid.isEmpty()) {
+            throw new ResourceNotFoundException("student id bulunamadi");
+        }
+        return studentByOid.get().getUser();
     }
 }

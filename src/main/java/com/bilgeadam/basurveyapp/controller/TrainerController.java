@@ -5,6 +5,9 @@ import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseListTagsDto;
+import com.bilgeadam.basurveyapp.entity.Student;
+import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.services.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,5 +57,10 @@ public class TrainerController {
     @Operation(summary = "Integer türünde id girilerek bulunan trainerın silinmesini sağlayan metot.")
     public ResponseEntity<Boolean> deleteTrainerById(@PathVariable Long id) {
         return ResponseEntity.ok(trainerService.deleteByTrainerOid(id));
+    }
+
+    @GetMapping("findUserByTrainerOid/{oid}")
+    public ResponseEntity<User> findUserByTrainerOId(@PathVariable Long oid) {
+        return ResponseEntity.ok(trainerService.findUserByTrainerOid(oid));
     }
 }

@@ -5,6 +5,7 @@ import com.bilgeadam.basurveyapp.dto.response.AssistantTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MasterTrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.TrainerResponseListTagsDto;
+import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.TrainerExTags;
 import com.bilgeadam.basurveyapp.entity.User;
@@ -133,5 +134,14 @@ public class TrainerService {
         userOfTrainer.getUser().setState(State.DELETED);
         trainerRepository.save(userOfTrainer);
       return trainerRepository.softDeleteById(trainer.get().getOid());
+    }
+
+    public User findUserByTrainerOid(Long oid) {
+
+        Optional<Trainer> trainer = trainerRepository.findTrainerByUserOid(oid);
+        if (trainer.isEmpty()) {
+            throw new ResourceNotFoundException("student id bulunamadi");
+        }
+        return trainer.get().getUser();
     }
 }
