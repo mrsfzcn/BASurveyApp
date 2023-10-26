@@ -24,11 +24,16 @@ public class QuestionTypeService {
 
     public boolean createQuestionType(CreateQuestionTypeRequestDto dto) {
         List<QuestionType> questionTypes = questionTypeRepository.findAll();
-        if(!questionTypes.stream().anyMatch(type -> type.getQuestionType().equalsIgnoreCase(dto.getQuestionType()))){
+        Optional<QuestionType> questionType1 = questionTypes.stream().filter(type -> type.getQuestionType().equalsIgnoreCase(dto.getQuestionType())).findFirst();
+        if(questionType1.isEmpty()){
             QuestionType questionType = (QuestionType.builder()
                     .questionType(dto.getQuestionType())
                     .build());
             questionTypeRepository.save(questionType);
+            return true;
+        } else if (questionType1.get().getState().equals(State.DELETED)) {
+            questionType1.get().setState(State.ACTIVE);
+            questionTypeRepository.save(questionType1.get());
             return true;
         }
         return false;
