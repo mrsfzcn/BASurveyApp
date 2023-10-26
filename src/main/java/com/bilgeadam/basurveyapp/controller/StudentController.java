@@ -2,6 +2,8 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.StudentUpdateDto;
 import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
+import com.bilgeadam.basurveyapp.entity.Student;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -38,4 +40,8 @@ public class StudentController {
         return ResponseEntity.ok(studentService.deleteByStudentOid(id));
     }
 
+    @GetMapping("findUserByStudentOid/{oid}")
+    public ResponseEntity<User> findUserByStudentOId(@PathVariable Long oid) {
+        return ResponseEntity.ok(studentService.findUserByStudentOid(oid));
+    }
 }
