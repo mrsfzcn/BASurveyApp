@@ -815,10 +815,10 @@ public class SurveyService {
         List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
         for(Question question:survey.getQuestions()){
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
-                            .questionIds(question.getOid())
-                            .questionString(question.getQuestionString())
-                            .questionType(question.getQuestionString())
-                            .build());
+                    .questionIds(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .questionType(question.getQuestionString())
+                    .build());
         }
         return responseDtoList;
     }
@@ -842,6 +842,17 @@ public class SurveyService {
         if(!registrations.isEmpty())
             throw new SurveyAlreadyAssignToClassException("Survey assignment has been completed. Removing questions from the survey is not allowed.");
 
+    }
+
+    public void deleteById(Long id){
+        Optional<Survey> survey = surveyRepository.findById(id);
+        List<Question> questions = questionService.findBySurveys(survey.get());
+        questionService.saveAll(questions.stream().map(question ->{
+            question.setSurveys(question.getSurveys().stream().filter(survey1 -> !survey1.getOid().equals(survey.get().getOid())).collect(Collectors.toSet()));
+            return question;
+        }).collect(Collectors.toList()));
+
+        surveyRepository.deleteById(id);
     }
 }
 

@@ -16,11 +16,9 @@ public class SurveyQuestionOrder {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "survey_id")
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
     private Question question;
 
     private Integer order;

@@ -97,6 +97,7 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.update(dto));
     }
 
+    @Deprecated
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete/{survey-id}")
     @Operation(summary = "Suver id girilerek ulaşılan survey'in silinmesini sağlayan metot.")
@@ -172,5 +173,12 @@ public class SurveyController {
         return ResponseEntity.ok(surveyService.removeSurveyQuestions(surveyid,dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @DeleteMapping("/full-delete/{id}")
+    @Operation(summary = "Anketin tamamen silinmesi için kullanılan metod")
+    ResponseEntity<Void> fullDelete(@PathVariable Long id) {
+        surveyService.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }
 
