@@ -4,6 +4,7 @@ package com.bilgeadam.basurveyapp.repositories;
 import com.bilgeadam.basurveyapp.dto.response.SurveyResponseByEmailTokenDto;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
+import org.apache.bcel.generic.Select;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,5 +24,6 @@ public interface SurveyRepository extends BaseRepository<Survey, Long> {
             "ORDER BY qs.order ASC")
     Optional<Survey> findSurveyWithOrderedQuestions(@Param("surveyId") Long surveyId);
 
-
+    @Query("SELECT sQO.survey.oid FROM SurveyQuestionOrder sQO WHERE sQO.question.oid = :questionId")
+    List<Long> findActiveSurveyIdsByQuestionId(@Param("questionId") Long questionId);
 }

@@ -339,5 +339,11 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.QUESTION_ANSWERED",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(QUESTION_ANSWERED,exception,request);
     }
+    @ResponseBody
+    @ExceptionHandler(SurveyInUseException.class)
+    public ResponseEntity<ExceptionResponse> surveyInUseException(SurveyInUseException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.SURVEY_IN_USE",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(SURVEY_IN_USE,exception,request);
+    }
 
 }

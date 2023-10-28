@@ -3,22 +3,15 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
-import com.bilgeadam.basurveyapp.entity.Question;
-import com.bilgeadam.basurveyapp.entity.QuestionType;
-import com.bilgeadam.basurveyapp.entity.Survey;
-import com.bilgeadam.basurveyapp.entity.Trainer;
-import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import com.bilgeadam.basurveyapp.entity.base.BaseTag;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.QuestionMapper;
 import com.bilgeadam.basurveyapp.mapper.QuestionTagMapper;
 import com.bilgeadam.basurveyapp.repositories.QuestionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -167,12 +160,20 @@ public class QuestionService {
             throw new QuestionNotFoundException("Question not found to delete");
         } else {
             if(deleteQuestion.get().getResponses().size()>0){
-                throw new QuestionAnsweredException("Answered questions can not be deleted.");
+                throw new QuestionAnsweredException("Answered questions cannot be deleted.");
             }
             Question question = deleteQuestion.get();
             System.out.println(deleteQuestion.get().getResponses().size());
+            List<Long> SurveyIdsIncludeSelectedQuestionId = surveyService.findActiveSurveyIdsByQuestionId(questionId);
 
-           return questionRepository.softDeleteById(question.getOid());
+            if (SurveyIdsIncludeSelectedQuestionId.size() > 0) {
+                System.out.println("survey id size kontrolu");
+                Boolean anySurveyRegistrated = surveyService.isAnySurveyRegistrated(SurveyIdsIncludeSelectedQuestionId);
+                if (anySurveyRegistrated) {
+                    throw new SurveyInUseException("Silme islemi basariz. Silmek istediginiz soru aktif bir ankete aittir.");//Bu exception neden gozukmuyor arastir
+                }
+            }
+            return questionRepository.softDeleteById(question.getOid());
         }
     }
 

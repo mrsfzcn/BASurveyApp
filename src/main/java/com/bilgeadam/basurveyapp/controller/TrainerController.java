@@ -58,7 +58,7 @@ public class TrainerController {
     public ResponseEntity<Boolean> deleteTrainerById(@PathVariable Long id) {
         return ResponseEntity.ok(trainerService.deleteByTrainerOid(id));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("findUserByTrainerOid/{oid}")
     public ResponseEntity<User> findUserByTrainerOId(@PathVariable Long oid) {
         return ResponseEntity.ok(trainerService.findUserByTrainerOid(oid));
