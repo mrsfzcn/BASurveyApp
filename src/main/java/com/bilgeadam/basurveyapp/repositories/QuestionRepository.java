@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.Question;
+import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,4 +31,6 @@ public interface QuestionRepository extends BaseRepository<Question, Long> {
 
     @Query(value = "select q.question_string from questions as q join questiontypes as qtype on q.question_type_oid = qtype.oid where qtype.question_type = ?1", nativeQuery = true)
     List<String> findQuestionTypeAsString(String questionType);
+
+    List<Question> findBySurveys(Survey survey);
 }

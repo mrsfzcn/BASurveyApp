@@ -32,23 +32,23 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SurveyRegistration> surveyRegistrations;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Student> studentsWhoAnswered;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany( fetch = FetchType.LAZY)
     private List<Student> studentsWhoDidntAnswered;
 
     @JsonManagedReference
-    @ManyToMany(mappedBy = "surveys", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "surveys", fetch = FetchType.LAZY)
     private List<Question> questions;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Trainer whoCreatedSurvey;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "targetEntities", fetch = FetchType.LAZY)
     private Set<SurveyTag> surveyTags;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<Response> responses;
 
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
