@@ -73,31 +73,31 @@ public class QuestionService {
                     throw new QuestionAlreadyExistsException("Question with the same question string already exists.");
                 }
             } else {
-                Set<QuestionTag> questionTagList = new HashSet<>();
+            Set<QuestionTag> questionTagList = new HashSet<>();
 
-                List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
-                tagOids.forEach(questTagOid -> questionTagService.findActiveById(questTagOid).ifPresent(questionTagList::add));
+            List<Long> tagOids = createQuestionDto.getTagOids().stream().toList();
+            tagOids.forEach(questTagOid -> questionTagService.findActiveById(questTagOid).ifPresent(questionTagList::add));
 
-                Question question = Question.builder()
-                        .questionString(createQuestionDto.getQuestionString())
-                        .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
-                                () -> new QuestionTypeNotFoundException("Question type is not found")))
-                        .questionTag(questionTagList)
-                        .options(createQuestionDto.getOptions())
-                        .build();
+            Question question = Question.builder()
+                    .questionString(createQuestionDto.getQuestionString())
+                    .questionType(questionTypeService.findActiveById(createQuestionDto.getQuestionTypeOid()).orElseThrow(
+                            () -> new QuestionTypeNotFoundException("Question type is not found")))
+                    .questionTag(questionTagList)
+                    .options(createQuestionDto.getOptions())
+                    .build();
 
-                questionRepository.save(question);
-                List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
-                questionTagsToAdd.forEach(questionTag -> {
-                    questionTag.getTargetEntities().add(question);
-                    questionTagService.save(questionTag);
-                });
-            }
+            questionRepository.save(question);
+            List<QuestionTag> questionTagsToAdd = new ArrayList<>(questionTagList);
+            questionTagsToAdd.forEach(questionTag -> {
+                questionTag.getTargetEntities().add(question);
+                questionTagService.save(questionTag);
+            });
+        }
         }
         return true;
     }
 
-    // TODO questionTag ile target entitites
+// TODO questionTag ile target entitites
     public Boolean updateQuestion(UpdateQuestionDto updateQuestionDto) {
 
         Optional<Question> updateQuestion = questionRepository.findActiveById(updateQuestionDto.getQuestionOid());
@@ -171,7 +171,15 @@ public class QuestionService {
             }
             Question question = deleteQuestion.get();
             System.out.println(deleteQuestion.get().getResponses().size());
+            List<Long> SurveyIdsIncludeSelectedQuestionId = surveyService.findActiveSurveyIdsByQuestionId(questionId);
 
+            if (SurveyIdsIncludeSelectedQuestionId.size() > 0) {
+                System.out.println("survey id size kontrolu");
+                Boolean anySurveyRegistrated = surveyService.isAnySurveyRegistrated(SurveyIdsIncludeSelectedQuestionId);
+                if (anySurveyRegistrated) {
+                    throw new SurveyInUseException("Silme islemi basariz. Silmek istediginiz soru aktif bir ankete aittir.");//Bu exception neden gozukmuyor arastir
+                }
+            }
             return questionRepository.softDeleteById(question.getOid());
         }
     }
@@ -240,10 +248,10 @@ public class QuestionService {
 //        }
         if (tempQuestions.size() != 0) {
             return tempQuestions.stream().map(question -> QuestionResponseDto.builder()
-                            .questionOid(question.getOid())
-                            .questionString(question.getQuestionString())
-                            .questionTags(QuestionTagMapper.INSTANCE.toQuestionTagResponseDtoList(question.getQuestionTag()))
-                            .build())
+                    .questionOid(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .questionTags(QuestionTagMapper.INSTANCE.toQuestionTagResponseDtoList(question.getQuestionTag()))
+                    .build())
                     .collect(Collectors.toList());
         } else {
             throw new ResourceNotFoundException("There is no any result to be shown");
@@ -345,9 +353,9 @@ public class QuestionService {
         for (Question question: questionList) {
             questionTagList = question.getQuestionTag().stream().map(x -> x.getTagString()).toList();
             dto = FindAllQuestionResponseDto.builder().
-                    questionOid(question.getOid())
+            questionOid(question.getOid())
                     .questionString(question.getQuestionString())
-                    .questionType(question.getQuestionType().getQuestionType()).
+                            .questionType(question.getQuestionType().getQuestionType()).
                     questionTags(questionTagList).
                     build();
             dtos.add(dto);

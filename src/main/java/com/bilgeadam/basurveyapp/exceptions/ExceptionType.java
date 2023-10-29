@@ -62,6 +62,7 @@ public enum ExceptionType {
     TAG_ALREADY_EXIST(9034,"Tag already exists",INTERNAL_SERVER_ERROR),
     SURVEY_ANSWERED(9034,"Survey answered. Can not deleted",BAD_REQUEST),
     QUESTION_ANSWERED(9035,"Question answered. Can not deleted",BAD_REQUEST),
+    SURVEY_IN_USE(9036,"Survey is active. Cannot delete",BAD_REQUEST),
 
 
     /*

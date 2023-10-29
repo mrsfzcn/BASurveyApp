@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.converter.SurveyServiceConverter;
 import com.bilgeadam.basurveyapp.dto.request.*;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.entity.tags.SurveyTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.*;
@@ -815,10 +816,10 @@ public class SurveyService {
         List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
         for(Question question:survey.getQuestions()){
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
-                    .questionIds(question.getOid())
-                    .questionString(question.getQuestionString())
-                    .questionType(question.getQuestionString())
-                    .build());
+                            .questionIds(question.getOid())
+                            .questionString(question.getQuestionString())
+                            .questionType(question.getQuestionString())
+                            .build());
         }
         return responseDtoList;
     }
@@ -853,6 +854,30 @@ public class SurveyService {
         }).collect(Collectors.toList()));
 
         surveyRepository.deleteById(id);
+    }
+
+    /**
+     *
+     * @param questionId
+     * @return Lutfen buraya herhangi bir kontrol eklemeyiniz. Listenin bos gelmedi durumunu kullandiginiz metodda yapininiz!
+     */
+    public List<Long> findActiveSurveyIdsByQuestionId(Long questionId) {
+        List<Long> activeSurveyIdsByQuestionId = surveyRepository.findActiveSurveyIdsByQuestionId(questionId);
+        return activeSurveyIdsByQuestionId;
+    }
+
+    public Boolean isAnySurveyRegistrated(List<Long> surveyIds) {
+        for (Long id : surveyIds) {
+            Optional<Survey> optionalSurvey = surveyRepository.findActiveById(id);
+            if (optionalSurvey.isPresent()) {
+                boolean anyActiveRegistration = optionalSurvey.get().getSurveyRegistrations().stream()
+                        .anyMatch(r -> r.getState()==State.ACTIVE);
+                if (anyActiveRegistration) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 

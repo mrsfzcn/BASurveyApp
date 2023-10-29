@@ -39,7 +39,7 @@ public class StudentController {
     public ResponseEntity<Boolean> deleteStudentById(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.deleteByStudentOid(id));
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("findUserByStudentOid/{oid}")
     public ResponseEntity<User> findUserByStudentOId(@PathVariable Long oid) {
         return ResponseEntity.ok(studentService.findUserByStudentOid(oid));

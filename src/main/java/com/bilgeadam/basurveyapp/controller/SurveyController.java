@@ -172,6 +172,17 @@ public class SurveyController {
     public ResponseEntity<Boolean> removeSurveyQuestions(@PathVariable Long surveyid,@RequestBody RemoveSurveyQuestionRequestDto dto){
         return ResponseEntity.ok(surveyService.removeSurveyQuestions(surveyid,dto));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @GetMapping("find-active-survey-by-question-id")
+    public ResponseEntity<List<Long>> findActiveSurveyIdsByQuestionId(@RequestParam Long questionId) {
+        return ResponseEntity.ok(surveyService.findActiveSurveyIdsByQuestionId(questionId));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
+    @GetMapping("is-any-survey-registrated")
+    public ResponseEntity<Boolean> isAnySurveyRegistrated(@RequestParam List<Long> surveyIds) {
+        return ResponseEntity.ok(surveyService.isAnySurveyRegistrated(surveyIds));
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/full-delete/{id}")
