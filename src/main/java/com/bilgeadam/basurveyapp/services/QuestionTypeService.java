@@ -87,4 +87,7 @@ public class QuestionTypeService {
         questionType.setQuestionType(newTypeString);
         return questionTypeRepository.save(questionType);
     }
+    public Boolean existsByQuestionType(String questionType){
+        return questionTypeRepository.existsByQuestionType(questionType);
+    }
 }
