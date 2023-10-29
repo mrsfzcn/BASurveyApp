@@ -14,4 +14,6 @@ public interface QuestionTypeRepository extends BaseRepository<QuestionType, Lon
     Optional<QuestionType> findByOidAndState(Long oid, State state);
 
     Optional<QuestionType> findOptionalByQuestionType(String typeString);
+
+    Boolean existsByQuestionType(String questionType);
 }
