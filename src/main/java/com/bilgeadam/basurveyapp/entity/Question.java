@@ -19,7 +19,7 @@ import java.util.Set;
 @Table(name = "questions")
 public class Question extends BaseEntity {
     // todo : veritabanında 255 karakter ile sınırlı. bu sorun olabilir
-    @Column(name = "question_string")
+    @Column(name = "question_string",length = 10485760)
     private String questionString;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private QuestionType questionType;
