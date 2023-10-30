@@ -814,7 +814,8 @@ public class SurveyService {
     public List<SurveyQuestionsResponseDto> findSurveyQuestions(Long surveyid) {
         Survey survey = validateSurveyExists(surveyid);
         List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
-        for(Question question:survey.getQuestions()){
+        List<Question> activeQuestions = survey.getQuestions().stream().filter(q -> q.getState() == State.ACTIVE).collect(toList());
+        for(Question question:activeQuestions){
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
                             .questionIds(question.getOid())
                             .questionString(question.getQuestionString())
