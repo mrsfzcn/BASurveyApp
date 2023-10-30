@@ -72,7 +72,7 @@ public class QuestionServiceTest {
                 questionsDto.add(QuestionResponseDto.builder()
                         .questionOid(question.getOid())
                         .questionString(question.getQuestionString())
-                        .order(question.getOrder())
+//                        .order(question.getOrder())
                         .questionTags(question.getQuestionTag().stream().map(
                                 questionTag -> QuestionTagResponseDto.builder()
                                         .oid(questionTag.getOid())
