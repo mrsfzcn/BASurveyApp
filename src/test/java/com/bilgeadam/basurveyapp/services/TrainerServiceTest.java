@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.entity.Trainer;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.TrainerTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.TrainerTagNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
@@ -187,5 +189,31 @@ public class TrainerServiceTest {
         } catch (TrainerNotFoundException e){
             assertEquals("Trainer is not found", e.getMessage());
         }
+    }
+
+    @Test
+    public void testFindUserByTrainerOId(){
+
+        when(trainerRepository.findTrainerByUserOid(123L)).thenReturn(Optional.empty());
+
+        try {
+            trainerService.findUserByTrainerOid(123L);
+        } catch (ResourceNotFoundException e) {
+            assertEquals("student id bulunamadi", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testFindUserByTrainerOidWhenTrainerIsPresent() {
+
+        Trainer trainer = new Trainer();
+        User user = new User();
+        trainer.setUser(user);
+
+        when(trainerRepository.findTrainerByUserOid(1L)).thenReturn(Optional.of(trainer));
+        User result = trainerService.findUserByTrainerOid(1L);
+
+        assertNotNull(result);
+        assertEquals(user, result);
     }
 }
