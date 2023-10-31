@@ -35,7 +35,7 @@ public class Survey extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Student> studentsWhoAnswered;
 
-    @ManyToMany( fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<Student> studentsWhoDidntAnswered;
 
     @JsonManagedReference

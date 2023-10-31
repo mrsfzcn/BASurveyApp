@@ -25,6 +25,6 @@ public class SurveyRegistration extends BaseEntity {
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private Survey survey;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private StudentTag studentTag;
 }
