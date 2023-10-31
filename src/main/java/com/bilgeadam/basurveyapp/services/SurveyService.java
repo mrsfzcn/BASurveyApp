@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -76,46 +77,6 @@ public class SurveyService {
         this.trainerService = trainerService;
     }
 
-    /**
-     * cron = "0 30 9 * * MON-FRI"
-     * cron = "*1 * * * * *" -> everySecond
-     * cron = "0 *1 * * * *" -> everyMinute
-     *
-     * @throws MessagingException
-     */
-//    private List<Student> getStudentsByStudentTag(StudentTag studentTag) {
-//
-//        return studentTagService.getStudentsByStudentTag(studentTag);
-//    }
-    @Async
-    @Scheduled(cron = "0 30 9 * * MON-FRI")
-    public void initiateSurveys() throws MessagingException {
-        List<SurveyRegistration> surveyRegistrations = surveyRegistrationRepository.findAllByEndDateAfter(LocalDateTime.now());
-
-        if (surveyRegistrations.size() != 0) {
-
-            Map<String, String> emailTokenMap = new HashMap<>();
-
-//TODO student listesinden student tag classroom tage eşit olanları student listesi olarak dönecek
-            surveyRegistrations
-                    .parallelStream()
-                    .filter(sR -> sR.getStartDate().toLocalDate().equals(LocalDate.now()))
-                    .forEach(sR -> studentTagService.getStudentsByStudentTag(sR.getStudentTag())
-                            .stream()
-                            .forEach(student -> emailTokenMap.put(
-                                    student.getUser().getEmail(),
-                                    jwtService.generateSurveyEmailToken(
-                                            student.getUser().getOid(),
-                                            sR.getSurvey().getOid(),
-                                            sR.getStudentTag().getOid(),
-                                            student.getUser().getEmail(),
-                                            (int) ChronoUnit.DAYS.between(sR.getEndDate(), sR.getStartDate())))));
-
-            emailService.sendSurveyMail(emailTokenMap);
-        }
-//        logger.info("Scheduled - " + Thread.currentThread().getId() + " - " + LocalDateTime.now());
-    }
-
     public List<SurveySimpleResponseDto> getSurveyList() {
         List<Survey> surveys = surveyRepository.findAllActive();
         return INSTANCE.toSurveySimpleResponseDto(surveys);
@@ -126,7 +87,7 @@ public class SurveyService {
         return surveyRepository.findAllActive(pageable);
     }
 
-    public SurveySimpleResponseDto  create(SurveyCreateRequestDto dto) {
+    public SurveySimpleResponseDto create(SurveyCreateRequestDto dto) {
 
         try {
             Survey survey = INSTANCE.toSurvey(dto);
@@ -175,14 +136,14 @@ public class SurveyService {
         Set<Student> whoAnsweredStudents = surveyById.get().getStudentsWhoAnswered();
 
         Map<Student, Integer> hashMap = new HashMap<>();
-        for(Student key : whoAnsweredStudents){
-            hashMap.put(key,0);
+        for (Student key : whoAnsweredStudents) {
+            hashMap.put(key, 0);
         }
 
         surveyById.get().getSurveyRegistrations().parallelStream()
                 .forEach(sR -> studentTagService.getStudentsByStudentTag(sR.getStudentTag()).stream()
                         .forEach(student -> {
-                            if (!hashMap.containsKey(student)){
+                            if (!hashMap.containsKey(student)) {
                                 studentsWhoNotAnswered.add(SurveyStudentResponseDto.builder()
                                         .email(student.getUser().getEmail())
                                         .firstName(student.getUser().getFirstName())
@@ -200,7 +161,9 @@ public class SurveyService {
         if (surveyId.isEmpty()) {
             throw new UndefinedTokenException("Invalid token.");
         }
-        Survey survey = surveyRepository.findSurveyWithOrderedQuestions(surveyId.get()).orElseThrow(() -> {throw new SurveyNotFoundException("Survey is not found");});
+        Survey survey = surveyRepository.findSurveyWithOrderedQuestions(surveyId.get()).orElseThrow(() -> {
+            throw new SurveyNotFoundException("Survey is not found");
+        });
         SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(survey);
 
         return surveyResponseByEmailTokenDto;
@@ -331,11 +294,11 @@ public class SurveyService {
                 .parallelStream()
                 .filter(sR -> sR.getSurvey().getOid().equals(survey.getOid()) && sR.getStudentTag().getOid().equals(studentTag.get().getOid()))
                 .findAny();
-        if(studentTag.get().getTargetEntities().isEmpty()){
-            throw new  StudentNotFoundException("Bu sınıfta öğrenci bulunmamaktadır!");
+        if (studentTag.get().getTargetEntities().isEmpty()) {
+            throw new StudentNotFoundException("Bu sınıfta öğrenci bulunmamaktadır!");
         }
 
-        studentList(studentTag.get().getOid(),survey.getOid());
+        studentList(studentTag.get().getOid(), survey.getOid());
 
 
         if (surveyRegistrationOptional.isPresent()) {
@@ -349,7 +312,7 @@ public class SurveyService {
         } catch (Exception e) {
             startDate = LocalDateTime.now();
         }
-        if(startDate.compareTo(LocalDateTime.now())<0){
+        if (startDate.compareTo(LocalDateTime.now()) < 0) {
             throw new SurveyAssignInvalidDateException("Date field can't containt past date");
         }
 
@@ -363,9 +326,8 @@ public class SurveyService {
         survey.getSurveyRegistrations().add(surveyRegistration);
 
         surveyRepository.save(survey);
-
-        sendEmail(surveyRegistration, dto.getDays());
-
+        if (startDate.toLocalDate().equals(LocalDate.now()) && startDate.toLocalTime().isAfter(LocalTime.of(9, 30)))
+            sendEmail(surveyRegistration, dto.getDays());
         return true;
     }
 
@@ -394,6 +356,7 @@ public class SurveyService {
 
         return emailTokenMap;
     }
+
     public List<SurveyByStudentTagResponseDto> findSurveysByStudentTag(Long studentTagOid) {
         StudentTag studentTag = studentTagService.findActiveById(studentTagOid)
                 .orElseThrow(() -> new StudentTagNotFoundException("Student tag not found with id: " + studentTagOid));
@@ -591,7 +554,7 @@ public class SurveyService {
                 .orElseThrow(() -> new StudentNotFoundException("Student not found with id: " + studentOid));
 
         if (roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_STUDENT)) {
-            if(student.getUser().getOid() != user.getOid()){
+            if (student.getUser().getOid() != user.getOid()) {
                 throw new AccessDeniedException("Access denied");
             }
         }
@@ -652,7 +615,7 @@ public class SurveyService {
         Survey survey = surveyRepository.findActiveById(dto.getSurveyId()).orElseThrow(() -> new SurveyNotFoundException("Survey not found."));
         List<Question> questions = survey.getQuestions();
 
-        dto.getQuestionIds().sort(Comparator.comparing(QuestionOrderResponseDto :: getOrder));
+        dto.getQuestionIds().sort(Comparator.comparing(QuestionOrderResponseDto::getOrder));
 
         dto.getQuestionIds().forEach(questionOrderDto -> {
             Long qId = questionOrderDto.getQuestionOid();
@@ -682,7 +645,7 @@ public class SurveyService {
                 .orElseThrow(() -> new EntityNotFoundException("Student tag not found with id: " + id));
     }
 
-    private List<Response> getResponsesForStudentTag(StudentTag studentTag){
+    private List<Response> getResponsesForStudentTag(StudentTag studentTag) {
         List<Response> responses = new ArrayList<>();
         for (Student student : studentTag.getTargetEntities()) {
             Set<Response> studentResponses = responseService.findSetByUser(student.getUser());
@@ -744,9 +707,9 @@ public class SurveyService {
     @Transactional
     public SurveySimpleResponseDto assignSurveyTag(SurveyTagAssignRequestDto dto) {
         Optional<Survey> survey = Optional.ofNullable(surveyRepository.findActiveById(dto.getSurveyOid()).orElseThrow(() -> new SurveyNotFoundException("Survey not found.")));
-        for(int i =0;i<dto.getSurveyTagOid().size();i++){
+        for (int i = 0; i < dto.getSurveyTagOid().size(); i++) {
             Optional<SurveyTag> surveyTag = Optional.ofNullable(surveyTagService.findActiveById(dto.getSurveyTagOid().get(i)).orElseThrow(() -> new SurveyTagNotFoundException("SurveyTag not found")));
-            if(!survey.get().getSurveyTags().contains(surveyTag.get())){
+            if (!survey.get().getSurveyTags().contains(surveyTag.get())) {
                 survey.get().getSurveyTags().add(surveyTag.get());
                 surveyTag.get().getTargetEntities().add(survey.get());
                 surveyTagService.save(surveyTag.get());
@@ -760,12 +723,12 @@ public class SurveyService {
     }
 
 
-    public List<Long> findTotalStudentBySurveyOid(Long surveyid,Long studentTagOid) {
-        return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid,studentTagOid);
+    public List<Long> findTotalStudentBySurveyOid(Long surveyid, Long studentTagOid) {
+        return surveyRegistrationRepository.findTotalStudentBySurveyOid(surveyid, studentTagOid);
     }
 
-    public List<String> findStudentNameBySurveyOid(Long surveyid,Long studentTagOid) {
-        return surveyRegistrationRepository.findStudentNameBySurveyOid(surveyid,studentTagOid);
+    public List<String> findStudentNameBySurveyOid(Long surveyid, Long studentTagOid) {
+        return surveyRegistrationRepository.findStudentNameBySurveyOid(surveyid, studentTagOid);
     }
 
     public List<SurveyQuestionResponseByStudentResponseDto> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto) {
@@ -781,19 +744,18 @@ public class SurveyService {
         }
 
 
-
         Map<Question, List<Response>> questionResponseListMap = new LinkedHashMap<>();
 
         for (Response response : responseList) {
             Question question = response.getQuestion();
             List<Response> specialResponseList = new ArrayList<>();
 
-            for (Response response1: responseList){
-                if (response1.getQuestion()== question){
+            for (Response response1 : responseList) {
+                if (response1.getQuestion() == question) {
                     specialResponseList.add(response1);
                 }
             }
-            questionResponseListMap.put(question,specialResponseList);
+            questionResponseListMap.put(question, specialResponseList);
         }
 
         List<SurveyQuestionResponseByStudentResponseDto> surveyQuestionResponseByStudentResponseDtos = new ArrayList<>();
@@ -813,43 +775,46 @@ public class SurveyService {
 
     public List<SurveyQuestionsResponseDto> findSurveyQuestions(Long surveyid) {
         Survey survey = validateSurveyExists(surveyid);
-        List<SurveyQuestionsResponseDto> responseDtoList= new ArrayList<>();
+        List<SurveyQuestionsResponseDto> responseDtoList = new ArrayList<>();
         List<Question> activeQuestions = survey.getQuestions().stream().filter(q -> q.getState() == State.ACTIVE).collect(toList());
-        for(Question question:activeQuestions){
+        for (Question question : activeQuestions) {
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
-                            .questionIds(question.getOid())
-                            .questionString(question.getQuestionString())
-                            .questionType(question.getQuestionString())
-                            .build());
+                    .questionIds(question.getOid())
+                    .questionString(question.getQuestionString())
+                    .questionType(question.getQuestionString())
+                    .build());
         }
         return responseDtoList;
     }
-    public Boolean removeSurveyQuestions(Long surveyId,RemoveSurveyQuestionRequestDto dto) {
+
+    public Boolean removeSurveyQuestions(Long surveyId, RemoveSurveyQuestionRequestDto dto) {
         Survey survey = validateSurveyExists(surveyId);
         validateSurveyAssigment(surveyId);
         survey.getQuestions().removeIf(question -> dto.getQuestionIds().contains(question.getOid()));
-        for(Long ids : dto.getQuestionIds()){
+        for (Long ids : dto.getQuestionIds()) {
             Question question = questionService.findActiveById(ids).orElseThrow(() -> new QuestionNotFoundException("Invalid questionId"));
             question.getSurveys().removeIf(s -> s.getOid().equals(surveyId));
         }
         surveyRepository.save(survey);
         return true;
     }
-    public Survey validateSurveyExists(Long id){
+
+    public Survey validateSurveyExists(Long id) {
         return surveyRepository.findActiveById(id)
                 .orElseThrow(() -> new SurveyNotFoundException("Survey not found"));
     }
-    public void validateSurveyAssigment(Long surveyId){
+
+    public void validateSurveyAssigment(Long surveyId) {
         List<SurveyRegistration> registrations = surveyRegistrationRepository.findSurveyRegistrationsBySurvey0id(surveyId);
-        if(!registrations.isEmpty())
+        if (!registrations.isEmpty())
             throw new SurveyAlreadyAssignToClassException("Survey assignment has been completed. Removing questions from the survey is not allowed.");
 
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         Optional<Survey> survey = surveyRepository.findById(id);
         List<Question> questions = questionService.findBySurveys(survey.get());
-        questionService.saveAll(questions.stream().map(question ->{
+        questionService.saveAll(questions.stream().map(question -> {
             question.setSurveys(question.getSurveys().stream().filter(survey1 -> !survey1.getOid().equals(survey.get().getOid())).collect(Collectors.toSet()));
             return question;
         }).collect(Collectors.toList()));
@@ -858,7 +823,6 @@ public class SurveyService {
     }
 
     /**
-     *
      * @param questionId
      * @return Lutfen buraya herhangi bir kontrol eklemeyiniz. Listenin bos gelmedi durumunu kullandiginiz metodda yapininiz!
      */
@@ -872,7 +836,7 @@ public class SurveyService {
             Optional<Survey> optionalSurvey = surveyRepository.findActiveById(id);
             if (optionalSurvey.isPresent()) {
                 boolean anyActiveRegistration = optionalSurvey.get().getSurveyRegistrations().stream()
-                        .anyMatch(r -> r.getState()==State.ACTIVE);
+                        .anyMatch(r -> r.getState() == State.ACTIVE);
                 if (anyActiveRegistration) {
                     return true;
                 }
