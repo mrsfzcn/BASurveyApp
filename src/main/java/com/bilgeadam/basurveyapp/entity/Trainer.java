@@ -23,4 +23,6 @@ public class Trainer extends BaseEntity {
     Set<TrainerTag> trainerTags;
     boolean isMasterTrainer;
 
+    @ManyToOne
+    Branch branch;
 }

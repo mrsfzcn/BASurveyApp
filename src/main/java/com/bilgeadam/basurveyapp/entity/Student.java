@@ -25,4 +25,6 @@ public class Student extends BaseEntity {
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.LAZY)
     Set<StudentTag> studentTags;
 
+    @ManyToOne
+    Branch branch;
 }
