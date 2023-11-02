@@ -3,10 +3,10 @@ spring:
       url: jdbc:postgresql://localhost:5432/BASurveyApp
       driver-class-name: org.postgresql.Driver
       username: postgres
-      password: root
+      password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       format_sql: true
     show-sql: true
     properties:
