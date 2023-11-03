@@ -49,6 +49,10 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.0.0'
     implementation 'dev.samstevens.totp:totp:1.7'
 
+    //Feign eklentisi en güncel sürüm.
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.0.4'
+
+
 
 }
 
