@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IBranchRepository extends BaseRepository<Branch,Long> {
 
+    boolean existsByApiId(String apiId);
+
+    boolean existsByNameAndCity(String name, String city);
 }

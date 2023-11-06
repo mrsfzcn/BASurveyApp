@@ -346,4 +346,17 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(SURVEY_IN_USE,exception,request);
     }
 
+    @ResponseBody
+    @ExceptionHandler(BranchNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> branchNotFoundException(BranchNotFoundException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.BRANCH_NOT_FOUND",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(BRANCH_NOT_FOUND,exception,request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(BranchAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> branchAlreadyExistException(BranchAlreadyExistException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.BRANCH_ALREADY_EXIST",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(BRANCH_ALREADY_EXIST,exception,request);
+    }
 }

@@ -326,7 +326,7 @@ public class SurveyService {
         survey.getSurveyRegistrations().add(surveyRegistration);
 
         surveyRepository.save(survey);
-        if (startDate.toLocalDate().equals(LocalDate.now()) && startDate.toLocalTime().isAfter(LocalTime.of(9, 30)))
+//        if (startDate.toLocalDate().equals(LocalDate.now()) && startDate.toLocalTime().isAfter(LocalTime.of(9, 30)))
             sendEmail(surveyRegistration, dto.getDays());
         return true;
     }
