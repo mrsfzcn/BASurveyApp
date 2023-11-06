@@ -33,10 +33,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "authorized_role")
     private String authorizedRole;
     @JsonManagedReference
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     private boolean twoFactory;
     private String twoFactorKey;
+    private String apiId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
