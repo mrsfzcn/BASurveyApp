@@ -14,20 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name","location"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name","city"}))
 public class Branch extends BaseEntity{
 
 
+    private String apiId;
+
     private String name;
-    private String location;
+    private String city;
 
-
-    @OneToMany(mappedBy = "branch")
-    private List<Student> students;
-
-    @OneToMany(mappedBy = "branch")
-    private List<Trainer> trainers;
-
-    @OneToMany(mappedBy = "branch")
-    private List<Manager> managers;
 }

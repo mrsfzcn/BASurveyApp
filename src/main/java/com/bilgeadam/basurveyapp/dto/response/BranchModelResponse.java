@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageResponseDto {
-    private String message;
+public class BranchModelResponse {
+
+    private Long id;
+    private String name;
+    private String city;
 }

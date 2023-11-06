@@ -19,13 +19,9 @@ import java.util.List;
 public class CreateBranchRequestDto {
 
     @NotBlank
+    private String apiId;
+    @NotBlank
     private String name;
     @NotBlank
-    private String location;
-
-    private List<Student> students;
-
-    private List<Trainer> trainers;
-
-    private List<Manager> managers;
+    private String city;
 }

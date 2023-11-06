@@ -10,5 +10,5 @@ import java.util.List;
 @FeignClient(name = "api-trainer", url = "http://localhost:8081/trainer")
 public interface ITrainerManager {
     @GetMapping("/findall")
-    public ResponseEntity<List<TrainerModelResponse>> findAll();
+    ResponseEntity<List<TrainerModelResponse>> findAll();
 }
