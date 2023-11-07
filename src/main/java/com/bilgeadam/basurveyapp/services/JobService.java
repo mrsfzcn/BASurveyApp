@@ -2,14 +2,14 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.constant.ROLE_CONSTANTS;
+import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
 import com.bilgeadam.basurveyapp.dto.response.TrainerModelResponse;
-import com.bilgeadam.basurveyapp.entity.Role;
-import com.bilgeadam.basurveyapp.entity.SurveyRegistration;
-import com.bilgeadam.basurveyapp.entity.Trainer;
-import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.exceptions.custom.BranchNotFoundException;
+import com.bilgeadam.basurveyapp.manager.IBranchManager;
 import com.bilgeadam.basurveyapp.manager.ITrainerManager;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.utilty.Helpers;
@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Schedule işlemleri bu service içerisinde çözümlenmeli.
@@ -44,8 +43,12 @@ public class JobService {
     private final TrainerService trainerService;
     private final RoleService roleService;
 
+    private final BranchService branchService;
 
-    public JobService(ITrainerManager trainerManager, EmailService emailService, JwtService jwtService, SurveyRegistrationRepository surveyRegistrationRepository, StudentTagService studentTagService, PasswordEncoder passwordEncoder, UserService userService, QrCodeService qrCodeService, StudentService studentService, TrainerService trainerService, RoleService roleService) {
+    private final IBranchManager branchManager;
+
+
+    public JobService(ITrainerManager trainerManager, EmailService emailService, JwtService jwtService, SurveyRegistrationRepository surveyRegistrationRepository, StudentTagService studentTagService, PasswordEncoder passwordEncoder, UserService userService, QrCodeService qrCodeService, StudentService studentService, TrainerService trainerService, RoleService roleService, BranchService branchService, IBranchManager branchManager) {
         this.trainerManager = trainerManager;
         this.emailService = emailService;
         this.jwtService = jwtService;
@@ -57,6 +60,8 @@ public class JobService {
         this.studentService = studentService;
         this.trainerService = trainerService;
         this.roleService = roleService;
+        this.branchService = branchService;
+        this.branchManager = branchManager;
     }
 
     /**
@@ -102,6 +107,7 @@ public class JobService {
     @Scheduled(cron = "0 0 0 * * *")
     public void getDatasFromApi() {
         checkTrainerData(trainerManager.findAll().getBody());
+        checkBranchData(branchManager.findAll().getBody());
     }
 
     /**
@@ -168,5 +174,32 @@ public class JobService {
                 .twoFactory(false)
                 .twoFactorKey(qrCodeService.generateSecret())
                 .build();
+    }
+
+
+    private void checkBranchData(List<BranchModelResponse> baseApiBranches) {
+        if (baseApiBranches.isEmpty()) {
+            throw new BranchNotFoundException("Branch ile ilgili herhangi bir data bulunamamistir");
+        }
+        List<Branch> currentBranches = branchService.findAllBranches(); // SurveyApp uzerindeki veriler
+        List<Branch> deletedBranches = new ArrayList<>();
+
+        currentBranches.forEach(cBranch->{
+            Optional<BranchModelResponse> first = baseApiBranches.stream().filter(branch ->("Branch-" + branch.getId()).equals(cBranch.getApiId())).findFirst();
+            if (first.isEmpty()) {
+                deletedBranches.add(cBranch);
+            }
+        });
+
+        if (!deletedBranches.isEmpty()) {
+            deletedBranches.forEach(dBranch->branchService.deleteBranchByOid(dBranch.getOid()));
+        }
+
+        for (BranchModelResponse baseApiBranch : baseApiBranches) {
+            boolean existsByApiId = branchService.existByApiId("Branch-" + baseApiBranch.getId());
+            if (!existsByApiId) {
+               branchService.create(CreateBranchRequestDto.builder().apiId("Branch-"+baseApiBranch.getId()).name(baseApiBranch.getName()).city(baseApiBranch.getCity()).build());
+            }
+        }
     }
 }
