@@ -1,8 +1,10 @@
 package com.bilgeadam.basurveyapp.mapper;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
 import com.bilgeadam.basurveyapp.entity.Branch;
+import com.bilgeadam.basurveyapp.entity.CourseGroup;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -13,5 +15,6 @@ public interface IBranchMapper {
     IBranchMapper INSTANCE = Mappers.getMapper(IBranchMapper.class);
 
     Branch toBranch(final CreateBranchRequestDto dto);
+
 
 }
