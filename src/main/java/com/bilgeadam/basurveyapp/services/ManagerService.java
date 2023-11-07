@@ -1,6 +1,8 @@
 package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.entity.Manager;
+import com.bilgeadam.basurveyapp.entity.enums.State;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,10 @@ public class ManagerService {
 
     public void deleteByManagerOid(Long oid) {
         Optional<Manager> manager = managerRepository.findByUserOid(oid);
+        if(manager.isEmpty())
+            throw new ResourceNotFoundException("Entity not found");
+        manager.get().getUser().setState(State.DELETED);
+        managerRepository.save(manager.get());
         managerRepository.softDeleteById(manager.get().getOid());
     }
 }

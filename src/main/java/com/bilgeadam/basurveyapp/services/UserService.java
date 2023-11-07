@@ -95,7 +95,7 @@ public class UserService {
         return userRepository.save(userToBeUpdated.get());
     }
 
-    //Metodda bir problem var incelenmesi gerekiyor. Trainer silme işlemi için softDeleteTrainer metodu yazıldı.
+    // Yeniden düzenlendi.
     public boolean deleteUser(Long userId) {
 
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
@@ -103,14 +103,14 @@ public class UserService {
             throw new UserDoesNotExistsException("User is not found");
         }
 
-        if(userToBeDeleted.get().getAuthorizedRole().equals("STUDENT")){
-            studentService.deleteByStudentOid(userToBeDeleted.get().getOid());
-        } else if (userToBeDeleted.get().getAuthorizedRole().equals("MASTER_TRAINER") || userToBeDeleted.get().getAuthorizedRole().equals("ASSISTANT_TRAINER")) {
+        if(userToBeDeleted.get().getRoles().stream().anyMatch(role -> role.getRole().equals("STUDENT"))){
+            studentService.deleteStudentByUserOid(userToBeDeleted.get().getOid());
+        }  if (userToBeDeleted.get().getRoles().stream().anyMatch(role -> role.getRole().equals("MASTER_TRAINER") || role.getRole().equals("ASSISTANT_TRAINER"))) {
             trainerService.deleteByTrainerOid(userToBeDeleted.get().getOid());
-        } else if (userToBeDeleted.get().getAuthorizedRole().equals("MANAGER")) {
+        }  if (userToBeDeleted.get().getRoles().stream().anyMatch(role -> role.getRole().equals("MANAGER"))) {
             managerService.deleteByManagerOid(userToBeDeleted.get().getOid());
         }
-        return   userRepository.softDeleteById(userToBeDeleted.get().getOid());
+        return  true;
     }
     public boolean softDeleteTrainer(Long userId){
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
@@ -182,7 +182,7 @@ public class UserService {
 
 
     public User save(User auth) {
-       return userRepository.save(auth);
+        return userRepository.save(auth);
     }
 
     public Optional<User> findById(Long id) {
@@ -194,12 +194,12 @@ public class UserService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         if(userList.isEmpty()) throw new UserDoesNotExistsException("Kayıtlı User Bulunamadı");
         List<FindAllUserDetailsResponseDto> findAllUserDetailsResponseDtoList = userList.stream().map(user ->{
-            FindAllUserDetailsResponseDto dto = UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user);
-            String date = dateFormat.format(user.getCreatedAt());
+                    FindAllUserDetailsResponseDto dto = UserMapper.INSTANCE.toFindAllUserDetailsResponseDto(user);
+                    String date = dateFormat.format(user.getCreatedAt());
 
-            dto.setCreatedDate(date);
-            return dto;
-        }
+                    dto.setCreatedDate(date);
+                    return dto;
+                }
         ).collect(Collectors.toList());
         return findAllUserDetailsResponseDtoList;
     }

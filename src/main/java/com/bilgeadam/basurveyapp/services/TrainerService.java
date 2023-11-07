@@ -129,8 +129,9 @@ public class TrainerService {
     }
 
 
+    // Kullanılan ilk metod değiştirildi. findTrainerByUserOid > findActiveTrainerByUserOid
     public Boolean deleteByTrainerOid(Long oid) {
-      Optional<Trainer> trainer =  trainerRepository.findTrainerByUserOid(oid);
+      Optional<Trainer> trainer =  trainerRepository.findActiveTrainerByUserOid(oid);
         Trainer userOfTrainer = findActiveById(trainer.get().getOid()).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         userOfTrainer.getUser().setState(State.DELETED);
         trainerRepository.save(userOfTrainer);

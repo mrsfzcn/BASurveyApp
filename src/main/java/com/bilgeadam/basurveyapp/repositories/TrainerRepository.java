@@ -28,4 +28,7 @@ public interface TrainerRepository extends BaseRepository<Trainer, Long> {
 
     Optional<Trainer> findByUser(User user);
 
+    @Query("SELECT t FROM Trainer t WHERE t.state = 'ACTIVE' AND t.user.oid = ?1")
+    Optional<Trainer> findActiveTrainerByUserOid(Long oid);
+
 }
