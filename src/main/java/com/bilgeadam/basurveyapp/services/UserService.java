@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
 import com.bilgeadam.basurveyapp.exceptions.custom.UndefinedTokenException;
@@ -75,10 +76,29 @@ public class UserService {
         return userRepository.save(userToBeUpdated.get());
     }
 
+    /**
+     * API'dan gelecek verilerin güncelleme işlemleri için hazırlandı.
+     * @param userEmail Database'de kayıtlı olan email adresi
+     * @param dto Güncellenecek bilgileri içeren nesne
+     * @return Güncellenmiş User nesnesi.
+     */
+    public User updateTrainerWithApiData(String userEmail,UserUpdateRequestDto dto){
+        Optional<User> userToBeUpdated = userRepository.findByOnlyEmail(userEmail);
+        if (userToBeUpdated.isEmpty()) {
+            throw new UserDoesNotExistsException("User is not found");
+        }
+        userToBeUpdated.get().setFirstName(dto.getFirstName());
+        userToBeUpdated.get().setLastName(dto.getLastName());
+        userToBeUpdated.get().setEmail(dto.getEmail());
+        userToBeUpdated.get().setAuthorizedRole(dto.getAuthorizedRole());
+        userToBeUpdated.get().setState(State.ACTIVE);
+        return userRepository.save(userToBeUpdated.get());
+    }
+
+    //Metodda bir problem var incelenmesi gerekiyor. Yerine softDeleteUser metodu yazıldı.
     public boolean deleteUser(Long userId) {
 
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
-
         if (userToBeDeleted.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
@@ -90,11 +110,15 @@ public class UserService {
         } else if (userToBeDeleted.get().getAuthorizedRole().equals("MANAGER")) {
             managerService.deleteByManagerOid(userToBeDeleted.get().getOid());
         }
-
         return   userRepository.softDeleteById(userToBeDeleted.get().getOid());
-
-
-
+    }
+    public boolean softDeleteTrainer(Long userId){
+        Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
+        if (userToBeDeleted.isEmpty()) {
+            throw new UserDoesNotExistsException("User is not found");
+        }
+        trainerService.deleteTrainerByUser(userToBeDeleted.get());
+        return   userRepository.softDeleteById(userToBeDeleted.get().getOid());
     }
 
     public UserSimpleResponseDto findByOid(Long userId) {
@@ -157,8 +181,8 @@ public class UserService {
     }
 
 
-    public void save(User auth) {
-        userRepository.save(auth);
+    public User save(User auth) {
+       return userRepository.save(auth);
     }
 
     public Optional<User> findById(Long id) {
@@ -179,4 +203,14 @@ public class UserService {
         ).collect(Collectors.toList());
         return findAllUserDetailsResponseDtoList;
     }
+
+    public Optional<User> findByApiId(String apiId){
+        return userRepository.findByApiId(apiId);
+    }
+
+    public List<User> findByApiIdContains(String keyword, State state){
+        return userRepository.findByApiIdContainsAndState(keyword,state);
+    }
+
+
 }

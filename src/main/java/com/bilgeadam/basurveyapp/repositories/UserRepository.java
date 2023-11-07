@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.User;
+import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,10 @@ import java.util.Optional;
 public interface UserRepository extends BaseRepository<User,Long> {
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email = ?1")
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT u FROM User u WHERE u.email = ?1")
+    Optional<User> findByOnlyEmail(String email);
+
     @Query("SELECT u FROM User u WHERE u.state = 'ACTIVE' AND u.email IN ?1")
     List<User> findAllByEmails(List<String> emails);
 
@@ -38,4 +43,8 @@ public interface UserRepository extends BaseRepository<User,Long> {
 
     @Query(value = "SELECT * FROM users WHERE state = 'ACTIVE' AND oid IN (SELECT users_oid FROM users_roles WHERE roles_oid IN (SELECT oid FROM roles WHERE role != 'ADMIN')) ORDER BY email", nativeQuery = true)
     List<User> findAllByRolesNotADMIN();
+
+    Optional<User> findByApiId(String apiId);
+
+    List<User> findByApiIdContainsAndState(String apiId, State state);
 }
