@@ -106,12 +106,13 @@ public class JobService {
 
     /**
      * API'dan getirilen trainer verilerini silinmesi,değiştrilmesi ve yeni eklenmesi gibi durumlara göre güncelleyen/silen/ekleyen metod
+     *
      * @param trainers API'dan çekilen trainer listesi.
      */
     void checkTrainerData(List<TrainerModelResponse> trainers) {
 
         List<Role> roles = roleService.findRoles();
-        List<User> savedTrainers = userService.findByApiIdContains("trainer-", State.ACTIVE);
+        List<User> savedTrainers = userService.findByApiIdContainsAndState("trainer-", State.ACTIVE);
         List<User> deletedTrainers = new ArrayList<>();
         savedTrainers.forEach(user -> {
             Optional<TrainerModelResponse> first = trainers.stream().filter(trainer -> user.getApiId().equals("trainer-" + trainer.getId())).findFirst();
@@ -129,28 +130,40 @@ public class JobService {
                 apiTrainer.setUser(savedUser);
                 trainerService.createTrainer(apiTrainer);
             } else {
-                User updatedUser = userService.updateTrainerWithApiData(user.get().getEmail(), UserUpdateRequestDto.builder()
-                        .firstName(trainer.getName())
-                        .lastName(trainer.getSurname())
-                        .email(trainer.getEmail())
-                        .authorizedRole(trainer.getTrainerRole().name())
-                        .build());
-                Optional<Trainer> optionalTrainer = trainerService.findByUser(updatedUser);
-                if (optionalTrainer.isPresent() && optionalTrainer.get().getState().equals(State.DELETED)) {
-                    optionalTrainer.get().setMasterTrainer(trainer.getTrainerRole().name().equals("MASTER_TRAINER"));
-                    optionalTrainer.get().setUser(updatedUser);
-                    optionalTrainer.get().setState(State.ACTIVE);
-                    trainerService.createTrainer(optionalTrainer.get());
+                if(!compareApiAndAppTrainerData(trainer,user.get())){
+                    User updatedUser = userService.updateTrainerWithApiData(user.get().getEmail(), UserUpdateRequestDto.builder()
+                            .firstName(trainer.getName())
+                            .lastName(trainer.getSurname())
+                            .email(trainer.getEmail())
+                            .authorizedRole(trainer.getTrainerRole().name())
+                            .build());
+                    Optional<Trainer> optionalTrainer = trainerService.findByUser(updatedUser);
+                    if (optionalTrainer.isPresent() && optionalTrainer.get().getState().equals(State.DELETED)) {
+                        optionalTrainer.get().setMasterTrainer(trainer.getTrainerRole().name().equals("MASTER_TRAINER"));
+                        optionalTrainer.get().setUser(updatedUser);
+                        optionalTrainer.get().setState(State.ACTIVE);
+                        trainerService.createTrainer(optionalTrainer.get());
+                    }
                 }
             }
-
         }
     }
 
     /**
+     * API'dan gelen trainer bilgileri ile SurveyApp database'indeki iz düşümünü karşılaştırıp değişiklik kontrolü yapan metod.
+     * @param trainer API'dan gelen trainer bilgisi
+     * @param user  SurveyApp database'indeki trainer'a uygun user bilgisi
+     * @return Değişiklik varsa false dönüyor. Değişiklik yoksa true dönüyor.
+     */
+    public boolean compareApiAndAppTrainerData(TrainerModelResponse trainer, User user) {
+        return trainer.getName().equals(user.getFirstName()) && trainer.getSurname().equals(user.getLastName()) && trainer.getEmail().equals(user.getEmail()) && trainer.getTrainerRole().name().equals(user.getAuthorizedRole());
+    }
+
+    /**
      * API'dan gelen trainerların User'a çevrilme işlemlerini çözen metod.
+     *
      * @param trainer API'dan alınan trainer verisi
-     * @param roles Database'de kayıtlı olan roller.
+     * @param roles   Database'de kayıtlı olan roller.
      * @return Trainer verisi ile oluşturulmuş User nesnesi
      */
     User toTrainer(TrainerModelResponse trainer, List<Role> roles) {
