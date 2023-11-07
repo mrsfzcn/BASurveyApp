@@ -95,7 +95,7 @@ public class UserService {
         return userRepository.save(userToBeUpdated.get());
     }
 
-    //Metodda bir problem var incelenmesi gerekiyor. Yerine softDeleteUser metodu yazıldı.
+    //Metodda bir problem var incelenmesi gerekiyor. Trainer silme işlemi için softDeleteTrainer metodu yazıldı.
     public boolean deleteUser(Long userId) {
 
         Optional<User> userToBeDeleted = userRepository.findActiveById(userId);
@@ -208,7 +208,7 @@ public class UserService {
         return userRepository.findByApiId(apiId);
     }
 
-    public List<User> findByApiIdContains(String keyword, State state){
+    public List<User> findByApiIdContainsAndState(String keyword, State state){
         return userRepository.findByApiIdContainsAndState(keyword,state);
     }
 

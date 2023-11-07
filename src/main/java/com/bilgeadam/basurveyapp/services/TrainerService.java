@@ -128,7 +128,7 @@ public class TrainerService {
         return trainerRepository.findActiveByEmail(email);
     }
 
-   //bu metod çalışmıyor. Yerine
+
     public Boolean deleteByTrainerOid(Long oid) {
       Optional<Trainer> trainer =  trainerRepository.findTrainerByUserOid(oid);
         Trainer userOfTrainer = findActiveById(trainer.get().getOid()).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
@@ -137,6 +137,7 @@ public class TrainerService {
       return trainerRepository.softDeleteById(trainer.get().getOid());
     }
 
+    //deleteByTrainerOid metodu beklendiği gibi çalışmadığı için yeni metod eklendi.
     public void deleteTrainerByUser(User user){
         Optional<Trainer> trainer = trainerRepository.findByUser(user);
         if (trainer.isPresent()){
