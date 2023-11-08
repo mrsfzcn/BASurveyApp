@@ -15,13 +15,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateCourseGroupRequestDto {
+    @NotBlank
     private String apiId;
+    @NotBlank
     private String name;
+    @NotBlank
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
+    @NotBlank
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
+    @NotBlank
     private Long courseId;
+    @NotBlank
     private Long branchId;
+    @NotBlank
     private List<Long> trainers;
 }
