@@ -14,11 +14,14 @@ public interface IBranchRepository extends BaseRepository<Branch,Long> {
 
     boolean existsByApiId(String apiId);
 
+    Optional<Branch> findByApiId(String apiId);
+
     boolean existsByNameAndCity(String name, String city);
 
     List<Branch> findByNameAndState(String name, State state);
 
     Optional<Branch> findByNameAndCityAndState(String name, String city,State state);
+    Optional<Branch> findByNameAndCity(String name, String city);
 
 
     List<Branch> findByCityAndState(String city,State state);
