@@ -27,4 +27,10 @@ public class Student extends BaseEntity {
 
     @ManyToOne
     Branch branch;
+
+    @ManyToOne
+    CourseGroup courseGroup;
+
+    String baEmail;
+    String baBoostEmail;
 }
