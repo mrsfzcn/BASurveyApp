@@ -3,6 +3,7 @@ package com.bilgeadam.basurveyapp.entity;
 import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -13,10 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@SuperBuilder
+@Builder
 @Entity
-@Table
-public class CourseGroup extends BaseEntity {
+@Table()
+public class CourseGroup extends BaseEntity{
+
     private String apiId;
     private String name;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

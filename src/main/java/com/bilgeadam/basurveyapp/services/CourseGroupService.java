@@ -3,12 +3,14 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
+import com.bilgeadam.basurveyapp.entity.CourseGroup;
 import com.bilgeadam.basurveyapp.manager.IBranchManager;
 import com.bilgeadam.basurveyapp.manager.ICourseGroupManager;
 import com.bilgeadam.basurveyapp.mapper.ICourseGroupMapper;
 import com.bilgeadam.basurveyapp.repositories.ICourseGroupRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CourseGroupService{
@@ -45,6 +47,27 @@ public class CourseGroupService{
         return MessageResponseDto.builder()
                 .message(dto.getName()+ "isim sınıf" + dto.getCourseId() + "kurs" + dto.getBranchId()+ "şubesine ait" + dto.getTrainers() + " sahip eğitmenleri" + dto.getStartDate() + "baslangic tarihi" + dto.getEndDate() + "bitis tarihli sınıf eklendi")
                 .build();
+    }
+
+    public List<CourseGroup> findAllCourseGroup(){
+        return courseGroupRepository.findAll();
+    }
+
+    public Boolean deleteCourseGroupByOid(Long oid){
+        Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findById(oid);
+        if (optionalCourseGroup.isEmpty()){
+            throw new RuntimeException("Boyle bir sınıf bulunamamistir");
+        }
+        try {
+            courseGroupRepository.softDeleteById(oid);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean existsByApiId(String apiId){
+        return courseGroupRepository.existsByApiId(apiId);
     }
 
 

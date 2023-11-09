@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ICourseGroupRepository extends BaseRepository<CourseGroup,Long> {
-
+    boolean existsByApiId(String apiId);
 }

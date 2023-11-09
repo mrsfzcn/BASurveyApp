@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByNameAndCityRequestDto;
+import com.bilgeadam.basurveyapp.dto.request.UpdateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.Branch;
@@ -12,7 +13,9 @@ import com.bilgeadam.basurveyapp.manager.IBranchManager;
 import com.bilgeadam.basurveyapp.manager.ITrainerManager;
 import com.bilgeadam.basurveyapp.mapper.IBranchMapper;
 import com.bilgeadam.basurveyapp.repositories.IBranchRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +36,22 @@ public class BranchService {
 
 
     public MessageResponseDto create(CreateBranchRequestDto dto) {
-        boolean existsByApiId = branchRepository.existsByApiId(dto.getApiId());
-        boolean existsByNameAndCity = branchRepository.existsByNameAndCity(dto.getName(), dto.getCity());
-        if (existsByApiId || existsByNameAndCity) {
-            throw new BranchAlreadyExistException("Eklemeye calistiginiz branch zaten mevcut");
+        Optional<Branch> optionalBranch = branchRepository.findByApiId(dto.getApiId());
+        Optional<Branch> byNameAndCity = branchRepository.findByNameAndCity(dto.getName(), dto.getCity());
+        if (optionalBranch.isPresent()) {
+            if (optionalBranch.get().getState().equals(State.ACTIVE)) {
+                throw new BranchAlreadyExistException("Eklemeye calistiginiz branch zaten mevcut");
+            } else {
+                return new MessageResponseDto("Eklemeye calistiginiz Sube sistemde mevcut fakat Silinmis. Lutfen Sube aktif et metodunu kullaniniz.");
+            }
         }
-
+        if (byNameAndCity.isPresent()) {
+            if (byNameAndCity.get().getState().equals(State.ACTIVE)) {
+                throw new BranchAlreadyExistException("Eklemeye calistiginiz branch zaten mevcut");
+            } else {
+                return new MessageResponseDto("Eklemeye calistiginiz Sube sistemde mevcut fakat Silinmis. Lutfen Sube aktif et metodunu kullaniniz.");
+            }
+        }
         branchRepository.save(IBranchMapper.INSTANCE.toBranch(dto));
 
         return new MessageResponseDto(dto.getName()+" isimli sube "+dto.getCity()+" sehrine eklendi");
@@ -129,5 +142,27 @@ public class BranchService {
             throw new BranchNotFoundException("Herhangi bir branch bulunamadi");
         }
         return optionalBranch.get();
+    }
+
+    public MessageResponseDto updateBranchByApiId(@RequestBody @Valid UpdateBranchRequestDto dto) {
+        Optional<Branch> optionalBranch = branchRepository.findByApiIdAndState(dto.getApiId(), State.ACTIVE);
+        if (optionalBranch.isEmpty()) {
+            throw new BranchNotFoundException("Aradiginiz branch bulunamadi");
+        }
+
+        if (branchRepository.existsByNameAndCity(dto.getName(), dto.getCity())) {
+            if (!dto.getName().equals(optionalBranch.get().getName()) || !dto.getCity().equals(optionalBranch.get().getCity())) {
+                throw new BranchAlreadyExistException("Bu branch sistemde zaten mevcut");
+            }
+        }
+
+        if (!optionalBranch.get().getCity().equals(dto.getCity()) || !optionalBranch.get().getName().equals(dto.getName())) {
+            optionalBranch.get().setName(dto.getName());
+            optionalBranch.get().setCity(dto.getCity());
+            branchRepository.save(optionalBranch.get());
+            return new MessageResponseDto("Kaydetme islemi basarili");
+        }else{
+            return new MessageResponseDto("Herhangi bir degisiklik yapilmadi");
+        }
     }
 }
