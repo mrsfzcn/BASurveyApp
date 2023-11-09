@@ -27,4 +27,8 @@ public interface IBranchRepository extends BaseRepository<Branch,Long> {
     List<Branch> findByCityAndState(String city,State state);
 
     Optional<Branch> findByApiIdAndState(String apiId,State state);
+
+    List<Branch> findAllByState(State state);
+
+    Optional<Branch> findByOid(Long oid);
 }

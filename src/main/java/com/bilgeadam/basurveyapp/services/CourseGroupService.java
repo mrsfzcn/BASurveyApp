@@ -4,7 +4,6 @@ import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.CourseGroup;
-import com.bilgeadam.basurveyapp.manager.IBranchManager;
 import com.bilgeadam.basurveyapp.manager.ICourseGroupManager;
 import com.bilgeadam.basurveyapp.mapper.ICourseGroupMapper;
 import com.bilgeadam.basurveyapp.repositories.ICourseGroupRepository;
@@ -45,7 +44,7 @@ public class CourseGroupService{
     public MessageResponseDto createCourseGroup(CreateCourseGroupRequestDto dto){
         courseGroupRepository.save(ICourseGroupMapper.INSTANCE.toCourseGroup(dto));
         return MessageResponseDto.builder()
-                .message(dto.getName()+ "isim sınıf" + dto.getCourseId() + "kurs" + dto.getBranchId()+ "şubesine ait" + dto.getTrainers() + " sahip eğitmenleri" + dto.getStartDate() + "baslangic tarihi" + dto.getEndDate() + "bitis tarihli sınıf eklendi")
+                .successMessage(dto.getName()+ "isim sınıf" + dto.getCourseId() + "kurs" + dto.getBranchId()+ "şubesine ait" + dto.getTrainers() + " sahip eğitmenleri" + dto.getStartDate() + "baslangic tarihi" + dto.getEndDate() + "bitis tarihli sınıf eklendi")
                 .build();
     }
 
@@ -69,7 +68,5 @@ public class CourseGroupService{
     public Boolean existsByApiId(String apiId){
         return courseGroupRepository.existsByApiId(apiId);
     }
-
-
 
 }

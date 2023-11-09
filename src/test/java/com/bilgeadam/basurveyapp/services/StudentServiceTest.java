@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.entity.Student;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.repositories.StudentRepository;
 import com.bilgeadam.basurveyapp.services.StudentService;
 import com.bilgeadam.basurveyapp.services.StudentTagService;
@@ -162,4 +163,14 @@ public class StudentServiceTest {
         assertNotNull(result);
     }
 
+
+    @Test
+    public void testFindUserByStudentOidWhenStudentNotPresent() {
+        when(studentRepository.findStudentByOid(1L)).thenReturn(Optional.empty());
+        try {
+            studentRepository.findStudentByOid(1L);
+        }catch (ResourceNotFoundException e){
+            assertEquals("student id bulunamadi",e.getMessage());
+        }
+    }
 }
