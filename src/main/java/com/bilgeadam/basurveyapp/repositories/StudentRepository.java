@@ -25,5 +25,8 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
     @Query("SELECT st FROM Student st WHERE st.state = 'ACTIVE' AND st.oid = ?1")
     Optional<Student> findStudentByOid(Long oid);
 
+    Optional<Student> findByOid(Long oid);
+
+
 
 }
