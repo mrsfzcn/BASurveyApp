@@ -359,4 +359,10 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.BRANCH_ALREADY_EXIST",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(BRANCH_ALREADY_EXIST,exception,request);
     }
+    @ResponseBody
+    @ExceptionHandler(CourseGroupNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> courseGroupExistException(CourseGroupNotFoundException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.COURSE_GROUP_NOT_FOUND",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(COURSE_GROUP_NOT_FOUND,exception,request);
+    }
 }
