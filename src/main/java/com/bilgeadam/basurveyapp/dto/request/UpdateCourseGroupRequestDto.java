@@ -1,31 +1,35 @@
-package com.bilgeadam.basurveyapp.entity;
+package com.bilgeadam.basurveyapp.dto.request;
 
-import com.bilgeadam.basurveyapp.entity.base.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-@SuperBuilder
-@Entity
-@Table()
-public class CourseGroup extends BaseEntity{
 
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateCourseGroupRequestDto {
+
+    @NotBlank
     private String apiId;
+    @NotBlank
     private String name;
+    @NotBlank
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
+    @NotBlank
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
+    @NotBlank
     private Long courseId;
+    @NotBlank
     private Long branchId;
+    @NotBlank
     private List<Long> trainers;
 }
