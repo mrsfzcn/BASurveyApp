@@ -64,7 +64,7 @@ public class CourseGroupService{
     public Boolean deleteCourseGroupByOid(Long oid){
         Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findById(oid);
         if (optionalCourseGroup.isEmpty()){
-            throw new RuntimeException("Boyle bir sınıf bulunamamistir");
+            throw new CourseGroupNotFoundException("Boyle bir sınıf bulunamamistir");
         }
         try {
             courseGroupRepository.softDeleteById(oid);
@@ -118,7 +118,7 @@ public class CourseGroupService{
         Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findByApiIdAndState(dto.getApiId(), State.ACTIVE);
         if (dto.getCourseId() == null && dto.getName() == null && dto.getBranchId() == null && dto.getTrainers() == null && dto.getStartDate() == null && dto.getEndDate() == null)
             return MessageResponseDto.builder()
-                    .message("Başarısız aşko")
+                    .successMessage("Güncelleme işlemi başarısız oldu. Lütfen verilerin doğrulugunu kontrol edin")
                     .build();
         else {
             optionalCourseGroup.get().setCourseId(dto.getCourseId());
@@ -129,7 +129,7 @@ public class CourseGroupService{
             optionalCourseGroup.get().setEndDate(dto.getEndDate());
             courseGroupRepository.save(optionalCourseGroup.get());
             return MessageResponseDto.builder()
-                    .message("Güncelleme işlemi başarıyla gerçekleşti !!")
+                    .successMessage("Güncelleme işlemi başarıyla gerçekleşti !!")
                     .build();
         }
     }
