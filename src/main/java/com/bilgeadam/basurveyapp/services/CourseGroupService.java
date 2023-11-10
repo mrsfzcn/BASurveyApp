@@ -118,7 +118,7 @@ public class CourseGroupService{
         Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findByApiIdAndState(dto.getApiId(), State.ACTIVE);
         if (dto.getCourseId() == null && dto.getName() == null && dto.getBranchId() == null && dto.getTrainers() == null && dto.getStartDate() == null && dto.getEndDate() == null)
             return MessageResponseDto.builder()
-                    .successMessage("Başarısız aşko")
+                    .successMessage("Güncelleme işlemi başarısız oldu. Lütfen verilerin doğrulugunu kontrol edin")
                     .build();
         else {
             optionalCourseGroup.get().setCourseId(dto.getCourseId());
