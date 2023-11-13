@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse2Dto;
 import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.CourseGroup;
@@ -59,4 +60,8 @@ public class CourseGroupController {
         return ResponseEntity.ok(courseGroupService.findCourseGroupByTrainerId(trainerId));
     }
 
+    @GetMapping("/get-all-data-for-fronted-table")
+    public ResponseEntity<List<CourseGroupModelResponse2Dto>> getAllDataForFrontendTable(){
+        return ResponseEntity.ok(courseGroupService.getAllDataForFrontendTable());
+    }
 }
