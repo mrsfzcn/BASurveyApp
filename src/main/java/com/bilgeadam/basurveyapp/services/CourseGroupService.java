@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateCourseGroupRequestDto;
+import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse2Dto;
 import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.CourseGroup;
@@ -10,7 +11,10 @@ import com.bilgeadam.basurveyapp.exceptions.custom.CourseGroupNotFoundException;
 import com.bilgeadam.basurveyapp.manager.ICourseGroupManager;
 import com.bilgeadam.basurveyapp.mapper.ICourseGroupMapper;
 import com.bilgeadam.basurveyapp.repositories.ICourseGroupRepository;
+import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +23,13 @@ public class CourseGroupService{
     private final ICourseGroupManager courseGroupManager;
     private final ICourseGroupRepository courseGroupRepository;
 
-    public CourseGroupService(ICourseGroupManager courseGroupManager, ICourseGroupRepository courseGroupRepository) {
+    private final TrainerRepository trainerRepository;
+
+    public CourseGroupService(ICourseGroupManager courseGroupManager, ICourseGroupRepository courseGroupRepository, TrainerRepository trainerRepository) {
         super();
         this.courseGroupManager = courseGroupManager;
         this.courseGroupRepository = courseGroupRepository;
+        this.trainerRepository = trainerRepository;
     }
 
     /**
@@ -133,4 +140,23 @@ public class CourseGroupService{
                     .build();
         }
     }
+
+    public List<CourseGroupModelResponse2Dto> getAllDataForFrontendTable() {
+        List<CourseGroup> listCorse= courseGroupRepository.findAll();
+        List<CourseGroupModelResponse2Dto> listDto =new ArrayList<>();
+
+        for (CourseGroup obj: listCorse) {
+            CourseGroupModelResponse2Dto  courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
+                    .id(obj.getCourseId())
+                    .name(obj.getName())
+                    .startDate(obj.getStartDate())
+                    .endDate(obj.getEndDate())
+                    .masterTrainer(trainerRepository.getReferenceById(obj.getTrainers().get(0)).toString())
+                    .assistantTrainer(trainerRepository.getReferenceById(obj.getTrainers().get(1)).toString())
+                    .build();
+            listDto.add(courseGroupModelDto);
+        }
+        return  listDto;
+    }
+
 }
