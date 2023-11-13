@@ -2,20 +2,12 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
-import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.StudentModelResponse;
-import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
-import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.BranchModelResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponseDto;
-import com.bilgeadam.basurveyapp.dto.response.TrainerModelResponseDto;
+import com.bilgeadam.basurveyapp.dto.request.*;
+import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchNotFoundException;
-import com.bilgeadam.basurveyapp.manager.IBranchManager;
-import com.bilgeadam.basurveyapp.manager.IStudentManager;
-import com.bilgeadam.basurveyapp.manager.ICourseGroupManager;
-import com.bilgeadam.basurveyapp.manager.ITrainerManager;
+import com.bilgeadam.basurveyapp.manager.*;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.utilty.Helpers;
 import jakarta.mail.MessagingException;
@@ -42,7 +34,8 @@ public class JobService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-
+    private final CourseService courseService;
+    private final ICourseManager courseManager;
     private final QrCodeService qrCodeService;
     private final StudentService studentService;
     private final TrainerService trainerService;
@@ -56,7 +49,7 @@ public class JobService {
 
     private final IStudentManager studentManager;
 
-    public JobService(ITrainerManager trainerManager, EmailService emailService, JwtService jwtService, SurveyRegistrationRepository surveyRegistrationRepository, StudentTagService studentTagService, PasswordEncoder passwordEncoder, UserService userService, QrCodeService qrCodeService, StudentService studentService, TrainerService trainerService, RoleService roleService, BranchService branchService, IBranchManager branchManager, ICourseGroupManager courseGroupManager, CourseGroupService courseGroupService,IStudentManager studentManager) {
+    public JobService(ITrainerManager trainerManager, EmailService emailService, JwtService jwtService, SurveyRegistrationRepository surveyRegistrationRepository, StudentTagService studentTagService, PasswordEncoder passwordEncoder, UserService userService, CourseService courseService, ICourseManager courseManager, QrCodeService qrCodeService, StudentService studentService, TrainerService trainerService, RoleService roleService, BranchService branchService, IBranchManager branchManager, ICourseGroupManager courseGroupManager, CourseGroupService courseGroupService, IStudentManager studentManager) {
         this.trainerManager = trainerManager;
         this.emailService = emailService;
         this.jwtService = jwtService;
@@ -64,6 +57,8 @@ public class JobService {
         this.studentTagService = studentTagService;
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
+        this.courseService = courseService;
+        this.courseManager = courseManager;
         this.qrCodeService = qrCodeService;
         this.studentService = studentService;
         this.trainerService = trainerService;
@@ -122,6 +117,7 @@ public class JobService {
         checkCourseGroupData(courseGroupManager.findall().getBody());
         //Api'dan gelen Student ve CourseGroup en son kaydedilmeli çünkü bağımlılıklar mevcut.
         checkStudentData(studentManager.findAll().getBody());
+        checkCourseData(courseManager.findAll().getBody());
     }
 
     /**
@@ -228,6 +224,33 @@ public class JobService {
                branchService.create(CreateBranchRequestDto.builder().apiId("Branch-"+baseApiBranch.getId()).name(baseApiBranch.getName()).city(baseApiBranch.getCity()).build());
             }
         }
+    }
+
+    private void checkCourseData(List<CourseModalResponse> baseApiCourses){
+        if (baseApiCourses.isEmpty()){
+            throw new RuntimeException("Kurs ile ilgili herhangi bir veri bulunamamıştır.");
+        }
+        List<Course> currentCourses = courseService.findAllCourses();
+        List<Course> deletedCourses = new ArrayList<>();
+
+        currentCourses.forEach(cCourse -> {
+            Optional<CourseModalResponse> optCourse = baseApiCourses.stream().filter(course -> ("Course-" + course.getId()).equals(cCourse.getApiId())).findFirst();
+            if (optCourse.isEmpty()){
+                deletedCourses.add(cCourse);
+            }
+        });
+        if (!deletedCourses.isEmpty()){
+            deletedCourses.forEach(dCourse -> courseService.deleteCourseByOid(dCourse.getOid()));
+        }
+        for(CourseModalResponse baseApiCourse : baseApiCourses){
+            boolean existsByApiId = courseService.existByApiId("Course-" + baseApiCourse.getId());
+            if (!existsByApiId){
+                courseService.create(CreateCourseRequestDto.builder()
+                                .apiId("Course-"+baseApiCourse.getId()).name(baseApiCourse.getName())
+                        .build());
+            }
+        }
+
     }
 
     private void checkCourseGroupData(List<CourseGroupModelResponseDto> baseApiCourseGroup) {

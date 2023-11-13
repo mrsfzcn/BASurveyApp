@@ -365,4 +365,17 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.COURSE_GROUP_NOT_FOUND",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(COURSE_GROUP_NOT_FOUND,exception,request);
     }
+    @ResponseBody
+    @ExceptionHandler(CourseAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> courseAlreadyExistException(CourseAlreadyExistException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.COURSE_ALREADY_EXIST",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(COURSE_ALREADY_EXIST,exception,request);
+    }
+
+    @ResponseBody
+    @ExceptionHandler(CourseAlreadyExistException.class)
+    public ResponseEntity<ExceptionResponse> courseNotFoundException(CourseAlreadyExistException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.COURSE_ALREADY_EXIST",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(COURSE_ALREADY_EXIST,exception,request);
+    }
 }
