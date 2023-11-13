@@ -66,5 +66,5 @@ public class CourseController {
     public ResponseEntity<MessageResponseDto> activateCourse(@PathVariable String id) {
         return ResponseEntity.ok(service.activateCourse(id));
     }
-
+    //qwe
 }
