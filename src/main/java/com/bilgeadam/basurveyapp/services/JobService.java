@@ -144,7 +144,7 @@ public class JobService {
         for (TrainerModelResponseDto trainer : trainers) {
             Optional<User> user = userService.findByApiId("trainer-" + trainer.getId());
             if (user.isEmpty()) {
-                User savedUser = userService.save(toTrainer(trainer, roles));
+                User savedUser = userService.save(toUser(trainer, roles));
                 Trainer apiTrainer = new Trainer();
                 apiTrainer.setMasterTrainer(trainer.getTrainerRole().name().equals("MASTER_TRAINER"));
                 apiTrainer.setUser(savedUser);
@@ -158,7 +158,7 @@ public class JobService {
                             .authorizedRole(trainer.getTrainerRole().name())
                             .build());
                     Optional<Trainer> optionalTrainer = trainerService.findByUser(updatedUser);
-                    if (optionalTrainer.isPresent() && optionalTrainer.get().getState().equals(State.DELETED)) {
+                    if (optionalTrainer.isPresent()) {
                         optionalTrainer.get().setMasterTrainer(trainer.getTrainerRole().name().equals("MASTER_TRAINER"));
                         optionalTrainer.get().setUser(updatedUser);
                         optionalTrainer.get().setState(State.ACTIVE);
@@ -286,9 +286,9 @@ public class JobService {
                 Branch apiBranch = new Branch();
                 apiBranch.setOid(student.getBranchId());
                 apiStudent.setBranch(apiBranch);
-                 /* CourseGroup apiGroup = new CourseGroup();
+                  CourseGroup apiGroup = new CourseGroup();
                     apiGroup.setOid(student.getGroupId());
-                    apiStudent.setCourseGroup(apiGroup); CourseGroup verileri çekildiğinde açılacak. CourseGroup verileri yokken @ManyToOne anotasyonu yüzünden hata verebilir.*/
+                    apiStudent.setCourseGroup(apiGroup);
                 studentService.createStudent(apiStudent);
             } else {
                 if (!compareApiAndAppStudentData(student, user.get())) {
@@ -306,9 +306,9 @@ public class JobService {
                         Branch updatedBranch = new Branch();
                         updatedBranch.setOid(student.getBranchId());
                         optionalStudent.get().setBranch(updatedBranch);
-                       /* CourseGroup updatedCourseGroup = new CourseGroup();
+                       CourseGroup updatedCourseGroup = new CourseGroup();
                         updatedCourseGroup.setOid(student.getGroupId());
-                        optionalStudent.get().setCourseGroup(updatedCourseGroup); CourseGroup verileri çekildiğinde açılacak. CourseGroup verileri yokken @ManyToOne anotasyonu yüzünden hata verebilir.*/
+                        optionalStudent.get().setCourseGroup(updatedCourseGroup);
                         optionalStudent.get().setState(State.ACTIVE);
                         studentService.createStudent(optionalStudent.get());
                     }

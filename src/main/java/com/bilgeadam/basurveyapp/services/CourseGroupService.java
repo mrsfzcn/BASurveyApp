@@ -64,7 +64,7 @@ public class CourseGroupService{
     public Boolean deleteCourseGroupByOid(Long oid){
         Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findById(oid);
         if (optionalCourseGroup.isEmpty()){
-            throw new RuntimeException("Boyle bir sınıf bulunamamıştır.");
+            throw new CourseGroupNotFoundException("Boyle bir sınıf bulunamamistir");
         }
         try {
             courseGroupRepository.softDeleteById(oid);
