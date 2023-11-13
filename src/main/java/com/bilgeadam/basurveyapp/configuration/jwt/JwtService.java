@@ -103,7 +103,7 @@ public class JwtService {
 
     public boolean isSurveyEmailTokenValid(String jwtToken) {
         final String email = extractEmail(jwtToken);
-        return !isTokenNotExpired(jwtToken) || userRepository.findByEmail(email).isEmpty();
+        return !isTokenNotExpired(jwtToken) || userRepository.findActiveUserByEmail(email).isEmpty();
     }
 
     public String extractEmail(String jwtToken) {

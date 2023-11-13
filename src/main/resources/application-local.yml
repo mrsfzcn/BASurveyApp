@@ -19,3 +19,7 @@ spring:
     fallback-to-system-locale: false
 jwt:
   secret: 546A576E5A7234753778214125442A472D4B6150645367566B58703273357638
+
+
+feign:
+  url: http://localhost:8081

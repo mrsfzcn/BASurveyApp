@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(name = "api-student", url = "http://localhost:8081/student")
+@FeignClient(name = "api-student", url = "${feign.url}/student")
 public interface IStudentManager {
-    @GetMapping("/findall")
+    @GetMapping("/find-all")
     ResponseEntity<List<StudentModelResponse>> findAll();
 }

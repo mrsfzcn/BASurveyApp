@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data //@Getter @Setter @ToString hepsini kapsıyor.
 @Builder
-public class TrainerModelResponse {
+public class TrainerModelResponseDto {
     private Long id;
     private String name;
     private String surname;

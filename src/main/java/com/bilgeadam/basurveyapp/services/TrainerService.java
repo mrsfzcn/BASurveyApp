@@ -150,7 +150,7 @@ public class TrainerService {
 
         Optional<Trainer> trainer = trainerRepository.findTrainerByUserOid(oid);
         if (trainer.isEmpty()) {
-            throw new ResourceNotFoundException("student id bulunamadi");
+            throw new ResourceNotFoundException("student id bulunamadı.");
         }
         return trainer.get().getUser();
     }

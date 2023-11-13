@@ -65,7 +65,7 @@ public class UserService {
 
     public User updateUser(String userEmail, UserUpdateRequestDto dto) {
 
-        Optional<User> userToBeUpdated = userRepository.findByEmail(userEmail);
+        Optional<User> userToBeUpdated = userRepository.findActiveUserByEmail(userEmail);
         if (userToBeUpdated.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
@@ -83,7 +83,7 @@ public class UserService {
      * @return Güncellenmiş User nesnesi.
      */
     public User updateTrainerWithApiData(String userEmail,UserUpdateRequestDto dto){
-        Optional<User> userToBeUpdated = userRepository.findByOnlyEmail(userEmail);
+        Optional<User> userToBeUpdated = userRepository.findByEmail(userEmail);
         if (userToBeUpdated.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
@@ -145,7 +145,7 @@ public class UserService {
     }
 
     public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {
-        Optional<User> user = userRepository.findByEmail(jwtService.extractEmail(jwtToken));
+        Optional<User> user = userRepository.findActiveUserByEmail(jwtService.extractEmail(jwtToken));
         if (user.isEmpty()) throw new UserDoesNotExistsException("User is not found");
         if (!roleService.userHasRole(user.get(), ROLE_CONSTANTS.ROLE_MANAGER)) throw new AccessDeniedException("Unauthorized account");
 
@@ -157,7 +157,7 @@ public class UserService {
 
     public Boolean assignRoleToUser(AssignRoleToUserRequestDto request) {
 
-        Optional<User> user = userRepository.findByEmail(request.getUserEmail());
+        Optional<User> user = userRepository.findActiveUserByEmail(request.getUserEmail());
         if (user.isEmpty()) throw new UserDoesNotExistsException("User is not found");
         if(!roleService.hasRole(request.getRole()))  throw new RoleNotFoundException("Role is not found");
         if(roleService.userHasRole(user.get(), request.getRole())) throw new RoleAlreadyExistException("Role already exist");
@@ -177,7 +177,7 @@ public class UserService {
 
     public Optional<User> findByEmail(String extractEmail) {
 
-        return userRepository.findByEmail(extractEmail);
+        return userRepository.findActiveUserByEmail(extractEmail);
     }
 
 

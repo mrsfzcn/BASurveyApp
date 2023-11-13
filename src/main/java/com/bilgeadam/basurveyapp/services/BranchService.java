@@ -3,14 +3,13 @@ package com.bilgeadam.basurveyapp.services;
 import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByNameAndCityRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateBranchRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
+import com.bilgeadam.basurveyapp.dto.response.BranchModelResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.Branch;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchAlreadyExistException;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchNotFoundException;
 import com.bilgeadam.basurveyapp.manager.IBranchManager;
-import com.bilgeadam.basurveyapp.manager.ITrainerManager;
 import com.bilgeadam.basurveyapp.mapper.IBranchMapper;
 import com.bilgeadam.basurveyapp.repositories.IBranchRepository;
 import jakarta.validation.Valid;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BranchService {
@@ -40,21 +38,21 @@ public class BranchService {
         Optional<Branch> byNameAndCity = branchRepository.findByNameAndCity(dto.getName(), dto.getCity());
         if (optionalBranch.isPresent()) {
             if (optionalBranch.get().getState().equals(State.ACTIVE)) {
-                throw new BranchAlreadyExistException("Eklemeye calistiginiz branch zaten mevcut");
+                throw new BranchAlreadyExistException("Eklemeye calıştığınız şube zaten mevcut");
             } else {
-                return new MessageResponseDto("Eklemeye calistiginiz Sube sistemde mevcut fakat Silinmis. Lutfen Sube aktif et metodunu kullaniniz.");
+                return new MessageResponseDto("Eklemeye calıştığınız şube sistemde mevcut fakat silinmiş. Lütfen şube aktif et metodunu kullanınız.");
             }
         }
         if (byNameAndCity.isPresent()) {
             if (byNameAndCity.get().getState().equals(State.ACTIVE)) {
-                throw new BranchAlreadyExistException("Eklemeye calistiginiz branch zaten mevcut");
+                throw new BranchAlreadyExistException("Eklemeye calıştığınız şube zaten mevcut");
             } else {
-                return new MessageResponseDto("Eklemeye calistiginiz Sube sistemde mevcut fakat Silinmis. Lutfen Sube aktif et metodunu kullaniniz.");
+                return new MessageResponseDto("Eklemeye calıştığınız şube sistemde mevcut fakat silinmiş. Lutfen şube aktif et metodunu kullanınız.");
             }
         }
         branchRepository.save(IBranchMapper.INSTANCE.toBranch(dto));
 
-        return new MessageResponseDto(dto.getName() + " isimli sube " + dto.getCity() + " sehrine eklendi");
+        return new MessageResponseDto(dto.getName() + " isimli şube " + dto.getCity() + " şehrine eklendi.");
     }
 
     /**
@@ -63,17 +61,17 @@ public class BranchService {
      * @return
      */
     @Deprecated
-    public List<BranchModelResponse> getAllDataFromBaseApi() {
+    public List<BranchModelResponseDto> getAllDataFromBaseApi() {
 
-        List<BranchModelResponse> baseApiBranches = branchManager.findAll().getBody(); // Base Api uzerinden verileri getirdik.
+        List<BranchModelResponseDto> baseApiBranches = branchManager.findAll().getBody(); // Base Api uzerinden verileri getirdik.
         if (baseApiBranches.isEmpty()) {
-            throw new BranchNotFoundException("Branch ile ilgili herhangi bir data bulunamamistir");
+            throw new BranchNotFoundException("Şube ile ilgili herhangi bir data bulunamamistir");
         }
         List<Branch> currentBranches = branchRepository.findAll(); // SurveyApp uzerindeki veriler
         List<Branch> deletedBranches = new ArrayList<>();
 
         currentBranches.forEach(cBranch -> {
-            Optional<BranchModelResponse> first = baseApiBranches.stream().filter(branch -> ("Branch-" + branch.getId()).equals(cBranch.getApiId())).findFirst();
+            Optional<BranchModelResponseDto> first = baseApiBranches.stream().filter(branch -> ("Branch-" + branch.getId()).equals(cBranch.getApiId())).findFirst();
             if (first.isEmpty()) {
                 deletedBranches.add(cBranch);
             }
@@ -83,7 +81,7 @@ public class BranchService {
             deletedBranches.forEach(dBranch -> branchRepository.softDeleteById(dBranch.getOid()));
         }
 
-        for (BranchModelResponse baseApiBranch : baseApiBranches) {
+        for (BranchModelResponseDto baseApiBranch : baseApiBranches) {
             boolean existsByApiId = branchRepository.existsByApiId("Branch-" + baseApiBranch.getId());
             if (!existsByApiId) {
                 create(CreateBranchRequestDto.builder().apiId("Branch-" + baseApiBranch.getId()).name(baseApiBranch.getName()).city(baseApiBranch.getCity()).build());
@@ -96,7 +94,7 @@ public class BranchService {
     public Boolean deleteBranchByOid(Long oid) {
         Optional<Branch> optionalBranch = branchRepository.findById(oid);
         if (optionalBranch.isEmpty()) {
-            throw new BranchNotFoundException("Boyle bir sube bulunamamistir");
+            throw new BranchNotFoundException("Böyle bir şube bulunamamıştır.");
         }
         try {
             branchRepository.softDeleteById(oid);
@@ -109,7 +107,7 @@ public class BranchService {
     public List<Branch> findAllActiveBranches() {
         List<Branch> branchRepositoryAll = branchRepository.findAllActive();
         if (branchRepositoryAll.isEmpty()) {
-            throw new BranchNotFoundException("Herhangi bir branch bulunamadi.");
+            throw new BranchNotFoundException("Herhangi bir şube bulunamadı.");
         }
         return branchRepositoryAll;
     }
@@ -126,7 +124,7 @@ public class BranchService {
     public List<Branch> findBranchesByName(String name) {
         List<Branch> branchList = branchRepository.findByNameAndState(name, State.ACTIVE);
         if (branchList.isEmpty()) {
-            throw new BranchNotFoundException("Herhangi bir branch bulunamadi");
+            throw new BranchNotFoundException("Herhangi bir şube bulunamadı.");
         }
         return branchList;
     }
@@ -135,34 +133,34 @@ public class BranchService {
         Optional<Branch> optionalBranch = branchRepository.findByNameAndCityAndState(dto.getName(), dto.getCity(), State.ACTIVE);
 
         if (optionalBranch.isEmpty())
-            throw new BranchNotFoundException("Herhangi bir branch bulunamadi");
+            throw new BranchNotFoundException("Herhangi bir şube bulunamadı.");
         return optionalBranch.get();
     }
 
     public List<Branch> findByCity(String city) {
         List<Branch> branchList = branchRepository.findByCityAndState(city, State.ACTIVE);
         if (branchList.isEmpty())
-            throw new BranchNotFoundException("Herhangi bir branch bulunamadi");
+            throw new BranchNotFoundException("Herhangi bir şube bulunamadı.");
         return branchList;
     }
 
     public Branch findByApiId(String apiId) {
         Optional<Branch> optionalBranch = branchRepository.findByApiIdAndState(apiId, State.ACTIVE);
         if (optionalBranch.isEmpty()) {
-            throw new BranchNotFoundException("Herhangi bir branch bulunamadi");
+            throw new BranchNotFoundException("Herhangi bir şube bulunamadı.");
         }
         return optionalBranch.get();
     }
 
-    public MessageResponseDto updateBranchByApiId(@RequestBody @Valid UpdateBranchRequestDto dto) {
+    public MessageResponseDto updateBranchByApiId(UpdateBranchRequestDto dto) {
         Optional<Branch> optionalBranch = branchRepository.findByApiIdAndState(dto.getApiId(), State.ACTIVE);
         if (optionalBranch.isEmpty()) {
-            throw new BranchNotFoundException("Aradiginiz branch bulunamadi");
+            throw new BranchNotFoundException("Aradiginiz şube bulunamadı");
         }
 
         if (branchRepository.existsByNameAndCity(dto.getName(), dto.getCity())) {
             if (!dto.getName().equals(optionalBranch.get().getName()) || !dto.getCity().equals(optionalBranch.get().getCity())) {
-                throw new BranchAlreadyExistException("Bu branch sistemde zaten mevcut");
+                throw new BranchAlreadyExistException("Bu şube sistemde zaten mevcut");
             }
         }
 
@@ -170,16 +168,16 @@ public class BranchService {
             optionalBranch.get().setName(dto.getName());
             optionalBranch.get().setCity(dto.getCity());
             branchRepository.save(optionalBranch.get());
-            return new MessageResponseDto("Kaydetme islemi basarili");
+            return new MessageResponseDto("Kaydetme işlemi başarılı");
         } else {
-            return new MessageResponseDto("Herhangi bir degisiklik yapilmadi");
+            return new MessageResponseDto("Herhangi bir değişiklik yapılmadı.");
         }
     }
 
     public List<Branch> findAllDeletedBranches() {
         List<Branch> deletedBranches = branchRepository.findAllByState(State.DELETED);
         if (deletedBranches.isEmpty()) {
-            throw new BranchNotFoundException("Herhangi Silinmis bir branch bulunamadi");
+            throw new BranchNotFoundException("Herhangi siliniş bir şube bulunamadı.");
         }
         return deletedBranches;
     }
@@ -188,15 +186,15 @@ public class BranchService {
     public MessageResponseDto activateBranch(Long oid) {
         Optional<Branch> optionalBranch = branchRepository.findByOid(oid);
         if (optionalBranch.isEmpty()) {
-            throw new BranchNotFoundException("Boyle bir branch bulunamadi");
+            throw new BranchNotFoundException("Boyle bir şube bulunamadı.");
         }
 
         if (optionalBranch.get().getState().equals(State.ACTIVE)) {
-            throw new BranchAlreadyExistException(optionalBranch.get().getName()+ " isimli "+ optionalBranch.get().getCity()+ " sehrindeki sube zaten aktif");
+            throw new BranchAlreadyExistException(optionalBranch.get().getName()+ " isimli "+ optionalBranch.get().getCity()+ " şehrinde şube zaten aktif.");
         }
 
         optionalBranch.get().setState(State.ACTIVE);
         branchRepository.save(optionalBranch.get());
-        return new MessageResponseDto(optionalBranch.get().getName() + " isimli " + optionalBranch.get().getCity() + " sehrindeki sube aktif edildi");
+        return new MessageResponseDto(optionalBranch.get().getName() + " isimli " + optionalBranch.get().getCity() + " şehrindeki şube aktif edildi.");
     }
 }
