@@ -3,10 +3,9 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.FindByNameAndCityRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateBranchRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
+import com.bilgeadam.basurveyapp.dto.response.BranchModelResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.Branch;
-import com.bilgeadam.basurveyapp.repositories.IBranchRepository;
 import com.bilgeadam.basurveyapp.services.BranchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class BranchController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/get-data-from-base-api")
-    public ResponseEntity<List<BranchModelResponse>> getDataFromBaseApi() {
+    public ResponseEntity<List<BranchModelResponseDto>> getDataFromBaseApi() {
         return ResponseEntity.ok(service.getAllDataFromBaseApi());
     }
 
@@ -49,7 +48,7 @@ public class BranchController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-by-name-and-city")
-    public ResponseEntity<Branch> findByNameAndCity(FindByNameAndCityRequestDto dto) {
+    public ResponseEntity<Branch> findByNameAndCity(@RequestBody @Valid FindByNameAndCityRequestDto dto) {
         return ResponseEntity.ok(service.findByNameAndCity(dto));
     }
 
@@ -67,7 +66,7 @@ public class BranchController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update")
-    public ResponseEntity<MessageResponseDto> updateBranchByApiId(@RequestBody UpdateBranchRequestDto dto) {
+    public ResponseEntity<MessageResponseDto> updateBranchByApiId(@RequestBody @Valid UpdateBranchRequestDto dto) {
         return ResponseEntity.ok(service.updateBranchByApiId(dto));
     }
 

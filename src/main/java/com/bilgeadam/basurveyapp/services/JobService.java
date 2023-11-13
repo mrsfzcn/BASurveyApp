@@ -6,9 +6,9 @@ import com.bilgeadam.basurveyapp.dto.request.CreateBranchRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.StudentModelResponse;
 import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UserUpdateRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.BranchModelResponse;
-import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse;
-import com.bilgeadam.basurveyapp.dto.response.TrainerModelResponse;
+import com.bilgeadam.basurveyapp.dto.response.BranchModelResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.TrainerModelResponseDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchNotFoundException;
@@ -129,19 +129,19 @@ public class JobService {
      *
      * @param trainers API'dan çekilen trainer listesi.
      */
-    void checkTrainerData(List<TrainerModelResponse> trainers) {
+    void checkTrainerData(List<TrainerModelResponseDto> trainers) {
 
         List<Role> roles = roleService.findRoles();
         List<User> savedTrainers = userService.findByApiIdContainsAndState("trainer-", State.ACTIVE);
         List<User> deletedTrainers = new ArrayList<>();
         savedTrainers.forEach(user -> {
-            Optional<TrainerModelResponse> first = trainers.stream().filter(trainer -> user.getApiId().equals("trainer-" + trainer.getId())).findFirst();
+            Optional<TrainerModelResponseDto> first = trainers.stream().filter(trainer -> user.getApiId().equals("trainer-" + trainer.getId())).findFirst();
             if (first.isEmpty())
                 deletedTrainers.add(user);
         });
         if (!deletedTrainers.isEmpty())
             deletedTrainers.forEach(user -> userService.softDeleteTrainer(user.getOid()));
-        for (TrainerModelResponse trainer : trainers) {
+        for (TrainerModelResponseDto trainer : trainers) {
             Optional<User> user = userService.findByApiId("trainer-" + trainer.getId());
             if (user.isEmpty()) {
                 User savedUser = userService.save(toUser(trainer, roles));
@@ -175,7 +175,7 @@ public class JobService {
      * @param user  SurveyApp database'indeki trainer'a uygun user bilgisi
      * @return Değişiklik varsa false dönüyor. Değişiklik yoksa true dönüyor.
      */
-    public boolean compareApiAndAppTrainerData(TrainerModelResponse trainer, User user) {
+    public boolean compareApiAndAppTrainerData(TrainerModelResponseDto trainer, User user) {
         return trainer.getName().equals(user.getFirstName()) && trainer.getSurname().equals(user.getLastName()) && trainer.getEmail().equals(user.getEmail()) && trainer.getTrainerRole().name().equals(user.getAuthorizedRole());
     }
 
@@ -186,7 +186,7 @@ public class JobService {
      * @param roles   Database'de kayıtlı olan roller.
      * @return Trainer verisi ile oluşturulmuş User nesnesi
      */
-    User toUser(TrainerModelResponse trainer, List<Role> roles) {
+    User toTrainer(TrainerModelResponseDto trainer, List<Role> roles) {
         Optional<Role> firstRole = roles.stream().filter(role -> role.getRole().equals(trainer.getTrainerRole().name())).findFirst();
         String password = Helpers.generatePassword();
         System.out.println(trainer.getName() + " şifresi: " + password);
@@ -204,15 +204,15 @@ public class JobService {
     }
 
 
-    private void checkBranchData(List<BranchModelResponse> baseApiBranches) {
+    private void checkBranchData(List<BranchModelResponseDto> baseApiBranches) {
         if (baseApiBranches.isEmpty()) {
-            throw new BranchNotFoundException("Branch ile ilgili herhangi bir data bulunamamistir");
+            throw new BranchNotFoundException("Şube ile ilgili herhangi bir data bulunamamıştır.");
         }
         List<Branch> currentBranches = branchService.findAllBranches(); // SurveyApp uzerindeki veriler
         List<Branch> deletedBranches = new ArrayList<>();
 
         currentBranches.forEach(cBranch->{
-            Optional<BranchModelResponse> first = baseApiBranches.stream().filter(branch ->("Branch-" + branch.getId()).equals(cBranch.getApiId())).findFirst();
+            Optional<BranchModelResponseDto> first = baseApiBranches.stream().filter(branch ->("Branch-" + branch.getId()).equals(cBranch.getApiId())).findFirst();
             if (first.isEmpty()) {
                 deletedBranches.add(cBranch);
             }
@@ -222,7 +222,7 @@ public class JobService {
             deletedBranches.forEach(dBranch->branchService.deleteBranchByOid(dBranch.getOid()));
         }
 
-        for (BranchModelResponse baseApiBranch : baseApiBranches) {
+        for (BranchModelResponseDto baseApiBranch : baseApiBranches) {
             boolean existsByApiId = branchService.existByApiId("Branch-" + baseApiBranch.getId());
             if (!existsByApiId) {
                branchService.create(CreateBranchRequestDto.builder().apiId("Branch-"+baseApiBranch.getId()).name(baseApiBranch.getName()).city(baseApiBranch.getCity()).build());
@@ -230,14 +230,14 @@ public class JobService {
         }
     }
 
-    private void checkCourseGroupData(List<CourseGroupModelResponse> baseApiCourseGroup) {
+    private void checkCourseGroupData(List<CourseGroupModelResponseDto> baseApiCourseGroup) {
         if (baseApiCourseGroup.isEmpty())
-            throw new RuntimeException("Sınıf ile ilgili herhangi bir veri bulunamamıştır");
+            throw new RuntimeException("Sınıf ile ilgili herhangi bir veri bulunamamıştır.");
         List<CourseGroup> currentCourseGroups = courseGroupService.findAllCourseGroup();
         List<CourseGroup> deletedCourseGroups = new ArrayList<>();
 
         currentCourseGroups.forEach(cCourseGroup -> {
-            Optional<CourseGroupModelResponse> optCourseGroup = baseApiCourseGroup.stream().filter(courseGroup -> ("CourseGroup-" + courseGroup.getId()).equals(cCourseGroup.getApiId())).findFirst();
+            Optional<CourseGroupModelResponseDto> optCourseGroup = baseApiCourseGroup.stream().filter(courseGroup -> ("CourseGroup-" + courseGroup.getId()).equals(cCourseGroup.getApiId())).findFirst();
             if (optCourseGroup.isEmpty()) {
                 deletedCourseGroups.add(cCourseGroup);
             }
@@ -245,7 +245,7 @@ public class JobService {
         if (!deletedCourseGroups.isEmpty()) {
             deletedCourseGroups.forEach(dCourseGroup -> courseGroupService.deleteCourseGroupByOid(dCourseGroup.getOid()));
         }
-        for (CourseGroupModelResponse courseGroupApi : baseApiCourseGroup) {
+        for (CourseGroupModelResponseDto courseGroupApi : baseApiCourseGroup) {
             boolean existsByApiId = courseGroupService.existsByApiId("CourseGroup-" + courseGroupApi.getId());
             if (!existsByApiId) {
                 courseGroupService.createCourseGroup(CreateCourseGroupRequestDto.builder()

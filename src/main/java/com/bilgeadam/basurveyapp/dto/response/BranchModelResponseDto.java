@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BranchModelResponse {
+public class BranchModelResponseDto {
 
     private Long id;
     private String name;

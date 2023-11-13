@@ -63,7 +63,7 @@ public class TrainerTagController {
 
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @GetMapping("/findall")
+    @GetMapping("/find-all")
     @Operation(summary = "Aktif olan tüm trainer tag'lerin görüntülenmesini sağlayan metot.")
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = trainerTagService.findAll();

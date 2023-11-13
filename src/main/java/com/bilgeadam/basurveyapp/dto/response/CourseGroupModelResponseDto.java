@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseGroupModelResponse {
+public class CourseGroupModelResponseDto {
     private Long id;
     private String name;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

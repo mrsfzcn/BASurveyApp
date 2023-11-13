@@ -104,7 +104,7 @@ public class UserServiceTest {
         userToBeUpdated.setFirstName("Ad");
         userToBeUpdated.setLastName("Soyad");
 
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(userToBeUpdated));
+        when(userRepository.findActiveUserByEmail(email)).thenReturn(Optional.of(userToBeUpdated));
         when(userRepository.save(userToBeUpdated)).thenReturn(userToBeUpdated);
 
         User result = userService.updateUser(email, dto);
@@ -117,7 +117,7 @@ public class UserServiceTest {
     public void testUpdateUserWithNonExistingUser()  {
         String email = "test@bilgeadam.com";
         UserUpdateRequestDto dto = new UserUpdateRequestDto();
-        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+        when(userRepository.findActiveUserByEmail(email)).thenReturn(Optional.empty());
 
         try {
             userService.updateUser(email, dto);
@@ -191,7 +191,7 @@ public class UserServiceTest {
                 .authorizedRole(ROLE_CONSTANTS.ROLE_MANAGER)
                 .build();
         when(jwtService.extractEmail(jwtToken)).thenReturn(user.getEmail());
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findActiveUserByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(roleService.userHasRole(user, ROLE_CONSTANTS.ROLE_MANAGER)).thenReturn(true);
 
         User trainer = User.builder()
@@ -230,7 +230,7 @@ public class UserServiceTest {
     @Test
     public void testGetTrainersAndStudentsListWhenUserNotFound() {
         String jwtToken = "sampleToken";
-        when(userRepository.findByEmail(jwtService.extractEmail(jwtToken))).thenReturn(Optional.empty());
+        when(userRepository.findActiveUserByEmail(jwtService.extractEmail(jwtToken))).thenReturn(Optional.empty());
 
         try {
             userService.getTrainersAndStudentsList(jwtToken);
@@ -258,7 +258,7 @@ public class UserServiceTest {
                 .users(new ArrayList<>())
                 .build();
 
-        when(userRepository.findByEmail(request.getUserEmail())).thenReturn(Optional.of(user));
+        when(userRepository.findActiveUserByEmail(request.getUserEmail())).thenReturn(Optional.of(user));
         when(roleService.hasRole(request.getRole())).thenReturn(true);
         when(roleService.userHasRole(user, request.getRole())).thenReturn(false);
         when(roleService.findActiveRole(request.getRole())).thenReturn(role);

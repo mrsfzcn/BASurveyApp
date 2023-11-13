@@ -27,7 +27,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> {
-            Optional<User> user = userRepository.findByEmail(username);
+            Optional<User> user = userRepository.findActiveUserByEmail(username);
             if (user.isPresent()) {
                 return user.get();
             } else {

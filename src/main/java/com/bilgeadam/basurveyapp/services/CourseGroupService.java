@@ -2,7 +2,7 @@ package com.bilgeadam.basurveyapp.services;
 
 import com.bilgeadam.basurveyapp.dto.request.CreateCourseGroupRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.UpdateCourseGroupRequestDto;
-import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponse;
+import com.bilgeadam.basurveyapp.dto.response.CourseGroupModelResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.CourseGroup;
 import com.bilgeadam.basurveyapp.entity.enums.State;
@@ -31,12 +31,12 @@ public class CourseGroupService{
      * @return FakeAPI'daki verilerin hepsi
      */
     @Deprecated
-    public List<CourseGroupModelResponse> getAllDataFromCourseGroup() {
-        List<CourseGroupModelResponse> allData = courseGroupManager.findall().getBody();
+    public List<CourseGroupModelResponseDto> getAllDataFromCourseGroup() {
+        List<CourseGroupModelResponseDto> allData = courseGroupManager.findall().getBody();
         if (allData.isEmpty()) {
             throw new RuntimeException("Data boştur");
         }
-        for (CourseGroupModelResponse groupCourses: allData){
+        for (CourseGroupModelResponseDto groupCourses: allData){
             createCourseGroup(CreateCourseGroupRequestDto.builder()
                     .apiId("CourseGroup-"+groupCourses.getId())
                     .name(groupCourses.getName())
@@ -53,7 +53,7 @@ public class CourseGroupService{
     public MessageResponseDto createCourseGroup(CreateCourseGroupRequestDto dto){
         courseGroupRepository.save(ICourseGroupMapper.INSTANCE.toCourseGroup(dto));
         return MessageResponseDto.builder()
-                .successMessage(dto.getName()+ "isim sınıf" + dto.getCourseId() + "kurs" + dto.getBranchId()+ "şubesine ait" + dto.getTrainers() + " sahip eğitmenleri" + dto.getStartDate() + "baslangic tarihi" + dto.getEndDate() + "bitis tarihli sınıf eklendi")
+                .successMessage(dto.getName()+ "isim sınıf" + dto.getCourseId() + "kurs" + dto.getBranchId()+ "şubesine ait" + dto.getTrainers() + " sahip eğitmenleri" + dto.getStartDate() + "baslangıç tarihi" + dto.getEndDate() + "bitiş tarihli sınıf eklendi.")
                 .build();
     }
 
@@ -118,7 +118,7 @@ public class CourseGroupService{
         Optional<CourseGroup> optionalCourseGroup = courseGroupRepository.findByApiIdAndState(dto.getApiId(), State.ACTIVE);
         if (dto.getCourseId() == null && dto.getName() == null && dto.getBranchId() == null && dto.getTrainers() == null && dto.getStartDate() == null && dto.getEndDate() == null)
             return MessageResponseDto.builder()
-                    .successMessage("Güncelleme işlemi başarısız oldu. Lütfen verilerin doğrulugunu kontrol edin")
+                    .successMessage("Güncelleme işlemi başarısız oldu. Lütfen verilerin doğrulugunu kontrol edin.")
                     .build();
         else {
             optionalCourseGroup.get().setCourseId(dto.getCourseId());
@@ -129,7 +129,7 @@ public class CourseGroupService{
             optionalCourseGroup.get().setEndDate(dto.getEndDate());
             courseGroupRepository.save(optionalCourseGroup.get());
             return MessageResponseDto.builder()
-                    .successMessage("Güncelleme işlemi başarıyla gerçekleşti !!")
+                    .successMessage("Güncelleme işlemi başarıyla gerçekleşti!!")
                     .build();
         }
     }
