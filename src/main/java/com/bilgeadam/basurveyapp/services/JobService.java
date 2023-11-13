@@ -186,7 +186,7 @@ public class JobService {
      * @param roles   Database'de kayıtlı olan roller.
      * @return Trainer verisi ile oluşturulmuş User nesnesi
      */
-    User toTrainer(TrainerModelResponseDto trainer, List<Role> roles) {
+    User toUser(TrainerModelResponseDto trainer, List<Role> roles) {
         Optional<Role> firstRole = roles.stream().filter(role -> role.getRole().equals(trainer.getTrainerRole().name())).findFirst();
         String password = Helpers.generatePassword();
         System.out.println(trainer.getName() + " şifresi: " + password);
