@@ -66,7 +66,8 @@ public enum ExceptionType {
     BRANCH_NOT_FOUND(9037,"Branch not found", NOT_FOUND),
     COURSE_GROUP_NOT_FOUND(9039,"Course_Group not found", NOT_FOUND),
     BRANCH_ALREADY_EXIST(9038,"Branch alredy exist",BAD_REQUEST),
-
+    COURSE_ALREADY_EXIST(9040,"Course already exist",BAD_REQUEST),
+    COURSE_NOT_FOUND(9041,"Course not found", NOT_FOUND),
 
     /*
         Validation errors.
