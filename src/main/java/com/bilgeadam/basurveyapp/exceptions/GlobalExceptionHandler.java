@@ -373,7 +373,7 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler(CourseAlreadyExistException.class)
+    @ExceptionHandler(CourseNotFoundException.class)
     public ResponseEntity<ExceptionResponse> courseNotFoundException(CourseAlreadyExistException exception, HttpServletRequest request){
         log.warn(messageSource.getMessage("exception.COURSE_ALREADY_EXIST",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(COURSE_ALREADY_EXIST,exception,request);
