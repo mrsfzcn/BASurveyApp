@@ -360,6 +360,12 @@ public class GlobalExceptionHandler {
         return createExceptionInfoResponse(BRANCH_ALREADY_EXIST,exception,request);
     }
     @ResponseBody
+    @ExceptionHandler(BranchIsUpToDateException.class)
+    public ResponseEntity<ExceptionResponse> branchIsUpToDateException(BranchIsUpToDateException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.BRANCH_IS_UP_TO_DATE",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(BRANCH_IS_UP_TO_DATE,exception,request);
+    }
+    @ResponseBody
     @ExceptionHandler(CourseGroupNotFoundException.class)
     public ResponseEntity<ExceptionResponse> courseGroupExistException(CourseGroupNotFoundException exception, HttpServletRequest request){
         log.warn(messageSource.getMessage("exception.COURSE_GROUP_NOT_FOUND",null,Locale.getDefault()),exception);

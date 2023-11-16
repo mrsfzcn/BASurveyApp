@@ -8,7 +8,9 @@ import com.bilgeadam.basurveyapp.dto.response.MessageResponseDto;
 import com.bilgeadam.basurveyapp.entity.Branch;
 import com.bilgeadam.basurveyapp.entity.enums.State;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchAlreadyExistException;
+import com.bilgeadam.basurveyapp.exceptions.custom.BranchIsUpToDateException;
 import com.bilgeadam.basurveyapp.exceptions.custom.BranchNotFoundException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.manager.IBranchManager;
 import com.bilgeadam.basurveyapp.mapper.IBranchMapper;
 import com.bilgeadam.basurveyapp.repositories.IBranchRepository;
@@ -196,5 +198,33 @@ public class BranchService {
         optionalBranch.get().setState(State.ACTIVE);
         branchRepository.save(optionalBranch.get());
         return new MessageResponseDto(optionalBranch.get().getName() + " isimli " + optionalBranch.get().getCity() + " şehrindeki şube aktif edildi.");
+    }
+
+    public Branch refreshSingleBranch(String apiId) {
+        Optional<Branch> branch = branchRepository.findByApiId(apiId);
+        if (branch.isEmpty())
+            throw new BranchNotFoundException("Böyle bir şube bulunamadı!");
+        long baseId = Long.parseLong(apiId.split("-")[1]);
+        BranchModelResponseDto body = null;
+        try {
+            body = branchManager.findById(baseId).getBody();
+        } catch (Exception e){
+            if(e.getMessage().contains("Sube bulunamamistir.")) {
+                branch.get().setState(State.DELETED);
+                branchRepository.save(branch.get());
+                throw new BranchNotFoundException("Bu şube kapatılmıştır.");
+            }
+            throw new ResponseNotFoundException("Database erişimi başarısız oldu. Lütfen database sahibiyle iletişime geçin!");
+        }
+        if (checkDifferencesBetween(branch.get(),body)){
+            throw new BranchIsUpToDateException("Şube zaten güncel!");
+        }
+        branch.get().setName(body.getName());
+        branch.get().setCity(body.getCity());
+        return branchRepository.save(branch.get());
+    }
+
+    boolean checkDifferencesBetween(Branch branch,BranchModelResponseDto dto){
+        return branch.getName().equals(dto.getName()) && branch.getCity().equals(dto.getCity());
     }
 }

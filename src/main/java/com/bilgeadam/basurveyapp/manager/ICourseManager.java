@@ -9,6 +9,6 @@ import java.util.List;
 
 @FeignClient(url = "http://localhost:8081/course",name = "api-course")
 public interface ICourseManager {
-    @GetMapping("/findAll")
+    @GetMapping("/find-all")
     ResponseEntity<List<CourseModalResponse>> findAll();
 }
