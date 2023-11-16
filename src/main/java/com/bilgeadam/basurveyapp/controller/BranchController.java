@@ -87,4 +87,10 @@ public class BranchController {
     public ResponseEntity<MessageResponseDto> activateBranch(@PathVariable Long oid) {
         return ResponseEntity.ok(service.activateBranch(oid));
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PutMapping("/refresh/{apiId}")
+    public ResponseEntity<Branch> updateBranchByApiId(@PathVariable String apiId) {
+        return ResponseEntity.ok(service.refreshSingleBranch(apiId));
+    }
 }
