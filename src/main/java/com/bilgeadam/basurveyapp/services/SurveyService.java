@@ -164,6 +164,19 @@ public class SurveyService {
         Survey survey = surveyRepository.findSurveyWithOrderedQuestions(surveyId.get()).orElseThrow(() -> {
             throw new SurveyNotFoundException("Survey is not found");
         });
+        Set<Long> uniqueOids = new HashSet<>();
+        List<Question> uniqueQuestions = new ArrayList<>();
+        System.out.println(survey.getOid()+"==================================================");
+        for (Question question : survey.getQuestions()) {
+            if (uniqueOids.add(question.getOid())) {
+                uniqueQuestions.add(question);
+            }
+        }
+        for (Question uniqueQuestion : uniqueQuestions) {
+            System.out.println(uniqueQuestion);
+        }
+        survey.setQuestions(uniqueQuestions);
+        surveyRepository.save(survey);
         SurveyResponseByEmailTokenDto surveyResponseByEmailTokenDto = SurveyMapper.INSTANCE.toSurveyResponseByEmailTokenDto(survey);
 
         return surveyResponseByEmailTokenDto;
