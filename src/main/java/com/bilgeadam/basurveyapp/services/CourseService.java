@@ -74,20 +74,18 @@ public class CourseService {
     }
 
     public List<Course> findAllCourses(){
-        List<Course> courseList=courseRepository.findAll();
-        if (courseList.isEmpty()){
-            throw new CourseNotFoundException("Sistemde kurs bulunmamaktadir");
-        }
-        return courseList;
+        return courseRepository.findAll();
     }
 
-    public List<Course> findCoursesByName(String name){
-        List<Course> courseList=courseRepository.findByNameIgnoreCase(name);
+    public Course findCoursesByName(String name){
+        Optional<Course> courseList=courseRepository.findByName(name);
         if (courseList.isEmpty()){
-            throw new CourseNotFoundException("herhangi bir kurs bulunmamaktadir");
+            throw new CourseNotFoundException("Sistemde aktif kurs bulunmamaktadir");
         }
-        return courseList;
+        return courseList.get();
     }
+
+
 
     public Course findByApiId(String apiId) {
         Optional<Course> optionalCourse = courseRepository.findByApiId(apiId);
