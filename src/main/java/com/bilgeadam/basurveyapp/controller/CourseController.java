@@ -35,7 +35,7 @@ public class CourseController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-by-name/{name}")
-    public ResponseEntity<List<Course>> findCoursesByName(@PathVariable String name) {
+    public ResponseEntity<Course> findCoursesByName(@PathVariable String name) {
         return ResponseEntity.ok(service.findCoursesByName(name));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
@@ -51,7 +51,7 @@ public class CourseController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @PutMapping("/active-course")
+    @GetMapping("/active-course")
     public ResponseEntity<List<Course>> activeCourses(){
         return ResponseEntity.ok(service.findAllActiveCourses());
     }
@@ -66,5 +66,6 @@ public class CourseController {
     public ResponseEntity<MessageResponseDto> activateCourse(@PathVariable String id) {
         return ResponseEntity.ok(service.activateCourse(id));
     }
+
     //qwe
 }
