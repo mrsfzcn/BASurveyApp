@@ -848,12 +848,10 @@ public class SurveyService {
 
 
     public Boolean setRequiredQuestionIndexes(SetRequiredQuestionIndexesDto dto) {
-        System.out.println("Metoda girdim mi============================================================");
         Optional<Survey> optionalSurvey = findActiveById(dto.getOid());
         if (optionalSurvey.isEmpty()) {
             throw new SurveyNotFoundException("Aktif bir survey bulunamadi");
         }
-        System.out.println("burda miyim");
         try {
             Survey survey = optionalSurvey.get();
             survey.setRequiredQuestionIndexes(dto.getRequiredIndexes());
