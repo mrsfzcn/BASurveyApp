@@ -191,5 +191,10 @@ public class SurveyController {
         surveyService.deleteById(id);
         return ResponseEntity.ok().build();
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PutMapping("/add-required-question-indexes")
+    public ResponseEntity<Boolean> setRequiredQuestionIndexes(@RequestBody SetRequiredQuestionIndexesDto dto){
+        return ResponseEntity.ok(surveyService.setRequiredQuestionIndexes(dto));
+    }
 }
 

@@ -54,4 +54,6 @@ public class Survey extends BaseEntity {
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<SurveyQuestionOrder> surveyQuestionOrders;
 
+    @ElementCollection
+    private List<Long> requiredQuestionIndexes;
 }

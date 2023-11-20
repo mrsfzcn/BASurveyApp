@@ -844,6 +844,23 @@ public class SurveyService {
         }
         return false;
     }
+
+
+
+    public Boolean setRequiredQuestionIndexes(SetRequiredQuestionIndexesDto dto) {
+        Optional<Survey> optionalSurvey = findActiveById(dto.getOid());
+        if (optionalSurvey.isEmpty()) {
+            throw new SurveyNotFoundException("Aktif bir survey bulunamadi");
+        }
+        try {
+            Survey survey = optionalSurvey.get();
+            survey.setRequiredQuestionIndexes(dto.getRequiredIndexes());
+            surveyRepository.save(survey);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 
 

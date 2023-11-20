@@ -15,4 +15,5 @@ public class SurveyResponseByEmailTokenDto {
     private String courseTopic;
     private List<SurveyClassroomResponseDto> surveyTags;
     private List<SurveyQuestionResponseDto> questions;
+    private List<Long> requiredQuestionIndexes;
 }
