@@ -166,7 +166,6 @@ public class SurveyService {
         });
         Set<Long> uniqueOids = new HashSet<>();
         List<Question> uniqueQuestions = new ArrayList<>();
-        System.out.println(survey.getOid()+"==================================================");
         for (Question question : survey.getQuestions()) {
             if (uniqueOids.add(question.getOid())) {
                 uniqueQuestions.add(question);
