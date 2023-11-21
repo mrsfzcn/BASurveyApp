@@ -146,7 +146,9 @@ public class CourseGroupService{
         List<CourseGroupModelResponse2Dto> listDto =new ArrayList<>();
 
         for (CourseGroup obj: listCorse) {
-            CourseGroupModelResponse2Dto  courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
+            CourseGroupModelResponse2Dto  courseGroupModelDto;
+            if (obj.getTrainers()!=null){
+            courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
                     .id(obj.getCourseId())
                     .name(obj.getName())
                     .startDate(obj.getStartDate())
@@ -155,8 +157,20 @@ public class CourseGroupService{
                     .assistantTrainer(trainerRepository.getReferenceById(obj.getTrainers().get(1)).toString())
                     .build();
             listDto.add(courseGroupModelDto);
+            }else {
+                courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
+                        .id(obj.getCourseId())
+                        .name(obj.getName())
+                        .startDate(obj.getStartDate())
+                        .endDate(obj.getEndDate())
+                        .masterTrainer("Atanmadı")
+                        .assistantTrainer("Atanmadı")
+                        .build();
+                listDto.add(courseGroupModelDto);
+            }
         }
         return  listDto;
     }
+
 
 }
