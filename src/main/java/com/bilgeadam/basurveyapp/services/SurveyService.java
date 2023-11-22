@@ -90,8 +90,15 @@ public class SurveyService {
     public SurveySimpleResponseDto create(SurveyCreateRequestDto dto) {
 
         try {
+            Set<SurveyTag> surveyTagList = new HashSet<>();
+            dto.getSurveyTagIds().forEach(surveyTagOid -> surveyTagService.findActiveById(surveyTagOid).ifPresent(surveyTagList::add));
             Survey survey = INSTANCE.toSurvey(dto);
+            survey.setSurveyTags(surveyTagList);
             surveyRepository.save(survey);
+            surveyTagList.stream().forEach(tag-> {
+                tag.getTargetEntities().add(survey);
+                surveyTagService.save(tag);
+            });
             SurveySimpleResponseDto response = new SurveySimpleResponseDto();
             response.setSurveyOid(survey.getOid());
             response.setSurveyTitle(survey.getSurveyTitle());
@@ -109,6 +116,17 @@ public class SurveyService {
         if (surveyToBeUpdated.isEmpty()) {
             throw new SurveyNotFoundException("Survey is not found");
         }
+        surveyToBeUpdated.get().getSurveyTags().forEach(surveyTag -> {
+            surveyTag.setTargetEntities(surveyTag.getTargetEntities().stream().filter(survey -> !survey.getOid().equals(surveyToBeUpdated.get().getOid())).collect(Collectors.toSet()));
+            surveyTagService.save(surveyTag);
+        });
+        dto.getSurveyTagIds().forEach(tagId -> {
+            Optional<SurveyTag> tag = surveyTagService.findActiveById(tagId);
+            if(tag.isPresent()){
+                tag.get().getTargetEntities().add(surveyToBeUpdated.get());
+                surveyTagService.save(tag.get());
+            }
+        });
         surveyToBeUpdated.get().setSurveyTitle(dto.getSurveyTitle());
         surveyToBeUpdated.get().setCourseTopic(dto.getCourseTopic());
         return surveyRepository.save(surveyToBeUpdated.get());

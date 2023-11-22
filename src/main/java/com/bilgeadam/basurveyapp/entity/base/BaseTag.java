@@ -20,6 +20,6 @@ public abstract class BaseTag<T> extends BaseEntity{
     String tagString;
     Long mainTagOid;
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<T> targetEntities;
 }
