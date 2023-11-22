@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,5 +20,7 @@ public class SurveyUpdateRequestDto {
     @NotBlank
     @NotNull
     private String courseTopic;
+
+    private List<Long> surveyTagIds;
 
 }

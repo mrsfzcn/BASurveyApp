@@ -15,7 +15,7 @@ public class SurveyQuestionOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Survey survey;
 
     @ManyToOne(fetch = FetchType.LAZY)

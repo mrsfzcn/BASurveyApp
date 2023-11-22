@@ -18,7 +18,7 @@ import java.util.Set;
 @Builder
 @Table(name = "surveys")
 //TODO geçici yazıldı. Daha iyi bir çözüm üretilecek. --> (bug olarak board' a eklendi)
-@JsonIgnoreProperties({"surveyRegistrations", "studentsWhoAnswered", "questions", "surveyTags", "responses"})
+@JsonIgnoreProperties({"surveyRegistrations", "studentsWhoAnswered", "questions", "surveyTags", "responses","surveyQuestionOrders"})
 
 public class Survey extends BaseEntity {
 
@@ -51,7 +51,8 @@ public class Survey extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     private Set<Response> responses;
 
-    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SurveyQuestionOrder> surveyQuestionOrders;
 
     @ElementCollection
