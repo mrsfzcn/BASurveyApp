@@ -53,7 +53,9 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/survey/response/**",
             "/question/getsurveyquestions/**",
-            "/role/**"
+            "/role/**",
+            "/user/find-user-by-email-token/**",
+            "/trainer-tag/find-trainers-by-trainer-tag/**",
     };
 
     @Bean

@@ -8,10 +8,7 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.entity.Role;
 import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.entity.enums.State;
-import com.bilgeadam.basurveyapp.exceptions.custom.RoleAlreadyExistException;
-import com.bilgeadam.basurveyapp.exceptions.custom.RoleNotFoundException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UndefinedTokenException;
-import com.bilgeadam.basurveyapp.exceptions.custom.UserDoesNotExistsException;
+import com.bilgeadam.basurveyapp.exceptions.custom.*;
 import com.bilgeadam.basurveyapp.mapper.UserMapper;
 import com.bilgeadam.basurveyapp.repositories.UserRepository;
 import org.springframework.context.annotation.Lazy;
@@ -21,7 +18,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -141,7 +140,20 @@ public class UserService {
         if (userById.isEmpty()) {
             throw new UserDoesNotExistsException("User is not found");
         }
-        return UserMapper.INSTANCE.toUserSimpleResponseDto(userById.get());
+
+        Map<String, Object> claims = new HashMap<>();
+        System.out.println(userById.get().getAuthorizedRole());
+        claims.put("role", "ADMIN");
+
+
+        UserSimpleResponseDto userSimpleResponseDto = UserMapper.INSTANCE.toUserSimpleResponseDto(userById.get());
+        AuthenticationResponseDto build = AuthenticationResponseDto.builder()
+                .token(jwtService.generateToken(claims, userById.get()))
+                .build();
+        userSimpleResponseDto.setToken(build.getToken());
+        return userSimpleResponseDto;
+
+
     }
 
     public List<UserTrainersAndStudentsResponseDto> getTrainersAndStudentsList(String jwtToken) {
