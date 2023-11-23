@@ -54,7 +54,7 @@ public class TrainerTagController {
     public ResponseEntity<GetTrainerTagsByEmailResponse> getTrainerTagsByEmail(@RequestBody @Valid FindUserByEmailRequestDto dto){
         return ResponseEntity.ok(trainerTagService.getTrainerTagsByEmail(dto.getEmail()));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
     @GetMapping("/find-trainers-by-trainer-tag/{token}")
     @Operation(summary = "Email token girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot")
     public List<UserSimpleResponseDto> findTrainersByEmailToken(@PathVariable String token){
