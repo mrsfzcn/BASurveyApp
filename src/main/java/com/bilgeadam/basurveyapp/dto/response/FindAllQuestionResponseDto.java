@@ -14,4 +14,5 @@ public class FindAllQuestionResponseDto {
     String questionString;
     String questionType;
     List<String> questionTags;
+    List<String> questionOptions;
 }

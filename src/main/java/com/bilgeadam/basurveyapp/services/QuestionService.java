@@ -353,10 +353,11 @@ public class QuestionService {
         for (Question question: questionList) {
             questionTagList = question.getQuestionTag().stream().map(x -> x.getTagString()).toList();
             dto = FindAllQuestionResponseDto.builder().
-            questionOid(question.getOid())
+                    questionOid(question.getOid())
                     .questionString(question.getQuestionString())
-                            .questionType(question.getQuestionType().getQuestionType()).
+                    .questionType(question.getQuestionType().getQuestionType()).
                     questionTags(questionTagList).
+                    questionOptions(question.getOptions()).
                     build();
             dtos.add(dto);
         }
