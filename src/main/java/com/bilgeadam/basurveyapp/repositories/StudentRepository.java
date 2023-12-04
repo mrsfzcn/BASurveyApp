@@ -28,5 +28,5 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
     Optional<Student> findByOid(Long oid);
 
 
-
+    Optional<Student> findByUserOid(Long oid);
 }
