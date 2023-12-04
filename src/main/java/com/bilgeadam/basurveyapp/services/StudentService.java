@@ -88,7 +88,7 @@ public class StudentService {
     }
     //Tüm kullanıcılar sayfasındaki student silme işlemi için eklendi. deleteByStudentOid metoduna alternatif olarak hazırlandı.
     public Boolean deleteStudentByUserOid(Long oid) {
-        Optional<Student> student =  studentRepository.findByUser(oid);
+        Optional<Student> student =  studentRepository.findByUserOid(oid);
         if(student.isEmpty())
             throw new ResourceNotFoundException("Entity not found");
         student.get().getUser().setState(State.DELETED);
