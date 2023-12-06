@@ -24,5 +24,9 @@ public interface MainTagRepository extends BaseRepository<MainTag, Long>{
     Optional<MainTag> findOptionalByTagNameAndTagClassAndState(String tagName, Tags tagClass, State state);
 
     Optional<List<MainTag>> findOptionalByTagNameAndState(String tagName, State state);
+
+    Optional<MainTag> findByTagNameAndTagClassAndState(String oldTagName, Tags tags, State state);
+
+    Optional<MainTag> findByTagNameAndTagClass(String oldTagName, Tags tags);
 }
 
