@@ -891,6 +891,10 @@ public class SurveyService {
             return false;
         }
     }
+
+    public SurveyRegistration findSurveyRegistrationByStudentTagOid(Long studentTagOid){
+        return surveyRegistrationRepository.findByStudentTagOid(studentTagOid).get();
+    }
 }
 
 

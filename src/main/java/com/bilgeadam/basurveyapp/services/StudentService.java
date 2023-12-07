@@ -107,4 +107,8 @@ public class StudentService {
         }
         return studentByOid.get().getUser();
     }
+
+    public Student findByUserOid(Long userOid){
+        return studentRepository.findByUserOid(userOid).get();
+    }
 }

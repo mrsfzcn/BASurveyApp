@@ -1,5 +1,7 @@
 package com.bilgeadam.basurveyapp.repositories;
 
+
+//import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.entity.User;
@@ -53,6 +55,7 @@ public interface ResponseRepository extends BaseRepository<Response, Long> {
     Integer findByStudentAnsweredSurvey(Long surveyOid);
 
 
+    List<Response> findByStudentTagOid(Long studentTagOid);
 
 
 

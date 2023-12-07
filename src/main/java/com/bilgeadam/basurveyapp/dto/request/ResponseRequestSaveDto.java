@@ -16,4 +16,10 @@ public class ResponseRequestSaveDto {
 
     @NotNull
     private Long questionOid;
+
+    @NotNull
+    private Long surveyOid;
+
+    @NotNull
+    private Long userOid;
 }

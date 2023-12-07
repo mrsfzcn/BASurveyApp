@@ -10,6 +10,7 @@ import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Getter
 @Setter
 @Entity
@@ -22,7 +23,7 @@ public class Student extends BaseEntity {
     @ManyToMany(mappedBy = "studentsWhoAnswered",  fetch = FetchType.LAZY)
     Set<Survey> surveysAnswered;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "targetEntities", fetch = FetchType.EAGER)
     Set<StudentTag> studentTags;
 
     @ManyToOne
