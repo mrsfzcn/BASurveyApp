@@ -153,8 +153,8 @@ public class CourseGroupService{
                     .name(obj.getName())
                     .startDate(obj.getStartDate())
                     .endDate(obj.getEndDate())
-                    .masterTrainer(trainerRepository.getReferenceById(obj.getTrainers().get(0)).toString())
-                    .assistantTrainer(trainerRepository.getReferenceById(obj.getTrainers().get(1)).toString())
+                    .masterTrainer(trainerRepository.findActiveById(obj.getTrainers().get(0)).get().getUser().getFirstName()+" "+trainerRepository.findActiveById(obj.getTrainers().get(0)).get().getUser().getLastName())
+                    .assistantTrainer(trainerRepository.findActiveById(obj.getTrainers().get(1)).get().getUser().getFirstName()+" "+trainerRepository.findActiveById(obj.getTrainers().get(1)).get().getUser().getLastName())
                     .build();
             listDto.add(courseGroupModelDto);
             }else {
