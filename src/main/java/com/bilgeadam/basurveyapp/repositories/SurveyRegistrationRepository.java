@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface SurveyRegistrationRepository extends BaseRepository<SurveyRegistration, Long> {
@@ -38,5 +39,7 @@ public interface SurveyRegistrationRepository extends BaseRepository<SurveyRegis
     List<String> findStudentNameBySurveyOid(Long surveyOid,Long studentTagOid);
     @Query(value = "select * from survey_registration where survey_oid = ?1",nativeQuery = true)
     List<SurveyRegistration> findSurveyRegistrationsBySurvey0id(Long survey0id);
+
+    Optional<SurveyRegistration> findByStudentTagOid(Long studentTagOid);
 
 }

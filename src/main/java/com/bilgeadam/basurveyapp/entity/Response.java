@@ -7,6 +7,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Getter
 @Setter
 @Entity
@@ -17,14 +18,16 @@ public class Response extends BaseEntity {
     @Column(name = "response_string", nullable = false)
     private String responseString; //todo: çok seçmeli sorularda çoklu cevap kaydedilebiliyor.Burası list tutulabilir
     @JsonManagedReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(referencedColumnName = "oid", name = "question")
     private Question question;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="user_oid", nullable=false)
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Survey survey;
+
+    private Long studentTagOid;
 
 }

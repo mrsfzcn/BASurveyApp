@@ -6,6 +6,7 @@ import com.bilgeadam.basurveyapp.dto.request.ResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.request.ResponseRequestSaveDto;
 import com.bilgeadam.basurveyapp.dto.request.SurveyUpdateResponseRequestDto;
 import com.bilgeadam.basurveyapp.dto.response.AnswerResponseDto;
+import com.bilgeadam.basurveyapp.dto.response.StudentResponseDto;
 import com.bilgeadam.basurveyapp.dto.response.WhoDidntAnswerSurveyStudentDto;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
@@ -55,11 +56,28 @@ public class ResponseService {
         this.studentTagService = studentTagService;
     }
 
+    //TODO BURASI AÇILACAK DATABASE'DE VERİYE İHTİYAÇ OLDUĞU İÇİN HERŞEY MANUEL ŞEKİLDE ATANDI !! DTO'NUN FIELDLARI Database'e gönderilecek cevaplara göre düzenlenecek !!
     public void  createResponse(ResponseRequestSaveDto responseRequestDto) {
-        User user = getAuthenticatedUser();
+//        User user = getAuthenticatedUser();
+        User user = new User();
+        user.setOid(responseRequestDto.getUserOid());
+        Student byUserOid = studentService.findByUserOid(user.getOid());
+        List<StudentResponseDto> studentList = studentService.getStudentList();
+        StudentResponseDto studentResponseDto = new StudentResponseDto();
+        for (StudentResponseDto students : studentList) {
+            if (students.getOid() == byUserOid.getOid()){
+                studentResponseDto.setStudentTags(students.getStudentTags());
+                studentResponseDto.setOid(students.getOid());
+                break;
+            }
+        }
+        StudentTag studentTag = studentTagService.findByStudentTagName(studentResponseDto.getStudentTags().get(0).getTagString()).get();
         Question question = getActiveQuestionById(responseRequestDto.getQuestionOid());
-
         Response response = buildResponse(responseRequestDto, question, user);
+        Survey survey = new Survey();
+        survey.setOid(responseRequestDto.getSurveyOid());
+        response.setSurvey(survey);
+        response.setStudentTagOid(studentTag.getOid());
         responseRepository.save(response);
     }
 
@@ -260,23 +278,42 @@ public class ResponseService {
 
 
 
-    // KULLANICIYA ATANAN ANKETLERİN CEVAPLARININ EXCELE EXPORT EDİLMESİNE YARAYAN METOD
+    // KULLANICIYA ATANAN ANKETLERİN CEVAPLARININ EXCELE EXPORT EDİLMESİNE YARAYAN METOD BAK !!
     public byte[] exportToExcel(Long studentTag) throws IOException {
-        System.out.println("student tag"+ studentTag);
-        Optional<StudentTag> studentTag1 = studentTagService.findById(studentTag);
-        List<Response> responses = responseRepository.findAll();
+//        List<Response> responses = responseRepository.findAll();
+
+        List<Response> byStudentTagOid = responseRepository.findByStudentTagOid(studentTag);
+
         List<Long> studentTagCount = studentTagService.studentTagCount(studentTag);
+        SurveyRegistration registrations = surveyService.findSurveyRegistrationByStudentTagOid(studentTag);
+
+        String anketBaslangic = registrations.getStartDate().getDayOfMonth() + "/" +
+                registrations.getStartDate().getMonthValue() + "/" +
+                registrations.getStartDate().getYear() + " - " +
+                registrations.getStartDate().getHour() + ":" +
+                registrations.getStartDate().getMinute() + ":" +
+                registrations.getStartDate().getSecond();
+
+        String anketBitis = registrations.getEndDate().getDayOfMonth() + "/" +
+                registrations.getEndDate().getMonthValue() + "/" +
+                registrations.getEndDate().getYear() + " - " +
+                registrations.getEndDate().getHour() + ":" +
+                registrations.getEndDate().getMinute() + ":" +
+                registrations.getEndDate().getSecond();
+
         if(studentTagCount.isEmpty()) throw new StudentTagNotFoundException(STUDENT_TAG_NOT_FOUND.getMessage());
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Responses");
+        Sheet sheet = workbook.createSheet("Öğrenci Cevapları");
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("ID");
-        headerRow.createCell(1).setCellValue("SINIF");
-        headerRow.createCell(2).setCellValue("Anket sırası");
-        headerRow.createCell(3).setCellValue("ANKET");
-        headerRow.createCell(4).setCellValue("KULLANICI");
-        headerRow.createCell(5).setCellValue("SORU");
-        headerRow.createCell(6).setCellValue("CEVAP");
+        headerRow.createCell(1).setCellValue("ANKET SIRASI");
+        headerRow.createCell(2).setCellValue("BAŞLAMA TARİHİ");
+        headerRow.createCell(3).setCellValue("BİTİŞ TARİHİ");
+        headerRow.createCell(4).setCellValue("ÖĞRENCİ EMAIL");
+        headerRow.createCell(5).setCellValue("ÖĞRENCİ İSİM");
+        headerRow.createCell(6).setCellValue("ÖĞRENCİ SOYİSİM");
+        headerRow.createCell(7).setCellValue("SORU");
+        headerRow.createCell(8).setCellValue("CEVAP");
         int count = 1;
         int rowNum = 1;
         Map<Long,Integer>map = new HashMap<>();
@@ -284,18 +321,21 @@ public class ResponseService {
             map.put(a,count++);
         }
         String surveyTitle = "";
-            for (Response response : responses) {
+
+            for (Response response : byStudentTagOid) {
+                System.out.println(response);
                 surveyTitle = response.getSurvey().getSurveyTitle();
                 if (!surveyTitle.equals("")){
                     Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(rowNum-1);
-                    row.createCell(1).setCellValue(studentTag1.get().getTagString());
-                    // excelde integer değer kabul ediyor. Map'in get metodu obje döndüğünden dolayı objeyi önce stringe daha sonra integer'a parse ettik.
-                  //  row.createCell(2).setCellValue(Integer.parseInt(String.valueOf(map.get(response.getSurvey().getOid()))));
-                   // row.createCell(3).setCellValue(response.getSurvey().getSurveyTitle());
+                    row.createCell(1).setCellValue("Sıra Düzenlenecek");
+                    row.createCell(2).setCellValue(anketBaslangic);
+                    row.createCell(3).setCellValue(anketBitis);
                     row.createCell(4).setCellValue(response.getUser().getEmail());
-                    row.createCell(5).setCellValue(response.getQuestion().getQuestionString());
-                    row.createCell(6).setCellValue(response.getResponseString());
+                    row.createCell(5).setCellValue(response.getUser().getFirstName());
+                    row.createCell(6).setCellValue(response.getUser().getLastName());
+                    row.createCell(7).setCellValue(response.getQuestion().getQuestionString());
+                    row.createCell(8).setCellValue(response.getResponseString());
                     count++;
                 }
             }

@@ -12,4 +12,5 @@ public class AnswerResponseDto {
     private Long questionOid;
     private Long surveyOid;
     private String responseString;
+    private String studentTag;
 }

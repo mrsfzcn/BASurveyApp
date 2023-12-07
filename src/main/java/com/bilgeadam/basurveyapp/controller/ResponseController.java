@@ -94,8 +94,9 @@ public class ResponseController {
     public ResponseEntity<Boolean> updateStudentAnswers(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
     }
+    //TODO ADMIN ROLÜ İLERDE KALDIRILACAK ADMİN GİRİŞİ YAPILDIĞINDA METHODUN ÇALIŞMASI İÇİN ADMIN AUTHORIZE'I EKLENDI !!
 
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @GetMapping("/excel/{id}")
     @Operation(summary = "anket cevaplarını excele export eden metod")
     public ResponseEntity<byte[]> exportToExcel(@PathVariable Long id) throws IOException {
@@ -106,21 +107,21 @@ public class ResponseController {
 
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @GetMapping("/survey-response-rate/{survey-id}/{student-tag-oid}")
     @Operation(summary = "anketin doldurulma oranını döndüren metod")
     public ResponseEntity<Double> surveyResponseRate(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
         return ResponseEntity.ok(responseService.surveyResponseRate(surveyId,studentTagOid));
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/survey-response-rates/{survey-id}/{student-tag-oid}")
     @Operation(summary = "anketin atandığı sınıftaki öğrencilerin ad soyadını döndüren metod")
     public ResponseEntity<List<String>> surveyResponseRateName(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
         return ResponseEntity.ok(responseService.surveyResponseRateName(surveyId,studentTagOid));
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @GetMapping("/who-need-to-complete/{survey-id}")
     @Operation(summary = "anketi cevaplaması gereken öğrencileri bulan metod ")
     public ResponseEntity<List<WhoDidntAnswerSurveyStudentDto>> whoNeedToComplete(@PathVariable(name = "survey-id") Long surveyId){
