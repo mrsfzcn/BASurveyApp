@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class TrieServiceImpl implements TrieService{
-    private ICategoryRepository categoryRepository;
+    private final ICategoryRepository categoryRepository;
 
     private TrieNode root = new TrieNode();
 

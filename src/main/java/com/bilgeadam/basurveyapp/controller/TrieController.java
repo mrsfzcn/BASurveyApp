@@ -12,7 +12,7 @@ import java.util.List;
 @RequestMapping("/kategori")
 @RequiredArgsConstructor
 public class TrieController {
-    private TrieServiceImpl trieService;
+    private final TrieServiceImpl trieService;
     @PostMapping("/insert")
     public void insertCategory(@RequestBody String[] categories) {
         trieService.insertCategory(categories);
