@@ -811,7 +811,7 @@ public class SurveyService {
             responseDtoList.add(SurveyQuestionsResponseDto.builder()
                     .questionIds(question.getOid())
                     .questionString(question.getQuestionString())
-                    .questionType(question.getQuestionString())
+                    .questionType(question.getQuestionType().getQuestionType())
                     .build());
         }
         return responseDtoList;
