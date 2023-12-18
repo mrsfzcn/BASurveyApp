@@ -10,6 +10,9 @@ import com.bilgeadam.basurveyapp.entity.tags.QuestionTag;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.QuestionTypeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +30,15 @@ public class QuestionTypeController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update-question-type-by-type-string")
-    @Operation(summary = "Belirtilen type stringine sahip olan question type'in güncellenmesini sağlayan metot")
+    @Operation(
+            summary = "Question Type Güncelleme",
+            description = "Belirtilen tip stringine sahip olan soru tipini güncelleyen metot. #59",
+            tags = {"Question Type Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek soru tipi bilgileri.",
+                    required = true
+            )
+    )
     public ResponseEntity <QuestionType> updateQuestionTypeByTagString(@RequestBody UpdateQuestionTypeByTagStringRequestDto dto){
 
         try {
@@ -43,14 +54,37 @@ public class QuestionTypeController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create-question-type")
-    @Operation(summary = "String türünde questiontype ismi girilerek yeni bir tür oluşturan metot. #8")
+    @Operation(
+            summary = "Soru Tipi Oluşturma",
+            description = "String türünde soru tipi ismi girilerek yeni bir soru tipi oluşturan metot. #60",
+            tags = {"Question Type Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak soru tipi bilgileri.",
+                    required = true
+            )
+    )
     public ResponseEntity<Boolean> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.createQuestionType(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update-question-type/{id}")
-    @Operation(summary = "Id ile questiontype'a ulaşılıp string türünde yeni questiontype girilmesini sağlayan metot.")
+    @Operation(
+            summary = "Soru Tipi Güncelleme",
+            description = "Id ile belirtilen soru tipine ulaşılıp yeni soru tipi isminin güncellenmesini sağlayan metot. #61",
+            tags = {"Question Type Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek soru tipi bilgileri.",
+                    required = true
+            ),
+            parameters = {
+            @Parameter(
+                    name = "id",
+                    description = "Güncellenecek sorunun ID'si",
+                    required = true
+            )
+        }
+    )
     public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto,@PathVariable Long id) {
         questionTypeService.updateQuestionType(dto,id);
         return ResponseEntity.ok().build();
@@ -58,21 +92,47 @@ public class QuestionTypeController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-by-id/{id}")
-    @Operation(summary = "Id ile questiontype'a ulaşıp görüntülenmesini sağlayan metot.")
+    @Operation(
+            summary = "Soru Tipi Bulma",
+            description = "Id ile belirtilen soru tipine ulaşıp görüntülenmesini sağlayan metot. #62",
+            tags = {"Question Type Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "Bulunacak soru tipinin Id'si.",
+                            required = true
+                    )
+            }
+    )
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
         return ResponseEntity.ok(questionTypeService.findById(id));
 
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/get-all-question-type")
-    @Operation(summary = "Tüm question type'ları görüntülemeyi sağlayan metot.")
+    @Operation(
+            summary = "Tüm Soru Tiplerini Görüntüleme",
+            description = "Tüm question type'larını görüntülemeyi sağlayan metot. #63",
+            tags = {"Question Type Controller"}
+    )
     public ResponseEntity<List<AllQuestionTypeResponseDto>> findAll() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("delete/{id}")
-    @Operation(summary = "id numarası ile ulaşılan question type'ı silmeyi sağlayan metot.")
+    @Operation(
+            summary = "Soru Tipi Silme",
+            description = "ID numarası ile ulaşılan question type'ını silmeyi sağlayan metot. #64",
+            tags = {"Question Type Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "Silinecek soru tipinin ID numarası",
+                            required = true
+                    )
+            }
+    )
     public ResponseEntity<Boolean> delete(@PathVariable Long id) {
         return ResponseEntity.ok(questionTypeService.delete(id));
     }
