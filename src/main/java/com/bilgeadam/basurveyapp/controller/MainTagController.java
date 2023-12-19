@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.dto.response.MainTagResponseDto;
 import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.MainTagService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,45 +22,88 @@ import java.util.List;
 @RequestMapping("/main-tags")
 @RequiredArgsConstructor
 public class MainTagController {
+
     private final MainTagService mainTagService;
+
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    @Operation(summary = "tag olusturma islemi. tag basliklarinda belirtilen isimde tag olusturur. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
+    @Operation(
+            summary = "Ana Etiket Oluşturma",
+            description = "Belirtilen etiket sınıfında ve isimde ana etiket oluşturan metot. Etiket sınıfları: (QUESTION, STUDENT, SURVEY, TRAINER). #35",
+            tags = {"Main Tag Controller"}
+    )
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createMainTag(dto);
         return ResponseEntity.ok(true);
     }
 
     @GetMapping("/find-by-tag-names")
-    @Operation(summary = "tag ismine göre arama")
-    public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagname){
-        return ResponseEntity.ok(mainTagService.findByTagNames(tagname));
+    @Operation(
+            summary = "Etiket İsimlerine Göre Arama",
+            description = "Belirtilen etiket isimlerine göre main etiketleri arayan metot. #36",
+            tags = {"Main Tag Controller"},
+            parameters = {
+                    @Parameter(name = "tagName", description = "Aranacak etiket ismi", required = true)
+            }
+    )
+    public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagName){
+        return ResponseEntity.ok(mainTagService.findByTagNames(tagName));
     }
+
     @GetMapping("/find-by-tag-name-and-tag-class")
-    @Operation(summary = "tag ismi ve tag classına göre arama.tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
-    public ResponseEntity<MainTagResponseDto> findByTagNameAndTagClass(@RequestParam String tagname,@RequestParam String tagclass){
-        return ResponseEntity.ok(mainTagService.findByTagNameAndTagClass(tagname,tagclass));
+    @Operation(
+            summary = "Etiket İsmi ve Etiket Sınıfına Göre Arama",
+            description = "Belirtilen etiket ismi ve etiket sınıfına göre ana etiketi arayan metot. Etiket sınıfları: (QUESTION, STUDENT, SURVEY, TRAINER). #37",
+            tags = {"Main Tag Controller"},
+            parameters = {
+                    @Parameter(name = "tagName", description = "Aranacak etiket ismi", required = true),
+                    @Parameter(name = "tagClass", description = "Aranacak etiket sınıfı", required = true)
+            }
+    )
+    public ResponseEntity<MainTagResponseDto> findByTagNameAndTagClass(@RequestParam String tagName,@RequestParam String tagClass){
+        return ResponseEntity.ok(mainTagService.findByTagNameAndTagClass(tagName,tagClass));
     }
+
     @PutMapping("/update-tag-by-tag-name")
-    @Operation(summary = "tag ismi ile update islemi yapılır.")
+    @Operation(
+            summary = "Etiket İsmi ile Güncelleme",
+            description = "Belirtilen etiket ismiyle ana etiketi güncelleyen metot. #38",
+            tags = {"Main Tag Controller"}
+    )
     public ResponseEntity<Boolean> updateTagByTagName(@RequestBody UpdateTagNameDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagName(dto));
     }
 
     @PutMapping("/update-tag-by-tag-name-and-tag-class")
-    @Operation(summary = "tag ismi ve tag classi ile update islemi yapılır.")
+    @Operation(
+            summary = "Etiket İsmi ve Etiket Sınıfı ile Güncelleme",
+            description = "Belirtilen etiket ismi ve etiket sınıfıyla ana etiketi güncelleyen metot. Etiket sınıfları: (QUESTION, STUDENT, SURVEY, TRAINER). #39",
+            tags = {"Main Tag Controller"}
+    )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
     }
+
     @GetMapping("/")
-    @Operation(summary = "tüm tag'leri getirir")
+    @Operation(
+            summary = "Tüm Etiketleri Getir",
+            description = "Sistemdeki tüm etiketleri getiren metot. #40",
+            tags = {"Main Tag Controller"}
+    )
     public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
         return ResponseEntity.ok(mainTagService.findAllTags());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete-by-tag-string/{tagString}")
-    @Operation(summary = "Tag stringine göre bulunan main tag'in silinmesini sağlayan metot.")
+    @Operation(
+            summary = "Etiket İsmine Göre Silme",
+            description = "Belirtilen etiket ismine göre ana etiketi silen metot. #41",
+            tags = {"Main Tag Controller"},
+            parameters = {
+                    @Parameter(name = "tagString", description = "Silinecek etiketin ismi", required = true)
+            }
+    )
     public ResponseEntity<Boolean> deleteByTagName(@PathVariable String tagString) {
         try {
             boolean deleted = mainTagService.deleteByTagName(tagString);
@@ -70,7 +114,11 @@ public class MainTagController {
     }
 
     @PostMapping("/update-tag-by-tag-name-and-tag-classes-all")
-    @Operation(summary = "tag güncelleme islemi. tag basliklarinda belirtilen isimde tag günceller. tag class-> (QUESTION,STUDENT,SURVEY,TRAINER)")
+    @Operation(
+            summary = "Tüm Tag Sınıfları İle Etiket Güncelleme",
+            description = "Belirtilen etiketin adını ve tüm etiket sınıflarını güncelleyen metot. #42",
+            tags = {"Main Tag Controller"}
+    )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClassesFrontEnd(@RequestBody UpdateTagNameAndTagClassesDto dto){
         mainTagService.updateTagByTagNameAndTagClassesFrontEnd(dto);
         return ResponseEntity.ok(true);

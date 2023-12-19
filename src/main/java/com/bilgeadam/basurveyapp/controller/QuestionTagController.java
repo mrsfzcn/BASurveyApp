@@ -8,6 +8,8 @@ import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.QuestionTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,11 @@ public class QuestionTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping
-    @Operation(summary = "String türünde tag ismi girilerek yeni question tag oluşturulmasını sağlayan metot. #9")
+    @Operation(
+            summary = "Yeni Soru Etiketi Oluştur",
+            description = "String türünde bir etiket adı girilerek yeni bir soru etiketi oluşturulmasını sağlayan metot. #55",
+            tags = {"Question Tag Controller"}
+    )
     @Hidden
     public ResponseEntity<QuestionTag> createTag(@RequestBody @Valid CreateTagDto dto) {
         QuestionTag createdTag = questionTagService.createTag(dto);
@@ -34,7 +40,11 @@ public class QuestionTagController {
     }
 
     @PutMapping("/update-tag-by-tag-string/{tag-string}")
-    @Operation(summary = "Belirtilen tag stringine sahip olan question tag'in güncellenmesini sağlayan metot")
+    @Operation(
+            summary = "Soru Etiketini Güncelle",
+            description = "Belirtilen etiket adına sahip olan soru etiketini güncellemeyi sağlayan metot. #56",
+            tags = {"Question Tag Controller"}
+    )
     @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(
             @PathVariable("tag-string") String tagString,
@@ -51,14 +61,29 @@ public class QuestionTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping
-    @Operation(summary = "Tüm tag'lerin görüntülenmesini sağlayan metot.")
+    @Operation(
+            summary = "Tüm Soru Etiketlerini Görüntüle",
+            description = "Sistemdeki tüm soru etiketlerini görüntülemeyi sağlayan metot. #57",
+            tags = {"Question Tag Controller"}
+    )
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = questionTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete-by-tag-string")
-    @Operation(summary = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot.")
+    @Operation(
+            summary = "Soru Etiketini Tag Stringine Göre Sil",
+            description = "Belirtilen tag stringine sahip olan soru etiketini silen metot. #58",
+            tags = {"Question Tag Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "tagString",
+                            description = "Silinecek soru etiketinin tag stringi.",
+                            required = true
+                    )
+            }
+    )
     public ResponseEntity<Boolean> deleteByTagString(@RequestParam @Valid String tagString) {
         System.out.println("*******-> "+tagString);
         try {

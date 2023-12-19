@@ -6,6 +6,9 @@ import com.bilgeadam.basurveyapp.dto.response.RegenerateQrCodeResponse;
 import com.bilgeadam.basurveyapp.dto.response.RegisterResponseDto;
 import com.bilgeadam.basurveyapp.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,36 +22,71 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    @Operation(summary = "Mail, şifre, isim, soyisim ve rol girilerek yeni kullanıcı oluşturan metot. #5")
+    @Operation(
+            summary = "Kullanıcı Kaydı",
+            description = "Mail, şifre, isim, soyisim ve rol girilerek yeni kullanıcı oluşturan metot. #5\n\n " +
+                    "1. Eğer kullanıcı admin veya manager rolüne sahipse, ilgili rolle ilişkilendirilen bir yönetici (Manager) oluşturulur.\n " +
+                    "2. Eğer kullanıcı student rolüne sahipse, bir öğrenci (Student) oluşturulur.\n " +
+                    "3. Eğer kullanıcı master trainer veya assistant trainer rolüne sahipse, ilgili rolle ilişkilendirilen bir eğitmen (Trainer) oluşturulur. #0",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/authenticate")
-    @Operation(summary = "Mail ve şifre ile giriş yapılmasını sağlayan metot. #0")
+    @Operation(
+            summary = "Yetkilendirme",
+            description = "Mail ve şifre ile giriş yapılmasını sağlayan metot. Eğer kullanıcı iki faktörlü kimlik doğrulamayı etkinleştirmemişse, yeni bir QR kodu ile birlikte kimlik doğrulama token'ı oluşturulur. #1",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid LoginRequestDto request) {
         return ResponseEntity.ok(authService.authenticate(request));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PutMapping("/update-login-credentials")
-    @Operation(summary = "")
+    @Operation(
+            summary = "Giriş Bilgilerini Güncelleme",
+            description = "Belirtilen kullanıcının giriş bilgilerini güncelleyerek yeni bir kimlik doğrulama token'ı oluşturur. Yalnızca ADMIN veya MANAGER rolüne sahip kullanıcılar tarafından erişilebilir.\n\n" +
+                    "İşlem adımları:\n" +
+                    "1. Yetkilendirilmiş kullanıcı belirlenir ve eğer bulunamazsa 'User is not found' hatası fırlatılır.\n" +
+                    "2. Güncellenecek kullanıcı belirlenir ve eğer bulunamazsa 'Username does not exist.' hatası fırlatılır.\n" +
+                    "3. Eğer kullanıcı ADMIN veya MANAGER rolüne sahipse, 'You can't change login to other admin or manager account' hatası fırlatılır.\n" +
+                    "4. Kullanıcının rolüne göre yetkilendirme rolü atanır.\n" +
+                    "5. Kullanıcı bilgileri güncellenir ve yeni bir kimlik doğrulama token'ı oluşturularak döndürülür. #2",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<AuthenticationResponseDto> updateLoginCredentials(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.updateLoginCredentials(request));
     }
 
     @PostMapping("/switch-authorization-roles")
-    @Operation(summary = "Bir role ait token üzerinden o rolün değiştirilmesini sağlayan metot.")
+    @Operation(
+            summary = "Kullanıcı Yetkilendirmelerini Değiştirme",
+            description = "Belirtilen kullanıcının yetkilendirme rollerini değiştirerek yeni bir kimlik doğrulama token'ı oluşturur. Kullanıcının mevcut rolü, istenen yetkilendirme rolü ile uyumlu olmalıdır. #3",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<AuthenticationResponseDto> switchAuthorizationRoles(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
         return ResponseEntity.ok(authService.switchAuthorizationRoles(request));
     }
 
     @PostMapping("/verify-code")
+    @Operation(
+            summary = "İki Faktörlü Kimlik Doğrulama",
+            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama kodunu doğrular. İki faktörlü kimlik doğrulama için kullanılan kod, kullanıcının belirtilen e-posta adresine atanmış bir JWT içerisinde bulunmalıdır.#4",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto){
         return ResponseEntity.ok(authService.verifyCode(verifyCodeRequestDto));
     }
 
     @PutMapping("/regenerate-qr-code")
+    @Operation(
+            summary = "QR Kodunu Yeniden Oluşturma",
+            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama için QR kodunu yeniden oluşturur ve günceller. Yeni QR kodu, kullanıcının e-posta adresine atanmış bir JWT içerisinde bulunmalıdır. #5",
+            tags = {"Auth Controller"}
+    )
     public ResponseEntity<RegenerateQrCodeResponse> regenerateQrCode(@RequestBody RegenerateQrCodeRequest regenerateQrCodeRequest){
         return ResponseEntity.ok(authService.regenerateQrCode(regenerateQrCodeRequest));
     }
