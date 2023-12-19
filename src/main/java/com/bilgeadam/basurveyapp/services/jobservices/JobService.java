@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.configuration.EmailService;
 import com.bilgeadam.basurveyapp.configuration.jwt.JwtService;
 import com.bilgeadam.basurveyapp.entity.*;
 import com.bilgeadam.basurveyapp.exceptions.custom.InvalidFormatException;
+import com.bilgeadam.basurveyapp.exceptions.custom.ResponseNotFoundException;
 import com.bilgeadam.basurveyapp.manager.*;
 import com.bilgeadam.basurveyapp.repositories.SurveyRegistrationRepository;
 import com.bilgeadam.basurveyapp.services.*;
@@ -139,12 +140,16 @@ public class JobService {
     }
 
     public void getDatasFromApi() {
-        trainerJob.checkTrainerData(trainerManager.findAll().getBody());
-        branchJob.checkBranchData(branchManager.findAll().getBody());
-        courseGroupJob.checkCourseGroupData(courseGroupManager.findall().getBody());
-        //Api'dan gelen Student ve CourseGroup en son kaydedilmeli çünkü bağımlılıklar mevcut.
-        studentJob.checkStudentData(studentManager.findAll().getBody());
-        courseJob.checkCourseData(courseManager.findAll().getBody());
+        try {
+            trainerJob.checkTrainerData(trainerManager.findAll().getBody());
+            branchJob.checkBranchData(branchManager.findAll().getBody());
+            courseGroupJob.checkCourseGroupData(courseGroupManager.findall().getBody());
+            //Api'dan gelen Student ve CourseGroup en son kaydedilmeli çünkü bağımlılıklar mevcut.
+            studentJob.checkStudentData(studentManager.findAll().getBody());
+            courseJob.checkCourseData(courseManager.findAll().getBody());
+        } catch (Exception e) {
+            throw new ResponseNotFoundException("Database erişimi başarısız oldu. Lütfen database sahibiyle iletişime geçin!");
+        }
     }
 
     public String getCurrentUpdateTime() {
