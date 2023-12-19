@@ -10,6 +10,7 @@ import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.services.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,7 +27,11 @@ public class TrainerController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/master-trainers")
-    @Operation(summary = "Master trainer'ları görüntülemeyi sağlayan metot.")
+    @Operation(
+            summary = "Master Trainer Listesini Getir",
+            description = "Master trainer'ları görüntülemeyi sağlayan metot. #117",
+            tags = {"Trainer Controller"}
+    )
     ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainerList() {
         return ResponseEntity.ok(trainerService.getMasterTrainerList());
     }
@@ -34,32 +39,60 @@ public class TrainerController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/assistant-trainers")
-    @Operation(summary = "Asistant trainer'ları görüntülemeyi sağlayan metot.")
+    @Operation(
+            summary = "Assistant Trainer Listesini Getir",
+            description = "Assistant trainer'ları görüntülemeyi sağlayan metot. #118",
+            tags = {"Trainer Controller"}
+    )
     ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainerList() {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-all-trainers")
-    @Operation(summary = "Tüm trainer'ları görüntülemeyi sağlayan metot.")
+    @Operation(
+            summary = "Trainer Listesini Getir",
+            description = "Tüm trainer'ları görüntülemeyi sağlayan metot. #119",
+            tags = {"Trainer Controller"}
+    )
     ResponseEntity<List<TrainerResponseListTagsDto>> getTrainerList() {
         return ResponseEntity.ok(trainerService.getTrainerList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/assign-trainer-tag")
-    @Operation(summary = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot. #7")
+    @Operation(
+            summary = "Trainer'a Tag Ata",
+            description = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot. #120",
+            tags = {"Trainer Controller"}
+    )
     public ResponseEntity<TrainerResponseDto> updateTrainer(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete-trainer-by-id/{id}")
-    @Operation(summary = "Integer türünde id girilerek bulunan trainerın silinmesini sağlayan metot.")
+    @Operation(
+            summary = "Trainer Silme",
+            description = "Integer türünde id girilerek bulunan trainer'ın silinmesini sağlayan metot. #121",
+            tags = {"Trainer Controller"}
+    )
     public ResponseEntity<Boolean> deleteTrainerById(@PathVariable Long id) {
         return ResponseEntity.ok(trainerService.deleteByTrainerOid(id));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("find-user-by-trainer-oid/{oid}")
+    @Operation(
+            summary = "Trainer'a Göre Kullanıcı Bulma",
+            description = "Trainer'ın oid'sine göre kullanıcıyı bulan metot. #122",
+            tags = {"Trainer Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "oid",
+                            description = "Trainer Kimliği (Trainer OID)",
+                            required = true
+                    )
+            }
+    )
     public ResponseEntity<User> findUserByTrainerOId(@PathVariable Long oid) {
         return ResponseEntity.ok(trainerService.findUserByTrainerOid(oid));
     }

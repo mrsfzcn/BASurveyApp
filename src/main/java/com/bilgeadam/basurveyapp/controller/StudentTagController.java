@@ -26,7 +26,7 @@ public class StudentTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/")
-    @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #03")
+    @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #85")
     @Hidden
     public ResponseEntity<StudentTagCreateResponseDto> createTag(@RequestBody @Valid CreateTagDto dto ){
         return ResponseEntity.ok(studentTagService.createTag(dto));
@@ -37,32 +37,48 @@ public class StudentTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findByStudentTagName")
-    @Operation(summary = "student tag girilerek bulunan student'ın gösterilmesini sağlayan metot.")
+    @Operation(summary = "student tag girilerek bulunan student'ın gösterilmesini sağlayan metot. #86")
     @Hidden
     public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
         return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/find-by-student-tag-oid")
-    @Operation(summary = "student tag oid girerek ulaşılan student'ın gösterilmesini sağlayan metot.")
+    @Operation(
+            summary = "Öğrenci Tag OID'sine Göre Öğrenci Bul",
+            description = "Öğrenci Tag OID'sine göre öğrenciyi bulur. #87",
+            tags = {"Student Controller"}
+    )
     public ResponseEntity<List<Student>> findByStudentTagOid(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findByStudentTagOid(studentTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/find-active-by-id")
-    @Operation(summary = "studentTagOid ile ilgili oid'ye ait StudentTag'i getiriyor. (ACTIVE ise)")
+    @Operation(
+            summary = "Aktif Öğrenci Etiketini(sınıfını) Bul",
+            description = "Belirtilen etiket(sınıf) OID'sine ait aktif öğrenci etiketini(sınıfını) getirir. #88",
+            tags = {"Student Tag Controller"}
+    )
     public ResponseEntity<Optional<StudentTag>> findActiveById(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findActiveById(studentTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete")
-    @Operation(summary = "student tag oid girilerek ulaşılan student'in silinmesinği sağlayan metot.")
+    @Operation(
+            summary = "Öğrenci Etiketini Sil",
+            description = "Belirtilen öğrenci etiketi OID'sine ait öğrenciyi etiketten(sınıftan) siler. #89",
+            tags = {"Student Tag Controller"}
+    )
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.delete(studentTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/student-tags")
-    @Operation(summary = "Tüm student tag'lerin görüntülenmesini sağlayan metot.")
+    @Operation(
+            summary = "Tüm Öğrenci Etiketlerini Listele",
+            description = "Sistemdeki tüm öğrenci etiketlerini(sınıflarını) listeler. #90",
+            tags = {"Student Tag Controller"}
+    )
     ResponseEntity<List<StudentTagDetailResponseDto>> getStudentTagList() {
         return ResponseEntity.ok(studentTagService.getStudentTagList());
     }
