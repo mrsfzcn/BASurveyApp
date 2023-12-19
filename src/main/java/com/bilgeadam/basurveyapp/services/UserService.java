@@ -58,7 +58,6 @@ public class UserService {
     }
 
     public Page<User> getUserPage(Pageable pageable) {
-
         return userRepository.findAllActive(pageable);
     }
 

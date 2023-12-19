@@ -61,7 +61,11 @@ public class SurveyTagController {
     // bu metotda main tag e taşınmalı
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping("/delete/{tagString}")
-    @Operation(summary = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot.")
+    @Operation(
+            summary = "Question Tag'ini Sil",
+            description = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot. #116",
+            tags = {"Survey Tag Controller"}
+    )
     public ResponseEntity<Boolean> deleteByTagString(@PathVariable String tagString) {
         try {
             boolean deleted = surveyTagService.deleteByTagString(tagString);

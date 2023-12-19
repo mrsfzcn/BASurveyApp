@@ -23,7 +23,7 @@ public class TrainerTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot. #02 ")
+    @Operation(summary = "java2, .net vb. gibi trainer tag oluşturmamızı sağlayan metot. #123")
     @Hidden
     public ResponseEntity<String> createTag(@RequestBody @Valid CreateTagDto dto ){
         trainerTagService.createTag(dto);
@@ -31,32 +31,52 @@ public class TrainerTagController {
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/find-active-by-id")
-    @Operation(summary = "girilen oid nin statusu aktifse bu tagin tagstringini(java4, .net2 gibi) dönen metot)")
+    @Operation(
+            summary = "Aktif Trainer Tag Bulma",
+            description = "Girilen oid'nin statusu aktifse, bu trainer tag'ının tag string'ini dönen metot. #124",
+            tags = {"Trainer Tag Controller"}
+    )
     public ResponseEntity<FindActiveTrainerTagByIdResponseDto> findActiveById(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.findActiveById(trainerTagOid));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @DeleteMapping ("/delete")
-    @Operation(summary = "verilen trainer tag oid mevcutsa ve statusu aktifse statusunu deleted e çeken metot ")
+    @Operation(
+            summary = "Trainer Tag Silme",
+            description = "Verilen trainer tag OID mevcutsa ve statusu aktifse, statusunu 'deleted' olarak güncelleyen metot. #125",
+            tags = {"Trainer Tag Controller"}
+    )
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.delete(trainerTagOid));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/trainer-tags")
-    @Operation(summary = "trainer tag stringlerini(.net2,java1,java3 gibi) ve trainer tag oid lerini dönen metot.")
+    @Operation(
+            summary = "Trainer Tag Listeleme",
+            description = "Trainer tag stringlerini (.net2, java1, java3 gibi) ve trainer tag OID'lerini dönen metot. #126",
+            tags = {"Trainer Tag Controller"}
+    )
     public ResponseEntity<List<TrainerTagDetailResponseDto>> getTrainerTagList(){
         return ResponseEntity.ok(trainerTagService.getTrainerTagList());
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/find-trainers-tags-by-email")
-    @Operation(summary = "trainer emaili girildiğinde ilgili trainera ait tüm tag stringlerini(java1,java2.. gibi) dönen metot.")
+    @Operation(
+            summary = "Trainer Taglarına Göre Listeleme",
+            description = "Trainer email'i girildiğinde ilgili trainera ait tüm tag stringlerini (java1, java2 gibi) dönen metot. #127",
+            tags = {"Trainer Tag Controller"}
+    )
     public ResponseEntity<GetTrainerTagsByEmailResponse> getTrainerTagsByEmail(@RequestBody @Valid FindUserByEmailRequestDto dto){
         return ResponseEntity.ok(trainerTagService.getTrainerTagsByEmail(dto.getEmail()));
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','STUDENT')")
     @GetMapping("/find-trainers-by-trainer-tag/{token}")
-    @Operation(summary = "Email token girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot")
+    @Operation(
+            summary = "Trainerları Tag'a Göre Listeleme",
+            description = "Email token girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot. #128",
+            tags = {"Trainer Tag Controller"}
+    )
     public List<UserSimpleResponseDto> findTrainersByEmailToken(@PathVariable String token){
         return trainerTagService.findTrainersByEmailToken(token);
     }
@@ -64,7 +84,11 @@ public class TrainerTagController {
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-all")
-    @Operation(summary = "Aktif olan tüm trainer tag'lerin görüntülenmesini sağlayan metot.")
+    @Operation(
+            summary = "Aktif Trainer Tag'leri Görüntüleme",
+            description = "Aktif olan tüm trainer tag'lerin görüntülenmesini sağlayan metot. #129",
+            tags = {"Trainer Tag Controller"}
+    )
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = trainerTagService.findAll();
         return ResponseEntity.ok(responseDtoList);
