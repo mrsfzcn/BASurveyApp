@@ -384,4 +384,11 @@ public class GlobalExceptionHandler {
         log.warn(messageSource.getMessage("exception.COURSE_NOT_FOUND",null,Locale.getDefault()),exception);
         return createExceptionInfoResponse(COURSE_NOT_FOUND,exception,request);
     }
+
+    @ResponseBody
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ExceptionResponse> invalidFormatException(InvalidFormatException exception, HttpServletRequest request){
+        log.warn(messageSource.getMessage("exception.DATA_NOT_VALID",null,Locale.getDefault()),exception);
+        return createExceptionInfoResponse(DATA_NOT_VALID, exception, request);
+    }
 }
