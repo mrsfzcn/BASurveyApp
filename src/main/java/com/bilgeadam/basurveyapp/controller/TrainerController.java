@@ -63,7 +63,11 @@ public class TrainerController {
     @Operation(
             summary = "Trainer'a Tag Ata",
             description = "Trainer tag oid ve trainer oid girilerek öğrencileri bir sınıfa kaydetmeyi sağlayan metot. #120",
-            tags = {"Trainer Controller"}
+            tags = {"Trainer Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Trainer'a atanacak tag ve trainer bilgilerini içeren istek gövdesi. trainerTagOid-trainerOid",
+                    required = true
+            )
     )
     public ResponseEntity<TrainerResponseDto> updateTrainer(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));

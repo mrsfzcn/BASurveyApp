@@ -26,7 +26,15 @@ public class StudentTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/")
-    @Operation(summary = "String girdisi ile yeni student tag oluşturulmasını sağlayan metot. #85")
+    @Operation(
+            summary = "String girdisi ile yeni student tag oluştur #85",
+            description = "Verilen string değeri kullanarak yeni bir student tag oluşturan metot.",
+            tags = {"Student Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak student tag için string değeri içeren istek gövdesi. tagString-mainTagOid",
+                    required = true
+            )
+    )
     @Hidden
     public ResponseEntity<StudentTagCreateResponseDto> createTag(@RequestBody @Valid CreateTagDto dto ){
         return ResponseEntity.ok(studentTagService.createTag(dto));
@@ -37,7 +45,12 @@ public class StudentTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/findByStudentTagName")
-    @Operation(summary = "student tag girilerek bulunan student'ın gösterilmesini sağlayan metot. #86")
+    @Operation(
+            summary = "Öğrenci Etiketi İle Öğrenci Bulma",
+            description = "Öğrenci etiketi kullanılarak bulunan öğrencinin bilgilerini gösteren metot. #86",
+            hidden = true, // Not: Hidden annotation, Swagger'da bu endpoint'i gizler.
+            tags = {"Student Tag Controller"}
+    )
     @Hidden
     public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
         return ResponseEntity.ok(studentTagService.findByStudentTagName(studentTag));

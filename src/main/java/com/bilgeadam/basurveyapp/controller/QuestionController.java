@@ -29,7 +29,11 @@ public class QuestionController {
     @Operation(
             summary = "Yeni Soru Oluşturma",
             description = "String türünde bir soru, long türünde soru tipi ve integer türünde sıralama girilerek yeni soru oluşturan metot. #43",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak soruların bilgilerini içeren istek gövdesi. questionString-questionTypeOid-order-tagOids(List)-options(List)",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
         return ResponseEntity.ok(questionService.createQuestion(createQuestionDtoList));
@@ -40,7 +44,11 @@ public class QuestionController {
     @Operation(
             summary = "Soru Güncelleme",
             description = "Oid ile mevcut bir soruyu bulup string türünde yeni bir sorunun aynı id ile yazılmasını sağlayan metot. #44",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek soru bilgilerini içeren istek gövdesi. questionOid-questionTypeOid-tagOids(List)-questionString",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
@@ -80,7 +88,7 @@ public class QuestionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/find-all-question")
     @Operation(
-            summary = "Tüm Soruları Getir (DUPLICATED)",
+            summary = "Tüm Soruları Getir",
             description = "Tüm soruların görüntülenmesini sağlayan metot. #47",
             tags = {"Question Controller"}
     )
@@ -94,7 +102,10 @@ public class QuestionController {
     @Operation(
             summary = "Soru Silme",
             description = "Integer türünde ID girilerek bulunan sorunun silinmesini sağlayan metot. #48",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "id", description = "Silinecek sorunun kimliği.", required = true)
+            }
     )
     public ResponseEntity<Boolean> deleteQuestionById(@PathVariable Long id) {
         return ResponseEntity.ok(questionService.delete(id));
@@ -104,7 +115,10 @@ public class QuestionController {
     @Operation(
             summary = "Anket Sorularını Getirme",
             description = "Token kullanılarak anket sorularına ulaşılmasını sağlayan metot. #50",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "student-token", description = "Öğrenciye ait token.", required = true)
+            }
     )
     public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable(name = "student-token") String token) {
         return ResponseEntity.ok(questionService.findAllSurveyQuestions(token));
@@ -115,7 +129,11 @@ public class QuestionController {
     @Operation(
             summary = "Anket Sorularını Anahtar Kelime İle Filtreleme",
             description = "Id ile survey'e ulaşıp string tütünde anahtar kelimenin içinde geçtiği soruları görüntülemeyi sağlayan metot. #51",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "survey-oid", description = "Filtrelenen soruların ait olduğu anketin ID'si.", required = true),
+                    @Parameter(name = "keyword", description = "Soruları filtrelemek için kullanılacak anahtar kelime.", required = true)
+            }
     )
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@PathVariable("survey-oid") Long survey0id,@RequestParam String keyword) {
         return ResponseEntity.ok(questionService.filterSurveyQuestionsByKeyword(survey0id,keyword));
@@ -127,7 +145,11 @@ public class QuestionController {
     @Operation(
             summary = "Anket Sorularını Etiketlere Göre Filtreleme",
             description = "Id ile survey bulup, survey'deki tüm soruları belirtilen etiketlere göre filtrelemeyi sağlayan metot. #52",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "survey0id", description = "Filtrelenecek anketin ID'si.", required = true),
+                    @Parameter(name = "questionTag0ids", description = "Filtreleme için kullanılacak etiketlerin ID'leri.", required = true)
+            }
     )
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestParam Long survey0id, @RequestParam List<Long> questionTag0ids) {
         return ResponseEntity.ok(questionService.filterSurveyQuestions(survey0id,questionTag0ids));
@@ -138,7 +160,11 @@ public class QuestionController {
     @Operation(
             summary = "Eğitmen ve Anket Bazında Soruları Getir",
             description = "Id ile eğitmen ve anketi bulup, belirtilen eğitmen tipine göre soruları görüntülemeyi sağlayan metot. #53",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "trainerid", description = "Eğitmenin kimlik numarası.", required = true),
+                    @Parameter(name = "surveyid", description = "Anketin kimlik numarası.", required = true)
+            }
     )
     ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestParam Long trainerid,@RequestParam Long surveyid) {
         return ResponseEntity.ok(questionService.questionByTrainerType(trainerid,surveyid));
@@ -149,7 +175,10 @@ public class QuestionController {
     @Operation(
             summary = "Belirli Türdeki Soruları Getir",
             description = "Belirli bir soru türüne sahip tüm soruları görüntülemeyi sağlayan metot. #54",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            parameters = {
+                    @Parameter(name = "type", description = "Görüntülenecek soru türünü belirten parametre.", required = true)
+            }
     )
     public ResponseEntity<List<String>> findAllByQuestionType(@RequestParam String type){
         return ResponseEntity.ok(questionService.findAllByQuestionType(type));

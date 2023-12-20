@@ -35,7 +35,7 @@ public class QuestionTypeController {
             description = "Belirtilen tip stringine sahip olan soru tipini güncelleyen metot. #59",
             tags = {"Question Type Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Güncellenecek soru tipi bilgileri.",
+                    description = "Güncellenecek soru tipi bilgileri. tagString-newTagString",
                     required = true
             )
     )
@@ -59,7 +59,7 @@ public class QuestionTypeController {
             description = "String türünde soru tipi ismi girilerek yeni bir soru tipi oluşturan metot. #60",
             tags = {"Question Type Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Oluşturulacak soru tipi bilgileri.",
+                    description = "Oluşturulacak soru tipi bilgileri. questionType",
                     required = true
             )
     )
@@ -74,7 +74,7 @@ public class QuestionTypeController {
             description = "Id ile belirtilen soru tipine ulaşılıp yeni soru tipi isminin güncellenmesini sağlayan metot. #61",
             tags = {"Question Type Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Güncellenecek soru tipi bilgileri.",
+                    description = "Güncellenecek soru tipi bilgileri. questionType",
                     required = true
             ),
             parameters = {

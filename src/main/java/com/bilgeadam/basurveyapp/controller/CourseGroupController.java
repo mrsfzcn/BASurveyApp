@@ -24,7 +24,7 @@ public class CourseGroupController {
 
     @GetMapping("/get-all-data-from-course-group")
     @Operation(
-            summary = "Tüm Kurs Grubu Verilerini Getirme (Deprecated)",
+            summary = "(Deprecated) Tüm Kurs Grubu Verilerini Getirme",
             description = "Sistemdeki tüm kurs gruplarına ait verileri getiren metot. #26",
             tags = {"Course Group Controller"}
     )
@@ -36,7 +36,11 @@ public class CourseGroupController {
     @Operation(
             summary = "Kurs Grubu Oluşturma",
             description = "Yeni bir kurs grubu oluşturan metot. Verilen bilgilere göre bir kurs grubu oluşturulur. #27",
-            tags = {"Course Group Controller"}
+            tags = {"Course Group Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak kurs grubu bilgilerini içeren istek gövdesi. apiId-name-startDate-endDate-courseId-branchId-trainers(List)",
+                    required = true
+            )
     )
     public ResponseEntity<MessageResponseDto> createCourseGroup(@RequestBody @Valid CreateCourseGroupRequestDto dto){
         return ResponseEntity.ok(courseGroupService.createCourseGroup(dto));

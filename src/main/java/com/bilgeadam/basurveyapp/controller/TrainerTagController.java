@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.dto.response.*;
 import com.bilgeadam.basurveyapp.services.TrainerTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,11 @@ public class TrainerTagController {
     @Operation(
             summary = "Aktif Trainer Tag Bulma",
             description = "Girilen oid'nin statusu aktifse, bu trainer tag'ının tag string'ini dönen metot. #124",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Bulunacak aktif trainer tag'ının OID'sini içeren istek.",
+                    required = true
+            )
     )
     public ResponseEntity<FindActiveTrainerTagByIdResponseDto> findActiveById(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.findActiveById(trainerTagOid));
@@ -45,7 +50,10 @@ public class TrainerTagController {
     @Operation(
             summary = "Trainer Tag Silme",
             description = "Verilen trainer tag OID mevcutsa ve statusu aktifse, statusunu 'deleted' olarak güncelleyen metot. #125",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            parameters = {
+                    @Parameter(name = "trainerTagOid", description = "Silinecek trainer tag OID'sini içeren istek gövdesi.", required = true)
+            }
     )
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.delete(trainerTagOid));
@@ -65,7 +73,11 @@ public class TrainerTagController {
     @Operation(
             summary = "Trainer Taglarına Göre Listeleme",
             description = "Trainer email'i girildiğinde ilgili trainera ait tüm tag stringlerini (java1, java2 gibi) dönen metot. #127",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Trainer email'ini içeren istek gövdesi.",
+                    required = true
+            )
     )
     public ResponseEntity<GetTrainerTagsByEmailResponse> getTrainerTagsByEmail(@RequestBody @Valid FindUserByEmailRequestDto dto){
         return ResponseEntity.ok(trainerTagService.getTrainerTagsByEmail(dto.getEmail()));
@@ -75,7 +87,10 @@ public class TrainerTagController {
     @Operation(
             summary = "Trainerları Tag'a Göre Listeleme",
             description = "Email token girildiğinde (Java4 gibi) ilgili sınıfa ait tüm trainerların adını ve soyadını listeleyen metot. #128",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            parameters = {
+                    @Parameter(name = "token", description = "Trainerları bulmak için kullanılacak email token'ı.", required = true)
+            }
     )
     public List<UserSimpleResponseDto> findTrainersByEmailToken(@PathVariable String token){
         return trainerTagService.findTrainersByEmailToken(token);

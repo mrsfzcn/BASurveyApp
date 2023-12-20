@@ -30,7 +30,11 @@ public class MainTagController {
     @Operation(
             summary = "Ana Etiket Oluşturma",
             description = "Belirtilen etiket sınıfında ve isimde ana etiket oluşturan metot. Etiket sınıfları: (QUESTION, STUDENT, SURVEY, TRAINER). #35",
-            tags = {"Main Tag Controller"}
+            tags = {"Main Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak ana etiketin bilgilerini içeren istek gövdesi. tagClass(List)-tagName",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createMainTag(dto);
@@ -68,7 +72,11 @@ public class MainTagController {
     @Operation(
             summary = "Etiket İsmi ile Güncelleme",
             description = "Belirtilen etiket ismiyle ana etiketi güncelleyen metot. #38",
-            tags = {"Main Tag Controller"}
+            tags = {"Main Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek etiket ismini içeren istek gövdesi. tagString-newTagString",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> updateTagByTagName(@RequestBody UpdateTagNameDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagName(dto));
@@ -78,7 +86,11 @@ public class MainTagController {
     @Operation(
             summary = "Etiket İsmi ve Etiket Sınıfı ile Güncelleme",
             description = "Belirtilen etiket ismi ve etiket sınıfıyla ana etiketi güncelleyen metot. Etiket sınıfları: (QUESTION, STUDENT, SURVEY, TRAINER). #39",
-            tags = {"Main Tag Controller"}
+            tags = {"Main Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek ana etiket bilgilerini içeren istek gövdesi. tagString-newTagString-tagClass",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
@@ -117,7 +129,11 @@ public class MainTagController {
     @Operation(
             summary = "Tüm Tag Sınıfları İle Etiket Güncelleme",
             description = "Belirtilen etiketin adını ve tüm etiket sınıflarını güncelleyen metot. #42",
-            tags = {"Main Tag Controller"}
+            tags = {"Main Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek etiketin adı ve tüm etiket sınıflarını içeren istek gövdesi. tagString-newTagString-tagClass(List)",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClassesFrontEnd(@RequestBody UpdateTagNameAndTagClassesDto dto){
         mainTagService.updateTagByTagNameAndTagClassesFrontEnd(dto);

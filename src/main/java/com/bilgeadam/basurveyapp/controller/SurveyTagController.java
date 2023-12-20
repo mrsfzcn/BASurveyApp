@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.SurveyTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.SurveyTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,16 @@ public class SurveyTagController {
     // kaldırılacak.
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @PostMapping("/create")
-    @Operation(summary = "#04")
+    @Operation(
+            summary = "Etiket Oluşturma",
+            description = "Yeni bir etiket oluşturan metot. Yalnızca ADMIN veya MANAGER rolüne sahip kullanıcılar tarafından erişilebilir. ",
+            hidden = true,
+            tags = {"Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak etiketin bilgilerini içeren istek gövdesi. tagString-mainTagOid",
+                    required = true
+            )
+    )
     @Hidden
     public ResponseEntity<SurveyTag> createTag(@RequestBody @Valid CreateTagDto dto ){
         SurveyTag createdTag = surveyTagService.createTag(dto);
@@ -64,7 +74,10 @@ public class SurveyTagController {
     @Operation(
             summary = "Question Tag'ini Sil",
             description = "Tag stringine göre bulunan question tag'in silinmesini sağlayan metot. #116",
-            tags = {"Survey Tag Controller"}
+            tags = {"Survey Tag Controller"},
+            parameters = {
+                    @Parameter(name = "tagString", description = "Silinecek question tag'in tag stringi.", required = true)
+            }
     )
     public ResponseEntity<Boolean> deleteByTagString(@PathVariable String tagString) {
         try {

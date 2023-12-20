@@ -36,7 +36,11 @@ public class StudentController {
     @Operation(
             summary = "Öğrenciye Etiket(Sınıf) Atama",
             description = "Belirtilen öğrenciye etiket(Sınıf) atama işlemini gerçekleştirir. #82",
-            tags = {"Student Controller"}
+            tags = {"Student Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Atanacak etiket bilgisini içeren istek gövdesi. studentTagOid-studentOid",
+                    required = true
+            )
     )
     public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
         return ResponseEntity.ok(studentService.updateStudent(dto));
