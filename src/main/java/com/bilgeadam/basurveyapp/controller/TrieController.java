@@ -26,9 +26,13 @@ public class TrieController {
             description = "Belirtilen kategoriyi trie veri yapısına ve veritabanına ekleyen metot. #130",
             tags = {"Trie Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                            description = "Kategori ekle",
-                            content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(type = "string"))))
+                    description = "Eklenecek kategori veya kategorilerin listesini içeren istek gövdesi.",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(type = "array", example = "[\"Kategori1\", \"Kategori2\"]")
+                    )
+            )
     )
     public void insertCategory(@RequestBody String[] categories) {
         trieService.insertCategory(categories);
@@ -45,7 +49,8 @@ public class TrieController {
                             description = "Aranacak kategori dizisi",
                             in = ParameterIn.QUERY,
                             style = ParameterStyle.FORM,
-                            array = @ArraySchema(schema = @Schema(type = "string")))
+                            array = @ArraySchema(schema = @Schema(type = "string"))
+                    )
             }
     )
     public boolean searchCategory(@RequestParam String[] categories) {

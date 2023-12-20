@@ -52,7 +52,10 @@ public class UserController {
     @Operation(
             summary = "Kullanıcı Sayfasını Getirme",
             description = "Sayfalı kullanıcı listesini getirir. #136",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            parameters = {
+                    @Parameter(name = "pageable", description = "Sayfalama ve sıralama parametrelerini içeren istek gövdesi.", required = true)
+            }
     )
     ResponseEntity<Page<User>> getUserPage(Pageable pageable) {
         return ResponseEntity.ok(userService.getUserPage(pageable));
@@ -106,7 +109,11 @@ public class UserController {
                             description = "User Email",
                             required = true
                     )
-            }
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek kullanıcı bilgilerini içeren istek gövdesi. firstName-lastName-email-authorizedRole",
+                    required = true
+            )
     )
     ResponseEntity<User> updateUser(@PathVariable("user-email") String userEmail, @RequestBody UserUpdateRequestDto dto) {
         userService.updateUser(userEmail, dto);
@@ -152,7 +159,11 @@ public class UserController {
     @Operation(
             summary = "Kullanıcıya Rol Atama",
             description = "Belirtilen kullanıcıya belirtilen rolü atama. #142",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Kullanıcıya atanacak rolü ve kullanıcı kimliğini içeren istek gövdesi. role-userEmail",
+                    required = true
+            )
     )
     ResponseEntity<Boolean> assignRoleToUser(@RequestBody @Valid AssignRoleToUserRequestDto request) {
         return ResponseEntity.ok(userService.assignRoleToUser(request));

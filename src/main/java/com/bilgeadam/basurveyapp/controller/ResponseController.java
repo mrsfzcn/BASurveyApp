@@ -31,7 +31,7 @@ public class ResponseController {
             description = "Response oluşturmak için kullanılan metot. #65",
             tags = {"Response Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Oluşturulacak Response'un bilgilerini içeren DTO"
+                    description = "Oluşturulacak Response'un bilgilerini içeren DTO. responseString-questionOid-surveyOid-userOid"
             )
     )
     public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
@@ -53,7 +53,7 @@ public class ResponseController {
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Güncellenecek Response'un yeni bilgilerini içeren DTO"
+                    description = "Güncellenecek Response'un yeni bilgilerini içeren DTO. responseString"
             )
     )
     public ResponseEntity<Void> updateResponse(@PathVariable Long id,@RequestBody @Valid ResponseRequestDto dto) {
@@ -120,7 +120,7 @@ public class ResponseController {
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Kaydedilecek Response'ların listesi",
+                    description = "Kaydedilecek Response'ların listesi. responseString-questionOid-surveyOid-userOid",
                     required = true
             )
     )
@@ -138,7 +138,7 @@ public class ResponseController {
             parameters = {
                     @Parameter(
                             name = "dto",
-                            description = "Cevapları getirmek için kullanılacak veri transfer nesnesi",
+                            description = "Cevapları getirmek için kullanılacak veri transfer nesnesi. userEmail-surveyOid",
                             required = true
                     )
             }
@@ -174,7 +174,7 @@ public class ResponseController {
             parameters = {
                     @Parameter(
                             name = "studentTagOid",
-                            description = "Cevapları getirmek için kullanılacak öğrenci etiketinin kimliği (OID)",
+                            description = "Cevapları getirmek için kullanılacak öğrenci etiketinin kimliği (studentTagOid)",
                             required = true
                     )
             }
@@ -198,7 +198,7 @@ public class ResponseController {
                     )
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Güncellenecek cevapları içeren istek gövdesi"
+                    description = "Güncellenecek cevapları içeren istek gövdesi. updateResponseMap(List)"
             )
     )
     public ResponseEntity<Boolean> updateStudentAnswers(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
@@ -237,12 +237,12 @@ public class ResponseController {
             parameters = {
                     @Parameter(
                             name = "survey-id",
-                            description = "Anketin kimliği (OID)",
+                            description = "Anketin kimliği (studentTagOid)",
                             required = true
                     ),
                     @Parameter(
                             name = "student-tag-oid",
-                            description = "Öğrenci etiketinin kimliği (OID)",
+                            description = "Öğrenci etiketinin kimliği (surveyOid)",
                             required = true
                     )
             }
@@ -260,12 +260,12 @@ public class ResponseController {
             parameters = {
                     @Parameter(
                             name = "survey-id",
-                            description = "Anketin kimliği (OID)",
+                            description = "Anketin kimliği (surveyOid)",
                             required = true
                     ),
                     @Parameter(
                             name = "student-tag-oid",
-                            description = "Öğrenci etiketinin kimliği (OID)",
+                            description = "Öğrenci etiketinin(sınıfının) kimliği (studentTagOid)",
                             required = true
                     )
             }
@@ -283,7 +283,7 @@ public class ResponseController {
             parameters = {
                     @Parameter(
                             name = "survey-id",
-                            description = "Anketin kimliği (OID)",
+                            description = "Anketin kimliği (surveyOid)",
                             required = true
                     )
             }

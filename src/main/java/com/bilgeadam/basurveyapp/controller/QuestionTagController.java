@@ -31,7 +31,11 @@ public class QuestionTagController {
     @Operation(
             summary = "Yeni Soru Etiketi Oluştur",
             description = "String türünde bir etiket adı girilerek yeni bir soru etiketi oluşturulmasını sağlayan metot. #55",
-            tags = {"Question Tag Controller"}
+            tags = {"Question Tag Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Oluşturulacak yeni soru etiketi adını içeren istek gövdesi.",
+                    required = true
+            )
     )
     @Hidden
     public ResponseEntity<QuestionTag> createTag(@RequestBody @Valid CreateTagDto dto) {
@@ -43,7 +47,14 @@ public class QuestionTagController {
     @Operation(
             summary = "Soru Etiketini Güncelle",
             description = "Belirtilen etiket adına sahip olan soru etiketini güncellemeyi sağlayan metot. #56",
-            tags = {"Question Tag Controller"}
+            tags = {"Question Tag Controller"},
+            parameters = {
+                    @Parameter(name = "tag-string", description = "Güncellenecek soru etiketinin mevcut adı.", required = true)
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenen etiket bilgisini içeren istek gövdesi.",
+                    required = true
+            )
     )
     @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(

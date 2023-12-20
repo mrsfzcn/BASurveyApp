@@ -32,7 +32,13 @@ public class SurveyController {
     @Operation(
             summary = "Öğrenciye Göre Anketteki Soru Yanıtlarını Listele",
             description = "Belirli bir sınıftaki öğrencilerin bir anketteki her soru için verdiği yanıtları listeler. #91",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "dto",
+                            description = "Öğrenci ve anket bilgilerini içeren istek gövdesi. surveyTitle-studentTagOId",
+                            required = true)
+            }
     )
     ResponseEntity<List<SurveyQuestionResponseByStudentResponseDto>> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto){
         return ResponseEntity.ok(surveyService.getAllSurveyQuestionResponseByStudent(dto));
@@ -101,7 +107,11 @@ public class SurveyController {
     @Operation(
             summary = "Yeni Anket Oluştur",
             description = "Belirtilen başlık ve konu ile yeni bir anket oluşturan metot. #96",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Yeni anket bilgilerini içeren istek gövdesi. surveyTitle-courseTopic-surveyTagIds(List)",
+                    required = true
+            )
     )
     ResponseEntity<SurveySimpleResponseDto> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
@@ -113,7 +123,11 @@ public class SurveyController {
             summary = "Anket Etiketi Ata",
             description = "Belirtilen anket ve etiketler arasında ilişki kurarak etiketleri ankete atayan metot. #97 " +
                     "Not: Long olarak surveyTag0id ve survey0id girilir. Birden fazla tag için ',' ile ayrılmalıdır.",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Anket etiketi atama işlemini tetikleyen istek gövdesi. surveyTagOid-surveyOid",
+                    required = true
+            )
     )
     ResponseEntity<SurveySimpleResponseDto> assignSurveyTag(@RequestBody @Valid SurveyTagAssignRequestDto dto) {
         return ResponseEntity.ok(surveyService.assignSurveyTag(dto));
@@ -125,7 +139,11 @@ public class SurveyController {
     @Operation(
             summary = "Ankete Soru Ekle",
             description = "Belirtilen anket ve soru arasında ilişki kurarak ankete yeni bir soru ekleyen metot. #98",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Ankete eklenmek istenen yeni sorunun bilgilerini içeren istek gövdesi. questionId-surveyId",
+                    required = true
+            )
     )
     ResponseEntity<Boolean> addQuestionToSurvey(@RequestBody SurveyAddQuestionRequestDto dto) {
         return ResponseEntity.ok(surveyService.addQuestionToSurvey(dto));
@@ -136,7 +154,11 @@ public class SurveyController {
     @Operation(
             summary = "Ankete Sorular Ekle",
             description = "Belirtilen anket ve soru ilişkilerini kullanarak ankete yeni sorular ekleyen metot. #99",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Ankete eklemek için kullanılacak soru ve anket ilişkilerini içeren istek gövdesi. questionIds(List)-surveyId",
+                    required = true
+            )
     )
     ResponseEntity<Boolean> addQuestionsToSurvey( @RequestBody @Valid SurveyAddQuestionsRequestDto dto) {
         surveyService.addQuestionsToSurvey( dto);
@@ -148,7 +170,11 @@ public class SurveyController {
     @Operation(
             summary = "Anket Güncelleme",
             description = "Belirtilen anket OID'si kullanılarak ankette değişiklik yapmayı sağlayan metot. #100",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek anket bilgilerini içeren istek gövdesi. surveyOid-surveyTitle-courseTopic-surveyTagIds(List)",
+                    required = true
+            )
     )
     ResponseEntity<Survey> update(@RequestBody @Valid SurveyUpdateRequestDto dto) {
         return ResponseEntity.ok(surveyService.update(dto));
@@ -179,7 +205,11 @@ public class SurveyController {
     @Operation(
             summary = "Anket Atama",
             description = "Belirli bir anketin öğrenciye atamasını sağlayan metot. #102",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Anketin sınıfa atanmasını sağlayan istek gövdesi. surveyId-studentTagId-days-startDate",
+                    required = true
+            )
     )
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
@@ -213,7 +243,10 @@ public class SurveyController {
     @Operation(
             summary = "Anket Cevaplarını Maskesiz Bul",
             description = "Belirli bir anketin ve öğrenci tag'inin(sınıfının) cevaplarını maskesiz bulan metot. #105",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            parameters = {
+                    @Parameter(name = "dto", description = "Anket ve öğrenci tag bilgilerini içeren istek gövdesi. surveyOid-studentTagOid", required = true)
+            }
     )
     ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyAnswersUnmasked(dto));
@@ -293,7 +326,13 @@ public class SurveyController {
     @Operation(
             summary = "Anket Katılımcıları",
             description = "Belirli bir ankete katılan öğrenci bilgilerini getirme metodu. #109",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "dto",
+                            description = "Anket katılımcılarını getirmek için kullanılacak istek gövdesi. surveyOid-studentTagOid",
+                            required = true)
+            }
     )
     ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
         return ResponseEntity.ok(surveyService.findSurveyParticipants(dto));
@@ -337,7 +376,13 @@ public class SurveyController {
     @Operation(
             summary = "Soruya Atanan Aktif Anket ID'lerini Bulma",
             description = "Belirli bir soruya atanmış aktif anket ID'lerini bulma metodu. #112",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "questionId",
+                            description = "Sorunun ID'si (questionId)",
+                            required = true)
+            }
     )
     public ResponseEntity<List<Long>> findActiveSurveyIdsByQuestionId(@RequestParam Long questionId) {
         return ResponseEntity.ok(surveyService.findActiveSurveyIdsByQuestionId(questionId));
@@ -377,7 +422,11 @@ public class SurveyController {
     @Operation(
             summary = "Zorunlu Soruların Id'sini Ayarla",
             description = "Belirtilen anketin zorunlu soru id'lerini ayarlayan metot. #115",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Zorunlu soru ID'lerini içeren istek gövdesi. oid-requiredIndexes(List)",
+                    required = true
+            )
     )
     public ResponseEntity<Boolean> setRequiredQuestionIndexes(@RequestBody SetRequiredQuestionIndexesDto dto){
         return ResponseEntity.ok(surveyService.setRequiredQuestionIndexes(dto));

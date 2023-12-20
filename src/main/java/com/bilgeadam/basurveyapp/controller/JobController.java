@@ -2,6 +2,7 @@ package com.bilgeadam.basurveyapp.controller;
 
 import com.bilgeadam.basurveyapp.services.jobservices.JobService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,14 @@ public class JobController {
     @Operation(
             summary = "Api'den Veri Alma Görevini Yeniden Zamanlama",
             description = "Api'den veri alma görevini belirtilen saat ve dakikaya göre yeniden zamanlamak için kullanılan endpoint.",
-            tags = {"Job Controller"}
+            tags = {"Job Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "expression",
+                            description = "String girilecek saat bilgisi",
+                            example = "13:35"
+                    )
+            }
     )
     public ResponseEntity<Boolean> rescheduleGetDatasFromApi(String expression) {
         jobService.rescheduleGetDatasFromApi(expression);
@@ -42,7 +50,7 @@ public class JobController {
     @GetMapping("/update-survey-app-data")
     @Operation(
             summary = "Anket Uygulama Verilerini Anında Güncelle",
-            description = "Anket uygulama verilerini anında güncellemek için kullanılan endpoint.",
+            description = "Anket uygulama verilerini API'den verileri çekerek anında güncellemek için kullanılan endpoint.",
             tags = {"Job Controller"}
     )
     public ResponseEntity<Boolean> instantUpdate() {

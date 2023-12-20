@@ -21,7 +21,11 @@ public class RoleController {
     @Operation(
             summary = "Yeni Rol Oluştur",
             description = "String girdisi ile yeni bir rol oluşturur. #79",
-            tags = {"Role Controller"}
+            tags = {"Role Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Yeni rolün adını içeren istek gövdesi. role",
+                    required = true
+            )
     )
     public ResponseEntity<CreateRoleResponseDto> createRole(@RequestBody CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));

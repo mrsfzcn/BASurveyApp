@@ -33,7 +33,11 @@ public class BranchController {
                     "1. Eğer şube mevcutsa ve aktifse, bir hata fırlatılır.\n" +
                     "2. Eğer şube mevcutsa ancak silinmişse, kullanıcıya silinmiş olduğu bilgisini içeren bir mesaj döner ve şube aktif etme metodunu kullanmaya yönlendirilir.\n" +
                     "3. Yeni bir şube oluşturulduğunda başarı mesajı döner. #6\n",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Yeni şube bilgilerini içeren istek gövdesi. apiId-name-city",
+                    required = true
+            )
     )
     public ResponseEntity<MessageResponseDto> create(@RequestBody @Valid CreateBranchRequestDto dto) {
         return ResponseEntity.ok(service.create(dto));
@@ -42,7 +46,7 @@ public class BranchController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("/get-data-from-base-api")
     @Operation(
-            summary = "Base API'den Veri Alma",
+            summary = "(Deprecated) Base API'den Veri Alma",
             description = "Base API'den tüm şube verilerini çeken ve veritabanıyla karşılaştıran metot.\n\n" +
                     "1. Silinmiş şubeleri tespit eder ve veritabanından kaldırır.\n" +
                     "2. Yeni eklenmiş şubeleri tespit eder ve veritabanına ekler. #7\n",
@@ -87,7 +91,9 @@ public class BranchController {
     @Operation(
             summary = "İsim ve Şehirle Şube Bulma",
             description = "Verilen isim ve şehre göre aktif şubeyi bulan metot. Eğer belirtilen isim ve şehirde şube bulunamazsa hata fırlatılır. #10",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            parameters = {
+            @Parameter(name = "dto", description = "İsim ve şehir bilgilerini içeren istek gövdesi. name-city", required = true)}
     )
     public ResponseEntity<Branch> findByNameAndCity(@RequestBody @Valid FindByNameAndCityRequestDto dto) {
         return ResponseEntity.ok(service.findByNameAndCity(dto));
@@ -112,7 +118,10 @@ public class BranchController {
     @Operation(
             summary = "API Kimliğiyle Şube Bulma",
             description = "Verilen API kimliğine göre aktif bir şubeyi bulan metot. Eğer belirtilen API kimliğine sahip şube bulunamazsa hata fırlatılır. #12",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            parameters = {
+                    @Parameter(name = "apiId", description = "Api Kimliğini içeren istek.", required = true)
+            }
     )
     public ResponseEntity<Branch> findByApiId(@PathVariable String apiId) {
         return ResponseEntity.ok(service.findByApiId(apiId));
@@ -123,7 +132,11 @@ public class BranchController {
     @Operation(
             summary = "Şube Güncelleme",
             description = "Verilen API kimliğine sahip aktif bir şubeyi güncelleyen metot. Eğer belirtilen API kimliğine sahip şube bulunamazsa veya güncelleme işlemi başarısız olursa hata fırlatılır. #13",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek şube bilgilerini içeren istek gövdesi. apiId-name-city",
+                    required = true
+            )
     )
     public ResponseEntity<MessageResponseDto> updateBranchByApiId(@RequestBody @Valid UpdateBranchRequestDto dto) {
         return ResponseEntity.ok(service.updateBranchByApiId(dto));

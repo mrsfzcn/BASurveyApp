@@ -29,7 +29,11 @@ public class CourseController {
     @Operation(
             summary = "Kurs Oluşturma",
             description = "Yeni bir kurs oluşturan metot. Verilen bilgilere göre bir kurs oluşturulur. #18",
-            tags = {"Course Controller"}
+            tags = {"Course Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Yeni kursun bilgilerini içeren istek gövdesi. apiId-name",
+                    required = true
+            )
     )
     public ResponseEntity<CourseResponseDto> create(@RequestBody @Valid CreateCourseRequestDto dto) {
         return ResponseEntity.ok(service.create(dto));
@@ -80,7 +84,11 @@ public class CourseController {
     @Operation(
             summary = "Kurs Güncelleme",
             description = "Belirtilen API ID'ye sahip kursu güncelleyen metot. Verilen bilgilere göre bir kurs güncellenir. #22",
-            tags = {"Course Controller"}
+            tags = {"Course Controller"},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Güncellenecek kurs bilgilerini içeren istek gövdesi. apiId-name",
+                    required = true
+            )
     )
     public ResponseEntity<MessageResponseDto> updateCourseByApiId(@RequestBody @Valid UpdateCourseRequestDto dto) {
         return ResponseEntity.ok(service.updateCourseByApiId(dto));
