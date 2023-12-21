@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.entity.tags.StudentTag;
 import com.bilgeadam.basurveyapp.services.StudentTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,13 @@ public class StudentTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak student tag için string değeri içeren istek gövdesi. tagString-mainTagOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenciler başarıyla bulundu."
+                    )
+            }
     )
     @Hidden
     public ResponseEntity<StudentTagCreateResponseDto> createTag(@RequestBody @Valid CreateTagDto dto ){
@@ -49,7 +56,17 @@ public class StudentTagController {
             summary = "Öğrenci Etiketi İle Öğrenci Bulma",
             description = "Öğrenci etiketi kullanılarak bulunan öğrencinin bilgilerini gösteren metot. #86",
             hidden = true, // Not: Hidden annotation, Swagger'da bu endpoint'i gizler.
-            tags = {"Student Tag Controller"}
+            tags = {"Student Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci etiketi başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci etiketi bulunamadı."
+                    )
+            }
     )
     @Hidden
     public ResponseEntity<Optional<StudentTag>> findByStudentTagName(@RequestParam @Valid String studentTag ){
@@ -60,7 +77,13 @@ public class StudentTagController {
     @Operation(
             summary = "Öğrenci Tag OID'sine Göre Öğrenci Bul",
             description = "Öğrenci Tag OID'sine göre öğrenciyi bulur. #87",
-            tags = {"Student Controller"}
+            tags = {"Student Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci etiket oid'sine göre öğrenci başarıyla bulundu."
+                    )
+            }
     )
     public ResponseEntity<List<Student>> findByStudentTagOid(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findByStudentTagOid(studentTagOid));
@@ -70,7 +93,17 @@ public class StudentTagController {
     @Operation(
             summary = "Aktif Öğrenci Etiketini(sınıfını) Bul",
             description = "Belirtilen etiket(sınıf) OID'sine ait aktif öğrenci etiketini(sınıfını) getirir. #88",
-            tags = {"Student Tag Controller"}
+            tags = {"Student Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci etiketi(sınıfı) başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci etiketi(sınıfı) bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Optional<StudentTag>> findActiveById(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.findActiveById(studentTagOid));
@@ -80,7 +113,17 @@ public class StudentTagController {
     @Operation(
             summary = "Öğrenci Etiketini Sil",
             description = "Belirtilen öğrenci etiketi OID'sine ait öğrenciyi etiketten(sınıftan) siler. #89",
-            tags = {"Student Tag Controller"}
+            tags = {"Student Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci etiketi başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci etiketi bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long studentTagOid ){
         return ResponseEntity.ok(studentTagService.delete(studentTagOid));
@@ -90,7 +133,13 @@ public class StudentTagController {
     @Operation(
             summary = "Tüm Öğrenci Etiketlerini Listele",
             description = "Sistemdeki tüm öğrenci etiketlerini(sınıflarını) listeler. #90",
-            tags = {"Student Tag Controller"}
+            tags = {"Student Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci etiketleri başarıyla listelendi."
+                    )
+            }
     )
     ResponseEntity<List<StudentTagDetailResponseDto>> getStudentTagList() {
         return ResponseEntity.ok(studentTagService.getStudentTagList());

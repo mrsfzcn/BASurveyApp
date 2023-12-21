@@ -3,6 +3,8 @@ package com.bilgeadam.basurveyapp.controller;
 import com.bilgeadam.basurveyapp.services.jobservices.JobService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +32,11 @@ public class JobController {
                     )
             }
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "İşlem başarılı"),
+            @ApiResponse(responseCode = "400", description = "Geçersiz saat formatı"),
+            @ApiResponse(responseCode = "500", description = "Beklenmeyen bir hata oluştu")
+    })
     public ResponseEntity<Boolean> rescheduleGetDatasFromApi(String expression) {
         jobService.rescheduleGetDatasFromApi(expression);
         return ResponseEntity.ok(true);
@@ -42,6 +49,10 @@ public class JobController {
             description = "Api'den veri alma görevinin güncel zamanlama saatini almak için kullanılan endpoint.",
             tags = {"Job Controller"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "İşlem başarılı"),
+            @ApiResponse(responseCode = "500", description = "Beklenmeyen bir hata oluştu")
+    })
     public ResponseEntity<String> getCurrentUpdateTime() {
         return ResponseEntity.ok(jobService.getCurrentUpdateTime());
     }
@@ -53,6 +64,10 @@ public class JobController {
             description = "Anket uygulama verilerini API'den verileri çekerek anında güncellemek için kullanılan endpoint.",
             tags = {"Job Controller"}
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "İşlem başarılı"),
+            @ApiResponse(responseCode = "500", description = "Beklenmeyen bir hata oluştu")
+    })
     public ResponseEntity<Boolean> instantUpdate() {
         jobService.getDatasFromApi();
         return ResponseEntity.ok(true);

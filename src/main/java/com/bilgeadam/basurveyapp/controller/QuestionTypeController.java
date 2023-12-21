@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,21 @@ public class QuestionTypeController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek soru tipi bilgileri. tagString-newTagString",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru tipi başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen tip stringine sahip soru tipi bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Beklenmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity <QuestionType> updateQuestionTypeByTagString(@RequestBody UpdateQuestionTypeByTagStringRequestDto dto){
 
@@ -61,7 +76,13 @@ public class QuestionTypeController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak soru tipi bilgileri. questionType",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru tipi başarıyla oluşturuldu."
+                    )
+            }
     )
     public ResponseEntity<Boolean> createQuestionType(@RequestBody @Valid CreateQuestionTypeRequestDto dto) {
         return ResponseEntity.ok(questionTypeService.createQuestionType(dto));
@@ -83,7 +104,17 @@ public class QuestionTypeController {
                     description = "Güncellenecek sorunun ID'si",
                     required = true
             )
-        }
+        },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru tipi başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen Id'ye sahip soru tipi bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Void> updateQuestionType(@RequestBody @Valid UpdateQuestionTypeRequestDto dto,@PathVariable Long id) {
         questionTypeService.updateQuestionType(dto,id);
@@ -102,6 +133,16 @@ public class QuestionTypeController {
                             description = "Bulunacak soru tipinin Id'si.",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru tipi başarıyla bulundu ve görüntülendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen Id'ye sahip soru tipi bulunamadı."
+                    )
             }
     )
     public ResponseEntity<QuestionTypeFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
@@ -113,7 +154,13 @@ public class QuestionTypeController {
     @Operation(
             summary = "Tüm Soru Tiplerini Görüntüleme",
             description = "Tüm question type'larını görüntülemeyi sağlayan metot. #63",
-            tags = {"Question Type Controller"}
+            tags = {"Question Type Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm soru tipleri başarıyla görüntülendi."
+                    )
+            }
     )
     public ResponseEntity<List<AllQuestionTypeResponseDto>> findAll() {
         List<AllQuestionTypeResponseDto> responseDtoList = questionTypeService.findAll();
@@ -130,6 +177,16 @@ public class QuestionTypeController {
                             name = "id",
                             description = "Silinecek soru tipinin ID numarası",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru tipi başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID numarasına sahip soru tipi bulunamadı."
                     )
             }
     )

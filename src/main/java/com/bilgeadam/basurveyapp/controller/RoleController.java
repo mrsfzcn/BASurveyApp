@@ -4,6 +4,7 @@ import com.bilgeadam.basurveyapp.dto.request.CreateRoleDto;
 import com.bilgeadam.basurveyapp.dto.response.CreateRoleResponseDto;
 import com.bilgeadam.basurveyapp.services.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,13 @@ public class RoleController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yeni rolün adını içeren istek gövdesi. role",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Yeni rol başarıyla oluşturuldu."
+                    )
+            }
     )
     public ResponseEntity<CreateRoleResponseDto> createRole(@RequestBody CreateRoleDto dto) {
         return ResponseEntity.ok(roleService.createRole(dto));
@@ -36,7 +43,13 @@ public class RoleController {
     @Operation(
             summary = "Tüm Rollerin Görüntülenmesi",
             description = "Tüm rollerin görüntülenmesini sağlar. #80",
-            tags = {"Role Controller"}
+            tags = {"Role Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Roller başarıyla alındı."
+                    )
+            }
     )
     public ResponseEntity<List<String>> findRoleStrings() {
         return ResponseEntity.ok(roleService.findRoleStrings());

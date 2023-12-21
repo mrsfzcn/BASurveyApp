@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.entity.Response;
 import com.bilgeadam.basurveyapp.services.ResponseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -32,7 +33,13 @@ public class ResponseController {
             tags = {"Response Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak Response'un bilgilerini içeren DTO. responseString-questionOid-surveyOid-userOid"
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response başarıyla oluşturuldu."
+                    )
+            }
     )
     public ResponseEntity<Boolean> createResponse (@RequestBody @Valid ResponseRequestSaveDto responseRequestSaveDto){
         responseService.createResponse(responseRequestSaveDto);
@@ -54,7 +61,17 @@ public class ResponseController {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek Response'un yeni bilgilerini içeren DTO. responseString"
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen id ile Response bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Void> updateResponse(@PathVariable Long id,@RequestBody @Valid ResponseRequestDto dto) {
         responseService.updateResponse(dto,id);
@@ -72,6 +89,16 @@ public class ResponseController {
                             description = "Görüntülenecek Response'un id'si",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response başarıyla bulundu ve görüntülendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen id ile Response bulunamadı."
+                    )
             }
     )
     public ResponseEntity<AnswerResponseDto> findById(@PathVariable @Valid Long id) {
@@ -83,7 +110,13 @@ public class ResponseController {
     @Operation(
             summary = "Tüm Yanıtları Görüntüleme",
             description = "Sistemde bulunan tüm Response'ları görüntülemek için kullanılan metot. #68",
-            tags = {"Response Controller"}
+            tags = {"Response Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response'lar başarıyla bulundu ve görüntülendi."
+                    )
+            }
     )
     public ResponseEntity<List<AnswerResponseDto>> findAll() {
         return ResponseEntity.ok(responseService.findAll());
@@ -99,6 +132,16 @@ public class ResponseController {
                             name = "id",
                             description = "Silinecek Response'un ID'si",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID ile Response bulunamadı."
                     )
             }
     )
@@ -122,7 +165,21 @@ public class ResponseController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Kaydedilecek Response'ların listesi. responseString-questionOid-surveyOid-userOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Response'lar başarıyla kaydedildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Anket zaten tamamlanmış, tekrar Response kaydedilemez."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen Token veya Soru ID'si ile ilgili kaynak bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> saveAll(@PathVariable @Valid String token,@RequestBody @Valid List<ResponseRequestSaveDto> responseRequestSaveDtoList){
         return ResponseEntity.ok(responseService.saveAll(token, responseRequestSaveDtoList));
@@ -140,6 +197,20 @@ public class ResponseController {
                             name = "dto",
                             description = "Cevapları getirmek için kullanılacak veri transfer nesnesi. userEmail-surveyOid",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcının belirtilen anketteki tüm cevapları başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Verilen kullanıcı e-posta adresi geçerli değil veya belirtilen anket bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Verilen kullanıcı e-posta adresi ile belirtilen anket arasında cevap bulunamadı."
                     )
             }
     )
@@ -159,6 +230,20 @@ public class ResponseController {
                             description = "Cevapları getirmek için kullanılacak kullanıcının e-posta adresi",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen kullanıcının tüm cevapları başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Verilen kullanıcı e-posta adresi geçerli değil."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Verilen kullanıcı e-posta adresi ile ilişkilendirilmiş cevap bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<AnswerResponseDto>> findAllResponsesOfUser(String userEmail) {
@@ -176,6 +261,16 @@ public class ResponseController {
                             name = "studentTagOid",
                             description = "Cevapları getirmek için kullanılacak öğrenci etiketinin kimliği (studentTagOid)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen öğrenci etiketine sahip tüm cevaplar başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen öğrenci etiketine sahip cevap bulunamadı."
                     )
             }
     )
@@ -199,7 +294,17 @@ public class ResponseController {
             },
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek cevapları içeren istek gövdesi. updateResponseMap(List)"
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci cevapları başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ankete ait cevaplar bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> updateStudentAnswers(@RequestParam Long surveyOid, @RequestBody SurveyUpdateResponseRequestDto dto) {
         return ResponseEntity.ok(responseService.updateStudentAnswers(surveyOid, dto));
@@ -217,6 +322,16 @@ public class ResponseController {
                             name = "id",
                             description = "Cevapları alınacak anketin kimliği (OID)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cevaplar başarıyla Excel dosyasına aktarıldı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen anketin cevapları bulunamadı."
                     )
             }
     )
@@ -245,6 +360,16 @@ public class ResponseController {
                             description = "Öğrenci etiketinin kimliği (surveyOid)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket doldurma oranı başarıyla hesaplandı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ankete ait öğrenci etiketi bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Double> surveyResponseRate(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
@@ -268,6 +393,16 @@ public class ResponseController {
                             description = "Öğrenci etiketinin(sınıfının) kimliği (studentTagOid)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sınıftaki öğrencilerin ad soyadları başarıyla listelendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ankete ait öğrenci etiketi bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<String>> surveyResponseRateName(@PathVariable(name = "survey-id")Long surveyId, @PathVariable(name = "student-tag-oid") Long studentTagOid){
@@ -285,6 +420,16 @@ public class ResponseController {
                             name = "survey-id",
                             description = "Anketin kimliği (surveyOid)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anketi cevaplaması gereken öğrenciler başarıyla listelendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ankete ait öğrenciler bulunamadı."
                     )
             }
     )
