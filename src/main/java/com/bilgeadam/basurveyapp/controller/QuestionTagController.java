@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,17 @@ public class QuestionTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak yeni soru etiketi adını içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru etiketi başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen etiket adına sahip bir etiket zaten var."
+                    )
+            }
     )
     @Hidden
     public ResponseEntity<QuestionTag> createTag(@RequestBody @Valid CreateTagDto dto) {
@@ -54,7 +65,21 @@ public class QuestionTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenen etiket bilgisini içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru etiketi başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket adına sahip bir soru etiketi bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bir hata oluştu."
+                    )
+            }
     )
     @Hidden
     public ResponseEntity<QuestionTag> updateTagByTagString(
@@ -75,7 +100,13 @@ public class QuestionTagController {
     @Operation(
             summary = "Tüm Soru Etiketlerini Görüntüle",
             description = "Sistemdeki tüm soru etiketlerini görüntülemeyi sağlayan metot. #57",
-            tags = {"Question Tag Controller"}
+            tags = {"Question Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru etiketleri başarıyla listelendi."
+                    )
+            }
     )
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = questionTagService.findAll();
@@ -92,6 +123,16 @@ public class QuestionTagController {
                             name = "tagString",
                             description = "Silinecek soru etiketinin tag stringi.",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru etiketi başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen tag stringine sahip soru etiketi bulunamadı."
                     )
             }
     )

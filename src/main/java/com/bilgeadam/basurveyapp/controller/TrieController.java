@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,13 @@ public class TrieController {
                             mediaType = "application/json",
                             schema = @Schema(type = "array", example = "[\"Kategori1\", \"Kategori2\"]")
                     )
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kategori başarıyla eklendi."
+                    )
+            }
     )
     public void insertCategory(@RequestBody String[] categories) {
         trieService.insertCategory(categories);
@@ -50,6 +57,16 @@ public class TrieController {
                             in = ParameterIn.QUERY,
                             style = ParameterStyle.FORM,
                             array = @ArraySchema(schema = @Schema(type = "string"))
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kategori bulundu ve true döndü."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kategori bulunamadı, false döndü."
                     )
             }
     )
@@ -79,7 +96,13 @@ public class TrieController {
     @Operation(
             summary = "Kategorileri Listeleme",
             description = "Trie veri yapısındaki tüm kategorileri listeler.  #133",
-            tags = {"Trie Controller"}
+            tags = {"Trie Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kategoriler başarıyla alındı."
+                    )
+            }
     )
     public List<Category> getCategories() {
         return trieService.getCategories();

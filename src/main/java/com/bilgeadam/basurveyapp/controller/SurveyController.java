@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.entity.Survey;
 import com.bilgeadam.basurveyapp.services.SurveyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,12 @@ public class SurveyController {
                             name = "dto",
                             description = "Öğrenci ve anket bilgilerini içeren istek gövdesi. surveyTitle-studentTagOId",
                             required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anketteki soru yanıtları başarıyla listelendi."
+                    )
             }
     )
     ResponseEntity<List<SurveyQuestionResponseByStudentResponseDto>> getAllSurveyQuestionResponseByStudent(SurveyQuestionResponseByStudentRequestDto dto){
@@ -49,7 +56,13 @@ public class SurveyController {
     @Operation(
             summary = "Tüm Anketleri Listele",
             description = "Aktif olan tüm anketleri listeler. #92",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anketler başarıyla listelendi."
+                    )
+            }
     )
     ResponseEntity<List<SurveySimpleResponseDto>> getSurveyList() {
         return ResponseEntity.ok(surveyService.getSurveyList());
@@ -60,7 +73,13 @@ public class SurveyController {
     @Operation(
             summary = "Anket Sayfalarını Listele",
             description = "Gelen anket bilgilerine göre aktif olan anketi sayfalayarak gösterir. #93",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket sayfaları başarıyla listelendi."
+                    )
+            }
     )
     ResponseEntity<Page<Survey>> getSurveyPage(Pageable pageable) {
         return ResponseEntity.ok(surveyService.getSurveyPage(pageable));
@@ -77,6 +96,16 @@ public class SurveyController {
                             name = "survey-id",
                             description = "Survey Kimliği (OID)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla bulundu ve görüntülendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID ile anket bulunamadı."
                     )
             }
     )
@@ -96,6 +125,20 @@ public class SurveyController {
                             description = "Email token",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla bulundu ve görüntülendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Geçersiz token hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID ile anket bulunamadı."
+                    )
             }
     )
     ResponseEntity<SurveyResponseByEmailTokenDto> findByEmailToken(@PathVariable String token) {
@@ -111,7 +154,17 @@ public class SurveyController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yeni anket bilgilerini içeren istek gövdesi. surveyTitle-courseTopic-surveyTagIds(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Başlık zaten kullanımda hatası."
+                    )
+            }
     )
     ResponseEntity<SurveySimpleResponseDto> create(@RequestBody @Valid SurveyCreateRequestDto dto) {
         return ResponseEntity.ok(surveyService.create(dto));
@@ -127,7 +180,21 @@ public class SurveyController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Anket etiketi atama işlemini tetikleyen istek gövdesi. surveyTagOid-surveyOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket etiketleri başarıyla atandı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Anket etiketi zaten mevcut hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya etiket bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<SurveySimpleResponseDto> assignSurveyTag(@RequestBody @Valid SurveyTagAssignRequestDto dto) {
         return ResponseEntity.ok(surveyService.assignSurveyTag(dto));
@@ -143,7 +210,21 @@ public class SurveyController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Ankete eklenmek istenen yeni sorunun bilgilerini içeren istek gövdesi. questionId-surveyId",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru başarıyla ankete eklendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Soru zaten mevcut hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya soru bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<Boolean> addQuestionToSurvey(@RequestBody SurveyAddQuestionRequestDto dto) {
         return ResponseEntity.ok(surveyService.addQuestionToSurvey(dto));
@@ -158,7 +239,17 @@ public class SurveyController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Ankete eklemek için kullanılacak soru ve anket ilişkilerini içeren istek gövdesi. questionIds(List)-surveyId",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sorular başarıyla ankete eklendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya soru bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<Boolean> addQuestionsToSurvey( @RequestBody @Valid SurveyAddQuestionsRequestDto dto) {
         surveyService.addQuestionsToSurvey( dto);
@@ -174,7 +265,17 @@ public class SurveyController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek anket bilgilerini içeren istek gövdesi. surveyOid-surveyTitle-courseTopic-surveyTagIds(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya etiket bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<Survey> update(@RequestBody @Valid SurveyUpdateRequestDto dto) {
         return ResponseEntity.ok(surveyService.update(dto));
@@ -193,6 +294,16 @@ public class SurveyController {
                             description = "Survey Kimliği (OID)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<Void> delete(@PathVariable("survey-id") Long surveyId) {
@@ -203,13 +314,31 @@ public class SurveyController {
     @PutMapping("/assign")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(
-            summary = "Anket Atama",
-            description = "Belirli bir anketin öğrenciye atamasını sağlayan metot. #102",
+            summary = "Anketi sınıfa Atama",
+            description = "Belirli bir anketin sınıfa atamasını sağlayan metot. #102",
             tags = {"Survey Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Anketin sınıfa atanmasını sağlayan istek gövdesi. surveyId-studentTagId-days-startDate",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket başarıyla sınıfa atandı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Geçersiz tarih hatası veya sınıfta öğrenci bulunamadı hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya öğrenci etiketi(sınıfı) bulunamadı hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Anket zaten sınıfa atanmış hatası."
+                    )
+            }
     )
     ResponseEntity<Boolean> assignSurveyToClassroom(@RequestBody SurveyAssignRequestDto surveyAssignRequestDto) throws MessagingException {
         return ResponseEntity.ok(surveyService.assignSurveyToClassroom(surveyAssignRequestDto));
@@ -220,7 +349,17 @@ public class SurveyController {
     @Operation(
             summary = "Öğrenci Etiketine(sınıfına) Göre Anketleri Bul",
             description = "Belirli bir öğrenci etiketine(sınıfına) sahip öğrencilerin katıldığı anketleri bulan metot. #103",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anketler başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci etiketi bulunamadı hatası."
+                    )
+            }
     )
     public ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentTag(
             @RequestParam Long studentTagOid) {
@@ -232,7 +371,21 @@ public class SurveyController {
     @Operation(
             summary = "Öğrenci OID'ye Göre Anketleri Bul",
             description = "Belirli bir öğrenci OID'ye sahip öğrencilerin katıldığı anketleri bulan metot. #104",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anketler başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci bulunamadı hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Erişim reddedildi hatası."
+                    )
+            }
     )
     ResponseEntity<List<SurveyByStudentTagResponseDto>> findSurveysByStudentOid(@RequestParam Long studentOid) {
         return ResponseEntity.ok(surveyService.findSurveysByStudentOid(studentOid));
@@ -246,6 +399,16 @@ public class SurveyController {
             tags = {"Survey Controller"},
             parameters = {
                     @Parameter(name = "dto", description = "Anket ve öğrenci tag bilgilerini içeren istek gövdesi. surveyOid-studentTagOid", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cevaplar başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya öğrenci tag(sınıf) bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<SurveyResponseWithAnswersDto> findSurveyAnswersUnmasked(@ParameterObject FindSurveyAnswersRequestDto dto) {
@@ -274,6 +437,16 @@ public class SurveyController {
                             name = "studentTagOid",
                             description = "Sınıf Kimliği (studentTagOid)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cevaplar başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket veya öğrenci tag(sınıf) bulunamadı hatası."
                     )
             }
     )
@@ -304,6 +477,16 @@ public class SurveyController {
                             description = "Sınıf Kimliği (studentTagOid)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cevaplar başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket, öğrenci tag(sınıf) veya eğitmen bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<SurveyOfClassroomMaskedResponseDto> findMaskedSurveyAnswersAsTrainer(@ParameterObject FindSurveyAnswersRequestDto findSurveyAnswersRequestDto) {
@@ -315,7 +498,17 @@ public class SurveyController {
     @Operation(
             summary = "Eğitmen Anketleri",
             description = "Eğitmenin yönettiği sınıflardaki anketleri getirme metodu. #108",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Eğitmenin yönettiği sınıflardaki anketler başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Eğitmen bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<TrainerClassroomSurveyResponseDto> findTrainerSurveys() {
         return ResponseEntity.ok(surveyService.findTrainerSurveys());
@@ -324,7 +517,7 @@ public class SurveyController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER','MASTER_TRAINER', 'ASSISTANT_TRAINER')")
     @GetMapping("/find-survey-participants")
     @Operation(
-            summary = "Anket Katılımcıları",
+            summary = "Anket Katılımcılarını göster",
             description = "Belirli bir ankete katılan öğrenci bilgilerini getirme metodu. #109",
             tags = {"Survey Controller"},
             parameters = {
@@ -332,6 +525,16 @@ public class SurveyController {
                             name = "dto",
                             description = "Anket katılımcılarını getirmek için kullanılacak istek gövdesi. surveyOid-studentTagOid",
                             required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket katılımcıları başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Öğrenci tag veya anket kaydı bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<SurveyParticipantResponseDto> findSurveyParticipants(SurveyParticipantRequestDto dto) {
@@ -340,7 +543,7 @@ public class SurveyController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'ASSISTANT_TRAINER', 'MASTER_TRAINER')")
     @GetMapping("/{surveyid}/questions")
     @Operation(
-            summary = "Ankete Atanan Sorular",
+            summary = "Ankete Atanan Soruları göster",
             description = "Belirli bir ankete atanan soruları getirme metodu. #110",
             tags = {"Survey Controller"},
             parameters = {
@@ -348,6 +551,16 @@ public class SurveyController {
                             name = "surveyid",
                             description = "Anket Kimliği (OID)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Ankete atanan sorular başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket bulunamadı hatası."
                     )
             }
     )
@@ -366,6 +579,16 @@ public class SurveyController {
                             description = "Anket Kimliği (OID)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Ankete atanan sorular başarıyla kaldırıldı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Anket bulunamadı veya sorular kaldırılamadı hatası."
+                    )
             }
     )
     public ResponseEntity<Boolean> removeSurveyQuestions(@PathVariable Long surveyid,@RequestBody RemoveSurveyQuestionRequestDto dto){
@@ -382,6 +605,16 @@ public class SurveyController {
                             name = "questionId",
                             description = "Sorunun ID'si (questionId)",
                             required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Aktif anket ID'leri başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Soruya atanmış aktif anket bulunamadı hatası."
+                    )
             }
     )
     public ResponseEntity<List<Long>> findActiveSurveyIdsByQuestionId(@RequestParam Long questionId) {
@@ -393,7 +626,17 @@ public class SurveyController {
     @Operation(
             summary = "Herhangi Bir Anketin herhangi bir Sınıfa atanıp atanmadığını Kontrol Etme",
             description = "Herhangi bir anketin herhangi bir sınıfa atanıp atanmadığını kontrol eden metodu. #113",
-            tags = {"Survey Controller"}
+            tags = {"Survey Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Herhangi bir ankete kayıt yapılmış."
+                    ),
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Herhangi bir ankete kayıt yapılmamış."
+                    )
+            }
     )
     public ResponseEntity<Boolean> isAnySurveyRegistrated(@RequestParam List<Long> surveyIds) {
         return ResponseEntity.ok(surveyService.isAnySurveyRegistrated(surveyIds));
@@ -411,6 +654,16 @@ public class SurveyController {
                             description = "Anket Kimliği (Survey ID)",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket ve sorular başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID'ye sahip anket bulunamadı."
+                    )
             }
     )
     ResponseEntity<Void> fullDelete(@PathVariable Long id) {
@@ -421,12 +674,22 @@ public class SurveyController {
     @PutMapping("/add-required-question-indexes")
     @Operation(
             summary = "Zorunlu Soruların Id'sini Ayarla",
-            description = "Belirtilen anketin zorunlu soru id'lerini ayarlayan metot. #115",
+            description = "Belirtilen anketin zorunlu soru id'lerini ayarlayan metot. (yazara göre index = id) #115",
             tags = {"Survey Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Zorunlu soru ID'lerini içeren istek gövdesi. oid-requiredIndexes(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Zorunlu soru id'leri başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID'ye sahip aktif anket bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> setRequiredQuestionIndexes(@RequestBody SetRequiredQuestionIndexesDto dto){
         return ResponseEntity.ok(surveyService.setRequiredQuestionIndexes(dto));

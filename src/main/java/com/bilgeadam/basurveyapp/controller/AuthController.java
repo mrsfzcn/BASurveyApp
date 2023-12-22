@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,9 +31,27 @@ public class AuthController {
                     "3. Eğer kullanıcı master trainer veya assistant trainer rolüne sahipse, ilgili rolle ilişkilendirilen bir eğitmen (Trainer) oluşturulur. #0",
             tags = {"Auth Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Yeni kullanıcının bilgilerini içeren istek gövdesi.",
+                    description = "Yeni kullanıcının bilgilerini içeren istek gövdesi. password-firstName-lastName-roles",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Giriş bilgileri başarıyla güncellendi. Yeni kimlik doğrulama token'ı ile birlikte."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı veya yetkilendirilmiş kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Giriş bilgileri başka bir admin veya yönetici hesabına değiştirilemez."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto request) {
         return ResponseEntity.ok(authService.register(request));
@@ -46,7 +65,25 @@ public class AuthController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Kullanıcının kimlik doğrulama bilgilerini içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Yetkilendirmeler başarıyla değiştirildi. Yeni kimlik doğrulama token'ı ile birlikte."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen yetkilendirme rolü bulunamadı veya mevcut rol ile uyumsuz."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody @Valid LoginRequestDto request) {
         return ResponseEntity.ok(authService.authenticate(request));
@@ -56,7 +93,7 @@ public class AuthController {
     @PutMapping("/update-login-credentials")
     @Operation(
             summary = "Giriş Bilgilerini Güncelleme",
-            description = "Belirtilen kullanıcının giriş bilgilerini güncelleyerek yeni bir kimlik doğrulama token'ı oluşturur. Yalnızca ADMIN veya MANAGER rolüne sahip kullanıcılar tarafından erişilebilir.\n\n" +
+            description = "Belirtilen kullanıcının giriş bilgilerini güncelleyerek yeni bir kimlik doğrulama token'ı oluşturur. Yalnızca ADMIN veya MANAGER rolüne sahip kullanıcılar tarafından erişilebilir. userEmail-authorizedToken\n\n" +
                     "İşlem adımları:\n" +
                     "1. Yetkilendirilmiş kullanıcı belirlenir ve eğer bulunamazsa 'User is not found' hatası fırlatılır.\n" +
                     "2. Güncellenecek kullanıcı belirlenir ve eğer bulunamazsa 'Username does not exist.' hatası fırlatılır.\n" +
@@ -67,7 +104,25 @@ public class AuthController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek kullanıcının yeni giriş bilgilerini içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Giriş bilgileri başarıyla güncellendi. Yeni kimlik doğrulama token'ı ile birlikte."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı veya yetkilendirilmiş kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Giriş bilgileri başka bir admin veya yönetici hesabına değiştirilemez."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<AuthenticationResponseDto> updateLoginCredentials(@RequestBody @Valid ChangeLoginRequestDto request) {
         return ResponseEntity.ok(authService.updateLoginCredentials(request));
@@ -76,12 +131,30 @@ public class AuthController {
     @PostMapping("/switch-authorization-roles")
     @Operation(
             summary = "Kullanıcı Yetkilendirmelerini Değiştirme",
-            description = "Belirtilen kullanıcının yetkilendirme rollerini değiştirerek yeni bir kimlik doğrulama token'ı oluşturur. Kullanıcının mevcut rolü, istenen yetkilendirme rolü ile uyumlu olmalıdır. #3",
+            description = "Belirtilen kullanıcının yetkilendirme rollerini değiştirerek yeni bir kimlik doğrulama token'ı oluşturur. Kullanıcının mevcut rolü, istenen yetkilendirme rolü ile uyumlu olmalıdır. authorizedRole-authorizedToken #3",
             tags = {"Auth Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yetkilendirme rollerini değiştirecek kullanıcının istenen rollerini ve tokenlerini içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Yetkilendirmeler başarıyla değiştirildi. Yeni kimlik doğrulama token'ı ile birlikte."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen yetkilendirme rolü bulunamadı veya mevcut rol ile uyumsuz."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<AuthenticationResponseDto> switchAuthorizationRoles(@RequestBody @Valid ChangeAuthorizedRequestDto request) {
         return ResponseEntity.ok(authService.switchAuthorizationRoles(request));
@@ -90,12 +163,30 @@ public class AuthController {
     @PostMapping("/verify-code")
     @Operation(
             summary = "İki Faktörlü Kimlik Doğrulama",
-            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama kodunu doğrular. İki faktörlü kimlik doğrulama için kullanılan kod, kullanıcının belirtilen e-posta adresine atanmış bir JWT içerisinde bulunmalıdır.#4",
+            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama kodunu doğrular. İki faktörlü kimlik doğrulama için kullanılan kod, kullanıcının belirtilen e-posta adresine atanmış bir JWT içerisinde bulunmalıdır. twoFactoryKey-token #4",
             tags = {"Auth Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Doğrulanacak iki faktörlü kimlik doğrulama kodunu ve token'ını içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kod başarıyla doğrulandı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen iki faktörlü kimlik doğrulama kodu geçerli değil veya kullanıcının iki faktörlü kimlik doğrulama özelliği etkin değil."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<Boolean> verifyCode(@RequestBody VerifyCodeRequestDto verifyCodeRequestDto){
         return ResponseEntity.ok(authService.verifyCode(verifyCodeRequestDto));
@@ -104,16 +195,26 @@ public class AuthController {
     @PutMapping("/regenerate-qr-code")
     @Operation(
             summary = "QR Kodunu Yeniden Oluşturma",
-            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama için QR kodunu yeniden oluşturur ve günceller. Yeni QR kodu, kullanıcının e-posta adresine atanmış bir JWT içerisinde bulunmalıdır. #5",
+            description = "Belirtilen kullanıcının iki faktörlü kimlik doğrulama için QR kodunu yeniden oluşturur ve günceller. Yeni QR kodu, kullanıcının e-posta adresine atanmış bir JWT içerisinde bulunmalıdır. token #5",
             tags = {"Auth Controller"},
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yeniden oluşturulacak QR kodu ve bu işlem için gerekli kimlik doğrulama token'ını içeren istek gövdesi.",
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = RegenerateQrCodeRequest.class, example = "{\"token\":\"sampleToken\"}")
+                    required = true
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "QR kodu başarıyla yeniden oluşturuldu ve güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kullanıcı bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
                     )
-            )
+            }
     )
     public ResponseEntity<RegenerateQrCodeResponse> regenerateQrCode(@RequestBody RegenerateQrCodeRequest regenerateQrCodeRequest){
         return ResponseEntity.ok(authService.regenerateQrCode(regenerateQrCodeRequest));

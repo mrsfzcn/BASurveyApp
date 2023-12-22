@@ -10,6 +10,7 @@ import com.bilgeadam.basurveyapp.entity.Course;
 import com.bilgeadam.basurveyapp.services.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,17 @@ public class CourseController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yeni kursun bilgilerini içeren istek gövdesi. apiId-name",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Eklemeye çalıştığınız kurs zaten mevcut veya silinmiş durumda."
+                    )
+            }
     )
     public ResponseEntity<CourseResponseDto> create(@RequestBody @Valid CreateCourseRequestDto dto) {
         return ResponseEntity.ok(service.create(dto));
@@ -47,6 +58,20 @@ public class CourseController {
             tags = {"Course Controller"},
             parameters = {
                     @Parameter(name = "oid", description = "Silinecek kursun OID değeri", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla soft olarak silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen OID'ye sahip kurs bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Kurs soft silme işlemi sırasında bir hata oluştu."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteCourseByOid(@PathVariable Long oid) {
@@ -60,6 +85,16 @@ public class CourseController {
             tags = {"Course Controller"},
             parameters = {
                     @Parameter(name = "name", description = "Bulunacak kursun adı", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen isimdeki kurs bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Course> findCoursesByName(@PathVariable String name) {
@@ -73,6 +108,16 @@ public class CourseController {
             tags = {"Course Controller"},
             parameters = {
                     @Parameter(name = "apiId", description = "Bulunacak kursun API ID'si", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen API ID'ye sahip kurs bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Course> findByApiId(@PathVariable String apiId) {
@@ -88,7 +133,21 @@ public class CourseController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek kurs bilgilerini içeren istek gövdesi. apiId-name",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen API ID'ye sahip kurs bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bu isimde bir kurs zaten mevcut veya herhangi bir değişiklik yapılmadı."
+                    )
+            }
     )
     public ResponseEntity<MessageResponseDto> updateCourseByApiId(@RequestBody @Valid UpdateCourseRequestDto dto) {
         return ResponseEntity.ok(service.updateCourseByApiId(dto));
@@ -99,7 +158,17 @@ public class CourseController {
     @Operation(
             summary = "Aktif Kursları Listeleme",
             description = "Sistemdeki tüm aktif kursları listeleyen metot. #23",
-            tags = {"Course Controller"}
+            tags = {"Course Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Aktif kurslar başarıyla listelendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sistemde aktif kurs bulunmamaktadır."
+                    )
+            }
     )
     public ResponseEntity<List<Course>> activeCourses(){
         return ResponseEntity.ok(service.findAllActiveCourses());
@@ -109,7 +178,17 @@ public class CourseController {
     @Operation(
             summary = "Silinmiş Kursları Listeleme",
             description = "Sistemdeki tüm silinmiş kursları listeleyen metot. #24",
-            tags = {"Course Controller"}
+            tags = {"Course Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Silinmiş kurslar başarıyla listelendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sistemde silinmiş kurs bulunmamaktadır."
+                    )
+            }
     )
     public ResponseEntity<List<Course>> deletedCourses() {
         return ResponseEntity.ok(service.findAllDeletedCourses());
@@ -123,6 +202,16 @@ public class CourseController {
             tags = {"Course Controller"},
             parameters = {
                     @Parameter(name = "oid", description = "Aktifleştirilecek kursun API ID'si", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs başarıyla aktifleştirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen API ID'ye sahip kurs bulunamadı."
+                    )
             }
     )
     public ResponseEntity<MessageResponseDto> activateCourse(@PathVariable String oid) {

@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.entity.Branch;
 import com.bilgeadam.basurveyapp.services.BranchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,25 @@ public class BranchController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Yeni şube bilgilerini içeren istek gövdesi. apiId-name-city",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şube başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Eklemeye çalıştığınız şube zaten mevcut ve aktif durumda."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Eklemeye çalıştığınız şube mevcut fakat silinmiş. Lütfen şube aktif et metodunu kullanınız."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<MessageResponseDto> create(@RequestBody @Valid CreateBranchRequestDto dto) {
         return ResponseEntity.ok(service.create(dto));
@@ -50,7 +69,21 @@ public class BranchController {
             description = "Base API'den tüm şube verilerini çeken ve veritabanıyla karşılaştıran metot.\n\n" +
                     "1. Silinmiş şubeleri tespit eder ve veritabanından kaldırır.\n" +
                     "2. Yeni eklenmiş şubeleri tespit eder ve veritabanına ekler. #7\n",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Base API'den veri başarıyla alındı ve güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Base API'den alınan veri bulunamadı veya şube ile ilgili herhangi bir data bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<List<BranchModelResponseDto>> getDataFromBaseApi() {
         return ResponseEntity.ok(service.getAllDataFromBaseApi());
@@ -66,6 +99,20 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "oid", description = "Silinecek şubenin OID değeri", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şube başarıyla yumuşak bir şekilde silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen OID'ye sahip şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteBranchByOid(@PathVariable Long oid) {
@@ -80,6 +127,20 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "name", description = "Bulunmak istenen şubenin adı", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "İsme göre şubeler başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
             }
     )
     public ResponseEntity<List<Branch>> findBranchesByName(@PathVariable String name) {
@@ -93,7 +154,22 @@ public class BranchController {
             description = "Verilen isim ve şehre göre aktif şubeyi bulan metot. Eğer belirtilen isim ve şehirde şube bulunamazsa hata fırlatılır. #10",
             tags = {"Branch Controller"},
             parameters = {
-            @Parameter(name = "dto", description = "İsim ve şehir bilgilerini içeren istek gövdesi. name-city", required = true)}
+            @Parameter(name = "dto", description = "İsim ve şehir bilgilerini içeren istek gövdesi. name-city", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "İsim ve şehire göre şube başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<Branch> findByNameAndCity(@RequestBody @Valid FindByNameAndCityRequestDto dto) {
         return ResponseEntity.ok(service.findByNameAndCity(dto));
@@ -107,6 +183,20 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "city", description = "Şehir adı", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şehire göre şubeler başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
             }
     )
     public ResponseEntity<List<Branch>> findByCity(@PathVariable String city) {
@@ -121,6 +211,20 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "apiId", description = "Api Kimliğini içeren istek.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "API kimliğine göre şube başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
             }
     )
     public ResponseEntity<Branch> findByApiId(@PathVariable String apiId) {
@@ -136,7 +240,25 @@ public class BranchController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek şube bilgilerini içeren istek gövdesi. apiId-name-city",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şube güncelleme işlemi başarıyla gerçekleştirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Aradığınız şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen isim ve şehirde zaten bir şube mevcut."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Bilinmeyen bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<MessageResponseDto> updateBranchByApiId(@RequestBody @Valid UpdateBranchRequestDto dto) {
         return ResponseEntity.ok(service.updateBranchByApiId(dto));
@@ -147,7 +269,17 @@ public class BranchController {
     @Operation(
             summary = "Aktif Şubeleri Getir",
             description = "Sistemdeki tüm aktif şubeleri getiren metot. Eğer aktif şube bulunamazsa hata fırlatılır. #14",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Aktif şubeler başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir aktif şube bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<List<Branch>> activeBranches() {
         return ResponseEntity.ok(service.findAllActiveBranches());
@@ -158,7 +290,17 @@ public class BranchController {
     @Operation(
             summary = "Silinmiş Şubeleri Getir",
             description = "Sistemdeki tüm silinmiş şubeleri getiren metot. Eğer silinmiş şube bulunamazsa hata fırlatılır. #15",
-            tags = {"Branch Controller"}
+            tags = {"Branch Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Silinmiş şubeler başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Herhangi bir silinmiş şube bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<List<Branch>> deletedBranches() {
         return ResponseEntity.ok(service.findAllDeletedBranches());
@@ -172,6 +314,20 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "oid", description = "Aktifleştirilecek şubenin OID değeri", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şube başarıyla aktifleştirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen OID'ye sahip şube bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen şube zaten aktif durumda."
+                    )
             }
     )
     public ResponseEntity<MessageResponseDto> activateBranch(@PathVariable Long oid) {
@@ -186,6 +342,16 @@ public class BranchController {
             tags = {"Branch Controller"},
             parameters = {
                     @Parameter(name = "apiId", description = "Yenilenecek şubenin apiId değeri", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Şube başarıyla yenilendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen OID'ye sahip şube bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Branch> updateBranchByApiId(@PathVariable String apiId) {
