@@ -59,7 +59,7 @@ public class StudentController {
                     )
             }
     )
-    public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
+    public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto) {
         return ResponseEntity.ok(studentService.updateStudent(dto));
     }
 
@@ -90,6 +90,7 @@ public class StudentController {
     public ResponseEntity<Boolean> deleteStudentById(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.deleteByStudentOid(id));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("find-user-by-student-oid/{oid}")
     @Operation(
@@ -116,5 +117,28 @@ public class StudentController {
     )
     public ResponseEntity<User> findUserByStudentOId(@PathVariable Long oid) {
         return ResponseEntity.ok(studentService.findUserByStudentOid(oid));
+    }
+
+    @PostMapping("/find-by-courseId/{course_group_oid}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Course id ile öğrenci döner ve öğrenci tablosundaki user id ile ilgili user bilgilerini döner", tags = {"Student Controller"}, parameters = {
+            @Parameter(
+                    name = "course_group_oid",
+                    description = "course_group oid",
+                    required = true
+            )
+    },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sınıfa göre user başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kaynak bulunamadı."
+                    )
+            })
+    public ResponseEntity<List<User>> findUserByCourseId(@PathVariable Long course_group_oid) {
+        return ResponseEntity.ok(studentService.findByCourseId(course_group_oid));
     }
 }
