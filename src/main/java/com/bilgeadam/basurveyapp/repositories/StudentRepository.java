@@ -1,6 +1,7 @@
 package com.bilgeadam.basurveyapp.repositories;
 
 import com.bilgeadam.basurveyapp.entity.Student;
+import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.repositories.base.BaseRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -29,4 +30,8 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
 
 
     Optional<Student> findByUserOid(Long oid);
+
+    @Query("SELECT u FROM Student st JOIN User u ON st.oid = u.oid WHERE st.courseGroup.oid = :courseGroupId")
+    Optional<List<User>> findByCourseGroupId(Long courseGroupId);
+
 }
