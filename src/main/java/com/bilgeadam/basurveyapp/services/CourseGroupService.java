@@ -149,7 +149,7 @@ public class CourseGroupService{
             CourseGroupModelResponse2Dto  courseGroupModelDto;
             if (obj.getTrainers()!=null){
             courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
-                    .id(obj.getCourseId())
+                    .id(obj.getOid())
                     .name(obj.getName())
                     .startDate(obj.getStartDate())
                     .endDate(obj.getEndDate())
@@ -159,7 +159,7 @@ public class CourseGroupService{
             listDto.add(courseGroupModelDto);
             }else {
                 courseGroupModelDto= CourseGroupModelResponse2Dto.builder()
-                        .id(obj.getCourseId())
+                        .id(obj.getOid())
                         .name(obj.getName())
                         .startDate(obj.getStartDate())
                         .endDate(obj.getEndDate())
