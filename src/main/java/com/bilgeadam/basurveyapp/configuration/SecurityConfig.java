@@ -56,6 +56,9 @@ public class SecurityConfig {
             "/role/**",
             "/user/find-user-by-email-token/**",
             "/trainer-tag/find-trainers-by-trainer-tag/**",
+            "/responses/survey-answers/**",
+            "/api/v1/responses/export-personalized-report-to-excel/**"
+
     };
 
     @Bean

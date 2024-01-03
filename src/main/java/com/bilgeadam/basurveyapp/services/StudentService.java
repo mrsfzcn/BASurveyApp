@@ -111,4 +111,8 @@ public class StudentService {
     public Student findByUserOid(Long userOid){
         return studentRepository.findByUserOid(userOid).get();
     }
+
+    public List<Student> findStudentListByCourseGroupOid(Long courseGroupOid){
+        return studentRepository.findByCourseGroupOid(courseGroupOid);
+    }
 }

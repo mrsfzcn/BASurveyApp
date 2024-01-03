@@ -107,7 +107,7 @@ public class ResponseController {
     }
 
     @PutMapping("/survey-answers/{token}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Tüm Response'ları Kaydet",
             description = "Belirli bir ankete ait tüm sorulara verilen Response'ları kaydetmeye yarayan metot. #70",
@@ -227,6 +227,34 @@ public class ResponseController {
         return new ResponseEntity<>(responseService.exportToExcel(id),headers, HttpStatus.OK);
 
     }
+
+
+    //@PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
+    @GetMapping("/export-personalized-report-to-excel/{id}")
+    @Operation(
+            summary = "Kişisel sonuçları excele aktar",
+            description = "kişi hakkındaki anket sonuçlarını Excel dosyasına aktarır. #79",
+            tags = {"Response Controller"},
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "kişisel rapor oluşturulacak kişinin kimliği (OID)",
+                            required = true
+                    )
+            }
+    )
+    public ResponseEntity<byte[]> exportPersonalizedReportToExcel(@PathVariable("id") Long id) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment","personalizedresult" + id + "xlsx");
+        return new ResponseEntity<>(responseService.exportPersonalizedReportToExcel(id),headers, HttpStatus.OK);
+
+    }
+
+
+
+
+
 
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @GetMapping("/survey-response-rate/{survey-id}/{student-tag-oid}")
