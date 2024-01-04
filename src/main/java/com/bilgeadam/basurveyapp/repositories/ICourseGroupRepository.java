@@ -20,4 +20,7 @@ public interface ICourseGroupRepository extends BaseRepository<CourseGroup, Long
 
     Optional<CourseGroup> findByApiIdAndState(String apiId, State state);
 
+
+
+
 }

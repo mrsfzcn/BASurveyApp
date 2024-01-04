@@ -15,9 +15,9 @@ import com.bilgeadam.basurveyapp.mapper.ResponseMapper;
 import com.bilgeadam.basurveyapp.repositories.ResponseRepository;
 
 
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.bilgeadam.basurveyapp.repositories.TrainerRepository;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.springframework.context.annotation.Lazy;
@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.io.ByteArrayOutputStream;
 
@@ -44,9 +45,14 @@ public class ResponseService {
     private final StudentService studentService;
     private final SurveyService surveyService;
     private final StudentTagService studentTagService;
+    private final TrainerRepository trainerRepository;
+    private final CourseGroupService courseGroupService;
+
+
+
 
     public ResponseService(ResponseRepository responseRepository, QuestionService questionService, UserService userService
-            , JwtService jwtService, StudentService studentService, @Lazy SurveyService surveyService, StudentTagService studentTagService) {
+            , JwtService jwtService, StudentService studentService, @Lazy SurveyService surveyService, StudentTagService studentTagService, TrainerRepository trainerRepository, CourseGroupService courseGroupService) {
         this.responseRepository = responseRepository;
         this.questionService = questionService;
         this.userService = userService;
@@ -54,6 +60,8 @@ public class ResponseService {
         this.studentService = studentService;
         this.surveyService = surveyService;
         this.studentTagService = studentTagService;
+        this.trainerRepository = trainerRepository;
+        this.courseGroupService = courseGroupService;
     }
 
     //TODO BURASI AÇILACAK DATABASE'DE VERİYE İHTİYAÇ OLDUĞU İÇİN HERŞEY MANUEL ŞEKİLDE ATANDI !! DTO'NUN FIELDLARI Database'e gönderilecek cevaplara göre düzenlenecek !!
@@ -346,6 +354,109 @@ public class ResponseService {
 
 
     }
+
+
+    public byte[] exportPersonalizedReportToExcel(Long trainerOid) throws IOException {
+        // eğitmen
+        Trainer theTrainer = trainerRepository.findTrainerByTrainerOid(trainerOid).get();
+
+        // eğitmenin kurs grupları
+        List<CourseGroup> courseGroupList = courseGroupService.findCourseGroupByTrainerId(trainerOid);
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Eğitmen Raporu");
+            int rowIndex = 0;
+
+            // Başlık
+            Row titleRow = sheet.createRow(rowIndex++);
+            Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("Kişiye Özel Rapor");
+            sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+
+            // Eğitmen Adı Soyadı
+            Row trainerRow = sheet.createRow(rowIndex++);
+            Cell trainerLabelCell = trainerRow.createCell(0);
+            trainerLabelCell.setCellValue("Raporlanacak eğitmenin adı soyadı:");
+
+            Cell trainerDataCell = trainerRow.createCell(1);
+            String fullName = theTrainer.getUser().getFirstName() + " " + theTrainer.getUser().getLastName();
+            trainerDataCell.setCellValue(fullName);
+
+            // Tarih
+            Row dateRow = sheet.createRow(rowIndex++);
+            Cell dateLabelCell = dateRow.createCell(0);
+            dateLabelCell.setCellValue("Tarih:");
+
+            Cell dateDataCell = dateRow.createCell(1);
+            dateDataCell.setCellValue(LocalDate.now().toString());
+
+            for (CourseGroup courseGroup : courseGroupList) {
+                // Eğitmenin kurs grubu adı
+                rowIndex++;
+                Row courseGroupRow = sheet.createRow(rowIndex++);
+                Cell courseGroupLabelCell = courseGroupRow.createCell(0);
+                courseGroupLabelCell.setCellValue("Kurs Grubu:");
+
+                Cell courseGroupDataCell = courseGroupRow.createCell(1);
+                courseGroupDataCell.setCellValue(courseGroup.getName());
+
+
+
+                // Öğrenci Listesi Başlığı
+                Row studentListHeaderRow = sheet.createRow(rowIndex++);
+                Cell studentListHeaderCell = studentListHeaderRow.createCell(0);
+                studentListHeaderCell.setCellValue("Öğrenci id:");
+                Cell questionHeaderCell = studentListHeaderRow.createCell(1);
+                questionHeaderCell.setCellValue("Soru:");
+                Cell answerHeaderCell = studentListHeaderRow.createCell(2);
+                answerHeaderCell.setCellValue("Cevap:");
+
+                // Öğrenci bilgileri
+                List<Student> studentList = studentService.findStudentListByCourseGroupOid(courseGroup.getOid());
+                for (Student student : studentList) {
+                    Set<Survey> answeredSurveys = student.getSurveysAnswered();
+                    if (!answeredSurveys.isEmpty()) {
+                        Survey firstSurvey = answeredSurveys.iterator().next();
+                        List<Question> surveyQuestions = firstSurvey.getQuestions();
+                        if (!surveyQuestions.isEmpty()) {
+                            for (Question question : surveyQuestions) {
+                                Row studentRow = sheet.createRow(rowIndex++);
+                                Cell studentIdCell = studentRow.createCell(0);
+                                studentIdCell.setCellValue(student.getOid().toString());
+
+                                Cell questionCell = studentRow.createCell(1);
+                                Cell responseCell = studentRow.createCell(2);
+
+                                questionCell.setCellValue(question.getQuestionString());
+
+                                for (Survey survey : student.getSurveysAnswered()) {
+                                    for (Response response : survey.getResponses()) {
+                                        if (response.getQuestion().equals(question)) {
+                                            responseCell.setCellValue(response.getResponseString());
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Dosyayı bir byte dizisine yaz
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                workbook.write(outputStream);
+                return outputStream.toByteArray();
+            }
+        }
+    }
+
+
+
+
+
+
+
 
 
     // studenTag'e atanan anketlerin öğrenciler tarafından cevaplanma oranını gösteren metod

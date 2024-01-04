@@ -34,4 +34,8 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
     @Query("SELECT u FROM Student st JOIN User u ON st.oid = u.oid WHERE st.courseGroup.oid = :courseGroupId")
     Optional<List<User>> findByCourseGroupId(Long courseGroupId);
 
+
+    List<Student> findByCourseGroupOid(Long id);
+
+
 }

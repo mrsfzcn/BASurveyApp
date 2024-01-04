@@ -116,4 +116,8 @@ public class StudentService {
 
     }
 
+
+    public List<Student> findStudentListByCourseGroupOid(Long courseGroupOid){
+        return studentRepository.findByCourseGroupOid(courseGroupOid);
+    }
 }
