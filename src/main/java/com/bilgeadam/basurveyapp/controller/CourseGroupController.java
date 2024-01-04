@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.repositories.ICourseGroupRepository;
 import com.bilgeadam.basurveyapp.services.CourseGroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,17 @@ public class CourseGroupController {
     @Operation(
             summary = "(Deprecated) Tüm Kurs Grubu Verilerini Getirme",
             description = "Sistemdeki tüm kurs gruplarına ait verileri getiren metot. #26",
-            tags = {"Course Group Controller"}
+            tags = {"Course Group Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm kurs gruplarına ait veriler başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Veri bulunamadı veya bir hata oluştu."
+                    )
+            }
     )
     public ResponseEntity<List<CourseGroupModelResponseDto>> getAllDataFromCourseGroup(){
         return ResponseEntity.ok(courseGroupService.getAllDataFromCourseGroup());
@@ -40,7 +51,13 @@ public class CourseGroupController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak kurs grubu bilgilerini içeren istek gövdesi. apiId-name-startDate-endDate-courseId-branchId-trainers(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kurs grubu başarıyla oluşturuldu."
+                    )
+            }
     )
     public ResponseEntity<MessageResponseDto> createCourseGroup(@RequestBody @Valid CreateCourseGroupRequestDto dto){
         return ResponseEntity.ok(courseGroupService.createCourseGroup(dto));
@@ -50,7 +67,13 @@ public class CourseGroupController {
     @Operation(
             summary = "Tüm Kurs Gruplarını Listeleme",
             description = "Sistemdeki tüm kurs gruplarını listeleyen metot. #28",
-            tags = {"Course Group Controller"}
+            tags = {"Course Group Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm kurs grupları başarıyla listelendi."
+                    )
+            }
     )
     public ResponseEntity<List<CourseGroup>> findall(){
         return ResponseEntity.ok(courseGroupService.findAllCourseGroup());
@@ -63,6 +86,16 @@ public class CourseGroupController {
             tags = {"Course Group Controller"},
             parameters = {
                     @Parameter(name = "name", description = "Bulunacak kurs gruplarının adı", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen isimle kurs grupları başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen isimle kurs grupları bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<CourseGroup>> findByGroupName(@RequestParam String name){
@@ -76,6 +109,16 @@ public class CourseGroupController {
             tags = {"Course Group Controller"},
             parameters = {
                     @Parameter(name = "courseId", description = "Bulunacak kurs gruplarının kurs ID'si", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen kurs ID'sine sahip kurs grupları başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen kurs ID'sine sahip kurs grupları bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<CourseGroup>> findCourseGroupByCourseId(@RequestParam Long courseId){
@@ -89,6 +132,16 @@ public class CourseGroupController {
             tags = {"Course Group Controller"},
             parameters = {
                     @Parameter(name = "branchId", description = "Bulunacak kurs gruplarının şube ID'si", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen şube ID'sine sahip kurs grupları başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen şube ID'sine sahip kurs grupları bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<CourseGroup>> findCourseGroupByBranchId(@RequestParam Long branchId){
@@ -102,6 +155,16 @@ public class CourseGroupController {
             tags = {"Course Group Controller"},
             parameters = {
                     @Parameter(name = "oid", description = "Bulunacak kurs grubunun OID değeri", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen Kurs Grubu OID'ye sahip kurs grubu başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen Kurs Grubu OID'ye sahip kurs grubu bulunamadı."
+                    )
             }
     )
     public ResponseEntity<CourseGroup> findByCourseGroupOid(@RequestParam Long oid){
@@ -115,6 +178,16 @@ public class CourseGroupController {
             tags = {"Course Group Controller"},
             parameters = {
                     @Parameter(name = "trainerId", description = "Bulunacak kurs gruplarının eğitmen ID'si", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen eğitmen ID'sine sahip kurs grupları başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen eğitmen ID'sine sahip kurs grupları bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<CourseGroup>> findCourseGroupByTrainerId(@RequestParam Long trainerId){
@@ -125,7 +198,13 @@ public class CourseGroupController {
     @Operation(
             summary = "Tüm Verileri Getirme",
             description = "Frontend tablo için gerekli verileri getiren metot. #34",
-            tags = {"Course Group Controller"}
+            tags = {"Course Group Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Frontend tablo için tüm veriler başarıyla getirildi."
+                    )
+            }
     )
     public ResponseEntity<List<CourseGroupModelResponse2Dto>> getAllDataForFrontendTable(){
         return ResponseEntity.ok(courseGroupService.getAllDataForFrontendTable());

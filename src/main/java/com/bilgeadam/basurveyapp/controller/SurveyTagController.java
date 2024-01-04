@@ -10,6 +10,7 @@ import com.bilgeadam.basurveyapp.services.SurveyTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,17 @@ public class SurveyTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak etiketin bilgilerini içeren istek gövdesi. tagString-mainTagOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tag başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Belirtilen tag string'ine sahip anket tag'i zaten mevcut."
+                    )
+            }
     )
     @Hidden
     public ResponseEntity<SurveyTag> createTag(@RequestBody @Valid CreateTagDto dto ){
@@ -77,6 +88,16 @@ public class SurveyTagController {
             tags = {"Survey Tag Controller"},
             parameters = {
                     @Parameter(name = "tagString", description = "Silinecek question tag'in tag stringi.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket tag'i başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen tag string'ine sahip anket tag'i bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteByTagString(@PathVariable String tagString) {

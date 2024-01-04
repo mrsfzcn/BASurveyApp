@@ -8,6 +8,7 @@ import com.bilgeadam.basurveyapp.services.TrainerTagService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,17 @@ public class TrainerTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Bulunacak aktif trainer tag'ının OID'sini içeren istek.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer tag başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer tag bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<FindActiveTrainerTagByIdResponseDto> findActiveById(@RequestBody @Valid Long trainerTagOid ){
         return ResponseEntity.ok(trainerTagService.findActiveById(trainerTagOid));
@@ -53,6 +64,16 @@ public class TrainerTagController {
             tags = {"Trainer Tag Controller"},
             parameters = {
                     @Parameter(name = "trainerTagOid", description = "Silinecek trainer tag OID'sini içeren istek gövdesi.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer tag başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer tag bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Boolean> delete(@RequestBody @Valid Long trainerTagOid ){
@@ -63,7 +84,13 @@ public class TrainerTagController {
     @Operation(
             summary = "Trainer Tag Listeleme",
             description = "Trainer tag stringlerini (.net2, java1, java3 gibi) ve trainer tag OID'lerini dönen metot. #126",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer tag listesi başarıyla alındı."
+                    )
+            }
     )
     public ResponseEntity<List<TrainerTagDetailResponseDto>> getTrainerTagList(){
         return ResponseEntity.ok(trainerTagService.getTrainerTagList());
@@ -77,7 +104,17 @@ public class TrainerTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Trainer email'ini içeren istek gövdesi.",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer tagları başarıyla alındı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer veya tag bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<GetTrainerTagsByEmailResponse> getTrainerTagsByEmail(@RequestBody @Valid FindUserByEmailRequestDto dto){
         return ResponseEntity.ok(trainerTagService.getTrainerTagsByEmail(dto.getEmail()));
@@ -90,6 +127,16 @@ public class TrainerTagController {
             tags = {"Trainer Tag Controller"},
             parameters = {
                     @Parameter(name = "token", description = "Trainerları bulmak için kullanılacak email token'ı.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer listesi başarıyla alındı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Geçersiz token."
+                    )
             }
     )
     public List<UserSimpleResponseDto> findTrainersByEmailToken(@PathVariable String token){
@@ -102,7 +149,13 @@ public class TrainerTagController {
     @Operation(
             summary = "Aktif Trainer Tag'leri Görüntüleme",
             description = "Aktif olan tüm trainer tag'lerin görüntülenmesini sağlayan metot. #129",
-            tags = {"Trainer Tag Controller"}
+            tags = {"Trainer Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Aktif olan tüm trainer tag'ler başarıyla alındı."
+                    )
+            }
     )
     public ResponseEntity<List<TagResponseDto>> findAll() {
         List<TagResponseDto> responseDtoList = trainerTagService.findAll();

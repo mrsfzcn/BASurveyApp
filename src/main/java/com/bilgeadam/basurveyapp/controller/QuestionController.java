@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,17 @@ public class QuestionController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak soruların bilgilerini içeren istek gövdesi. questionString-questionTypeOid-order-tagOids(List)-options(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Yeni soru başarıyla oluşturuldu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Aynı soru metniyle zaten var olan bir soru bulunmaktadır."
+                    )
+            }
     )
     public ResponseEntity<Boolean> createQuestion(@RequestBody @Valid List<CreateQuestionDto> createQuestionDtoList) {
         return ResponseEntity.ok(questionService.createQuestion(createQuestionDtoList));
@@ -48,7 +59,17 @@ public class QuestionController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek soru bilgilerini içeren istek gövdesi. questionOid-questionTypeOid-tagOids(List)-questionString",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Güncellenecek soru bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> updateQuestion(@RequestBody @Valid UpdateQuestionDto updateQuestionDto) {
         return ResponseEntity.ok(questionService.updateQuestion(updateQuestionDto));
@@ -67,6 +88,16 @@ public class QuestionController {
                             description = "Soru ID'si",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen ID'ye sahip soru bulunamadı."
+                    )
             }
     )
     public ResponseEntity<QuestionFindByIdResponseDto> findById(@PathVariable @Valid Long id) {
@@ -78,7 +109,13 @@ public class QuestionController {
     @Operation(
             summary = "Tüm Soruları Getir",
             description = "Tüm soruların görüntülenmesini sağlayan metot. #46",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm sorular başarıyla getirildi."
+                    )
+            }
     )
     public ResponseEntity<List<QuestionResponseDto>> findAll() {
         List<QuestionResponseDto> responseDtoList = questionService.findAll();
@@ -90,7 +127,13 @@ public class QuestionController {
     @Operation(
             summary = "Tüm Soruları Getir",
             description = "Tüm soruların görüntülenmesini sağlayan metot. #47",
-            tags = {"Question Controller"}
+            tags = {"Question Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm sorular başarıyla getirildi."
+                    )
+            }
     )
     public ResponseEntity<List<FindAllQuestionResponseDto>> findAllQuestion() {
         List<FindAllQuestionResponseDto> responseDtoList = questionService.findAllQuestion();
@@ -105,6 +148,24 @@ public class QuestionController {
             tags = {"Question Controller"},
             parameters = {
                     @Parameter(name = "id", description = "Silinecek sorunun kimliği.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Soru başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Soru bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Cevaplanmış sorular silinemez."
+                    ),
+                    @ApiResponse(
+                            responseCode = "423",
+                            description = "Soruya ait aktif anketler bulunmaktadır."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteQuestionById(@PathVariable Long id) {
@@ -118,6 +179,20 @@ public class QuestionController {
             tags = {"Question Controller"},
             parameters = {
                     @Parameter(name = "student-token", description = "Öğrenciye ait token.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Anket soruları başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen anket bulunamadı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Geçersiz token."
+                    )
             }
     )
     public ResponseEntity<List<QuestionResponseDto>> getSurveyQuestions(@PathVariable(name = "student-token") String token) {
@@ -133,6 +208,16 @@ public class QuestionController {
             parameters = {
                     @Parameter(name = "survey-oid", description = "Filtrelenen soruların ait olduğu anketin ID'si.", required = true),
                     @Parameter(name = "keyword", description = "Soruları filtrelemek için kullanılacak anahtar kelime.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sorular başarıyla keyword'e göre filtrelenmiştir."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen anket veya filtre sonucunda herhangi bir soru bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestionsByKeyword(@PathVariable("survey-oid") Long survey0id,@RequestParam String keyword) {
@@ -149,6 +234,16 @@ public class QuestionController {
             parameters = {
                     @Parameter(name = "survey0id", description = "Filtrelenecek anketin ID'si.", required = true),
                     @Parameter(name = "questionTag0ids", description = "Filtreleme için kullanılacak etiketlerin ID'leri.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sorular başarıyla etiketlere göre filtrelenmiştir."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen anket veya filtre sonucunda herhangi bir soru bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<QuestionResponseDto>> filterSurveyQuestions(@RequestParam Long survey0id, @RequestParam List<Long> questionTag0ids) {
@@ -164,6 +259,16 @@ public class QuestionController {
             parameters = {
                     @Parameter(name = "trainerid", description = "Eğitmenin kimlik numarası.", required = true),
                     @Parameter(name = "surveyid", description = "Anketin kimlik numarası.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sorular başarıyla getirilmiştir."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen eğitmen veya anket bulunamadı."
+                    )
             }
     )
     ResponseEntity<List<QuestionsTrainerTypeResponseDto>> QuestionsByTrainerType(@RequestParam Long trainerid,@RequestParam Long surveyid) {
@@ -178,6 +283,16 @@ public class QuestionController {
             tags = {"Question Controller"},
             parameters = {
                     @Parameter(name = "type", description = "Görüntülenecek soru türünü belirten parametre.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sorular başarıyla getirilmiştir."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen soru türüne sahip soru bulunamadı."
+                    )
             }
     )
     public ResponseEntity<List<String>> findAllByQuestionType(@RequestParam String type){

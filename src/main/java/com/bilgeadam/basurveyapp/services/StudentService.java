@@ -30,7 +30,7 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public StudentResponseDto updateStudent(StudentUpdateDto dto)   {
+    public StudentResponseDto updateStudent(StudentUpdateDto dto) {
         Optional<Student> studentOptional = studentRepository.findActiveById(dto.getStudentOid());
         Optional<StudentTag> studentTagOptional = studentTagService.findActiveById(dto.getStudentTagOid());
 
@@ -80,24 +80,23 @@ public class StudentService {
     }
 
     public Boolean deleteByStudentOid(Long oid) {
-        Optional<Student> student =  studentRepository.findStudentByOid(oid);
+        Optional<Student> student = studentRepository.findStudentByOid(oid);
         Student userOfStudent = studentRepository.findActiveById(student.get().getOid()).orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
         userOfStudent.getUser().setState(State.DELETED);
         studentRepository.save(userOfStudent);
         return studentRepository.softDeleteById(student.get().getOid());
     }
+
     //Tüm kullanıcılar sayfasındaki student silme işlemi için eklendi. deleteByStudentOid metoduna alternatif olarak hazırlandı.
     public Boolean deleteStudentByUserOid(Long oid) {
-        Optional<Student> student =  studentRepository.findByUserOid(oid);
-        if(student.isEmpty())
+        Optional<Student> student = studentRepository.findByUserOid(oid);
+        if (student.isEmpty())
             throw new ResourceNotFoundException("Entity not found");
         student.get().getUser().setState(State.DELETED);
         student.get().setState(State.DELETED);
         studentRepository.save(student.get());
         return true;
     }
-
-
 
 
     public User findUserByStudentOid(Long oid) {
@@ -108,9 +107,15 @@ public class StudentService {
         return studentByOid.get().getUser();
     }
 
-    public Student findByUserOid(Long userOid){
+    public Student findByUserOid(Long userOid) {
         return studentRepository.findByUserOid(userOid).get();
     }
+
+    public List<User> findByCourseId(Long courseId) {
+        return studentRepository.findByCourseGroupId(courseId).get();
+
+    }
+
 
     public List<Student> findStudentListByCourseGroupOid(Long courseGroupOid){
         return studentRepository.findByCourseGroupOid(courseGroupOid);

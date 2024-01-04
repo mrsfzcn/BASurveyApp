@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,13 @@ public class UserController {
     @Operation(
             summary = "Manager Listesini Getirme",
             description = "Manager kullanıcılarının listesini getirir. #134",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Manager listesi başarıyla alındı."
+                    )
+            }
     )
     ResponseEntity<List<ManagerResponseDto>> getManagerList() {
         return ResponseEntity.ok(userService.getManagerList());
@@ -40,7 +47,13 @@ public class UserController {
     @Operation(
             summary = "Admin Listesini Getirme",
             description = "Admin kullanıcılarının listesini getirir. #135",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Admin listesi başarıyla alındı."
+                    )
+            }
     )
     ResponseEntity<List<AdminResponseDto>> getAdminList() {
         return ResponseEntity.ok(userService.getAdminList());
@@ -55,6 +68,12 @@ public class UserController {
             tags = {"User Controller"},
             parameters = {
                     @Parameter(name = "pageable", description = "Sayfalama ve sıralama parametrelerini içeren istek gövdesi.", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcı listesi başarıyla sayfalandı."
+                    )
             }
     )
     ResponseEntity<Page<User>> getUserPage(Pageable pageable) {
@@ -73,6 +92,16 @@ public class UserController {
                             description = "User ID",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Manager listesi başarıyla alındı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<UserSimpleResponseDto> findByOid(@PathVariable("user-id") Long userId) {
@@ -90,6 +119,16 @@ public class UserController {
                             name = "token",
                             description = "Email token",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcı başarıyla alındı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Token hatası."
                     )
             }
     )
@@ -113,7 +152,17 @@ public class UserController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek kullanıcı bilgilerini içeren istek gövdesi. firstName-lastName-email-authorizedRole",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcı başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<User> updateUser(@PathVariable("user-email") String userEmail, @RequestBody UserUpdateRequestDto dto) {
         userService.updateUser(userEmail, dto);
@@ -132,6 +181,16 @@ public class UserController {
                             description = "User ID",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcı başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı bulunamadı hatası."
+                    )
             }
     )
     ResponseEntity<Void> deleteUser(@PathVariable("user-id") Long userId) {
@@ -148,7 +207,21 @@ public class UserController {
     @Operation(
             summary = "Eğitmenler ve Öğrenciler Listesi",
             description = "Eğitmenler ve onlara kayıtlı öğrencilerin listesini getirme. #141",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Eğitmenler ve öğrenciler başarıyla listelendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Access denied hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<List<UserTrainersAndStudentsResponseDto>> getTrainersAndStudentsList(String jwtToken) {
         return ResponseEntity.ok(userService.getTrainersAndStudentsList(jwtToken));
@@ -163,7 +236,21 @@ public class UserController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Kullanıcıya atanacak rolü ve kullanıcı kimliğini içeren istek gövdesi. role-userEmail",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcıya başarıyla rol atandı."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı veya rol bulunamadı hatası."
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Rol zaten atanmış hatası."
+                    )
+            }
     )
     ResponseEntity<Boolean> assignRoleToUser(@RequestBody @Valid AssignRoleToUserRequestDto request) {
         return ResponseEntity.ok(userService.assignRoleToUser(request));
@@ -174,7 +261,17 @@ public class UserController {
     @Operation(
             summary = "Tüm Kullanıcı Detaylarını Getirme",
             description = "Sistemde kayıtlı olan tüm kullanıcıların detaylarını getirir. #143",
-            tags = {"User Controller"}
+            tags = {"User Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm kullanıcılar başarıyla getirildi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kullanıcı bulunamadı hatası."
+                    )
+            }
     )
     ResponseEntity<List<FindAllUserDetailsResponseDto>> findAllUserDetails() {
         return ResponseEntity.ok(userService.findAllUserDetails());

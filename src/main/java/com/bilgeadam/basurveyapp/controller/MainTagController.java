@@ -9,6 +9,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.QuestionTagNotFoundException;
 import com.bilgeadam.basurveyapp.services.MainTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,13 @@ public class MainTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Oluşturulacak ana etiketin bilgilerini içeren istek gövdesi. tagClass(List)-tagName",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Ana etiket başarıyla oluşturuldu."
+                    )
+            }
     )
     public ResponseEntity<Boolean> createMainTag(@RequestBody CreateMainTagRequestDto dto){
         mainTagService.createMainTag(dto);
@@ -48,6 +55,12 @@ public class MainTagController {
             tags = {"Main Tag Controller"},
             parameters = {
                     @Parameter(name = "tagName", description = "Aranacak etiket ismi", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket isimlerine göre ana etiketler başarıyla bulundu."
+                    )
             }
     )
     public ResponseEntity<List<MainTagResponseDto>> findByTagNames(@RequestParam String tagName){
@@ -62,6 +75,16 @@ public class MainTagController {
             parameters = {
                     @Parameter(name = "tagName", description = "Aranacak etiket ismi", required = true),
                     @Parameter(name = "tagClass", description = "Aranacak etiket sınıfı", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket ismi ve sınıfa göre ana etiket başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket ismi ve sınıfa göre ana etiket bulunamadı."
+                    )
             }
     )
     public ResponseEntity<MainTagResponseDto> findByTagNameAndTagClass(@RequestParam String tagName,@RequestParam String tagClass){
@@ -76,7 +99,17 @@ public class MainTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek etiket ismini içeren istek gövdesi. tagString-newTagString",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket ismiyle ana etiket başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket ismiyle ana etiket bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> updateTagByTagName(@RequestBody UpdateTagNameDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagName(dto));
@@ -90,7 +123,17 @@ public class MainTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek ana etiket bilgilerini içeren istek gövdesi. tagString-newTagString-tagClass",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket ismi ve sınıfıyla ana etiket başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket ismi ve sınıfıyla ana etiket bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClass(@RequestBody UpdateTagDto dto){
         return ResponseEntity.ok(mainTagService.updateTagByTagNameAndTagClass(dto));
@@ -100,7 +143,13 @@ public class MainTagController {
     @Operation(
             summary = "Tüm Etiketleri Getir",
             description = "Sistemdeki tüm etiketleri getiren metot. #40",
-            tags = {"Main Tag Controller"}
+            tags = {"Main Tag Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Tüm etiketler başarıyla getirildi."
+                    )
+            }
     )
     public ResponseEntity<List<MainTagResponseDto>> findAllTags(){
         return ResponseEntity.ok(mainTagService.findAllTags());
@@ -114,6 +163,16 @@ public class MainTagController {
             tags = {"Main Tag Controller"},
             parameters = {
                     @Parameter(name = "tagString", description = "Silinecek etiketin ismi", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket ismine göre ana etiket başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket ismine göre ana etiket bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteByTagName(@PathVariable String tagString) {
@@ -133,7 +192,17 @@ public class MainTagController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Güncellenecek etiketin adı ve tüm etiket sınıflarını içeren istek gövdesi. tagString-newTagString-tagClass(List)",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Belirtilen etiket adı ve sınıflarıyla tüm etiketler başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Belirtilen etiket adına sahip etiket bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> updateTagByTagNameAndTagClassesFrontEnd(@RequestBody UpdateTagNameAndTagClassesDto dto){
         mainTagService.updateTagByTagNameAndTagClassesFrontEnd(dto);

@@ -11,6 +11,7 @@ import com.bilgeadam.basurveyapp.exceptions.custom.ResourceNotFoundException;
 import com.bilgeadam.basurveyapp.services.TrainerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,13 @@ public class TrainerController {
     @Operation(
             summary = "Master Trainer Listesini Getir",
             description = "Master trainer'ları görüntülemeyi sağlayan metot. #117",
-            tags = {"Trainer Controller"}
+            tags = {"Trainer Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Master trainer listesi başarıyla getirildi."
+                    )
+            }
     )
     ResponseEntity<List<MasterTrainerResponseDto>> getMasterTrainerList() {
         return ResponseEntity.ok(trainerService.getMasterTrainerList());
@@ -42,7 +49,13 @@ public class TrainerController {
     @Operation(
             summary = "Assistant Trainer Listesini Getir",
             description = "Assistant trainer'ları görüntülemeyi sağlayan metot. #118",
-            tags = {"Trainer Controller"}
+            tags = {"Trainer Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Assistant trainer listesi başarıyla getirildi."
+                    )
+            }
     )
     ResponseEntity<List<AssistantTrainerResponseDto>> getAssistantTrainerList() {
         return ResponseEntity.ok(trainerService.getAssistantTrainerList());
@@ -53,7 +66,13 @@ public class TrainerController {
     @Operation(
             summary = "Trainer Listesini Getir",
             description = "Tüm trainer'ları görüntülemeyi sağlayan metot. #119",
-            tags = {"Trainer Controller"}
+            tags = {"Trainer Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer listesi başarıyla getirildi."
+                    )
+            }
     )
     ResponseEntity<List<TrainerResponseListTagsDto>> getTrainerList() {
         return ResponseEntity.ok(trainerService.getTrainerList());
@@ -67,7 +86,17 @@ public class TrainerController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Trainer'a atanacak tag ve trainer bilgilerini içeren istek gövdesi. trainerTagOid-trainerOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer başarıyla güncellendi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer veya Trainer Tag bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<TrainerResponseDto> updateTrainer(@RequestBody TrainerUpdateDto dto){
         return ResponseEntity.ok(trainerService.updateTrainer(dto));
@@ -78,7 +107,17 @@ public class TrainerController {
     @Operation(
             summary = "Trainer Silme",
             description = "Integer türünde id girilerek bulunan trainer'ın silinmesini sağlayan metot. #121",
-            tags = {"Trainer Controller"}
+            tags = {"Trainer Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Trainer başarıyla silindi."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer bulunamadı."
+                    )
+            }
     )
     public ResponseEntity<Boolean> deleteTrainerById(@PathVariable Long id) {
         return ResponseEntity.ok(trainerService.deleteByTrainerOid(id));
@@ -94,6 +133,16 @@ public class TrainerController {
                             name = "oid",
                             description = "Trainer Kimliği (Trainer OID)",
                             required = true
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Kullanıcı başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Trainer veya kullanıcı bulunamadı."
                     )
             }
     )

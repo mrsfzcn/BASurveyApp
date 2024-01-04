@@ -7,6 +7,7 @@ import com.bilgeadam.basurveyapp.entity.User;
 import com.bilgeadam.basurveyapp.services.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +26,13 @@ public class StudentController {
     @Operation(
             summary = "Tüm Öğrencilerin Listelenmesi",
             description = "Tüm öğrencilerin listelenmesini sağlar. #81",
-            tags = {"Student Controller"}
+            tags = {"Student Controller"},
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenciler başarıyla alındı."
+                    )
+            }
     )
     ResponseEntity<List<StudentResponseDto>> getStudentList() {
         return ResponseEntity.ok(studentService.getStudentList());
@@ -40,9 +47,19 @@ public class StudentController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Atanacak etiket bilgisini içeren istek gövdesi. studentTagOid-studentOid",
                     required = true
-            )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Etiket(Sınıf) başarıyla öğrenciye atanmıştır."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kaynak bulunamadı."
+                    )
+            }
     )
-    public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto){
+    public ResponseEntity<StudentResponseDto> updateStudent(@RequestBody StudentUpdateDto dto) {
         return ResponseEntity.ok(studentService.updateStudent(dto));
     }
 
@@ -58,11 +75,22 @@ public class StudentController {
                             description = "Student ID",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci başarıyla silinmiştir."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kaynak bulunamadı."
+                    )
             }
     )
     public ResponseEntity<Boolean> deleteStudentById(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.deleteByStudentOid(id));
     }
+
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     @GetMapping("find-user-by-student-oid/{oid}")
     @Operation(
@@ -75,9 +103,42 @@ public class StudentController {
                             description = "Student oid",
                             required = true
                     )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Öğrenci kullanıcısı başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kaynak bulunamadı."
+                    )
             }
     )
     public ResponseEntity<User> findUserByStudentOId(@PathVariable Long oid) {
         return ResponseEntity.ok(studentService.findUserByStudentOid(oid));
+    }
+
+    @PostMapping("/find-by-courseId/{course_group_oid}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Course id ile öğrenci döner ve öğrenci tablosundaki user id ile ilgili user bilgilerini döner", tags = {"Student Controller"}, parameters = {
+            @Parameter(
+                    name = "course_group_oid",
+                    description = "course_group oid",
+                    required = true
+            )
+    },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sınıfa göre user başarıyla bulundu."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Kaynak bulunamadı."
+                    )
+            })
+    public ResponseEntity<List<User>> findUserByCourseId(@PathVariable Long course_group_oid) {
+        return ResponseEntity.ok(studentService.findByCourseId(course_group_oid));
     }
 }
